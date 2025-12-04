@@ -1,0 +1,15 @@
+types:
+  genome-like:
+    properties:
+      Format: FASTA
+      Data: DNA sequence
+  gbk:
+    properties:
+      Format: genbank file
+  gff:
+    properties:
+      Format: gene feature format
+  orfs:
+    properties:
+      Format: FASTA
+      Data: AA sequence

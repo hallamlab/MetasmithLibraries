@@ -1,0 +1,5 @@
+types:
+  genomeAccession:
+    properties:
+      Accession: NCBI genome accession
+      Operation: Data retrieval

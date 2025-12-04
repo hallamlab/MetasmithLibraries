@@ -1,0 +1,5 @@
+manifest:
+  getNcbiAssembly.py:
+    type: transforms::transform
+remote_src: null
+schema: 0.11.4

@@ -1,0 +1,6 @@
+types:
+  ncbi-datasets.oci:
+    properties:
+      Format: OCI
+      provides: 
+      - ncbi-datasets
