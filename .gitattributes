@@ -1,4 +1,2 @@
-** linguist-vendored
-transforms linguist-detectable
-resources linguist-detectable
+tests linguist-vendored
 **/_metadata linguist-vendored
