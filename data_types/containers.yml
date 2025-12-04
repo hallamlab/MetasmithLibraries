@@ -4,3 +4,8 @@ types:
       Format: OCI
       provides: 
       - ncbi-datasets
+  ppanggolin.oci:
+    properties:
+      Format: OCI
+      provides: 
+      - ppanggolin

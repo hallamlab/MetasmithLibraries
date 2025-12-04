@@ -1,8 +1,12 @@
+import glob
+import os
+from pathlib import Path
+import shutil
 from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-dep     = model.AddRequirement(lib.GetType("ncbi::genomeAccession"))
+dep     = model.AddRequirement(lib.GetType("ncbi::accession"))
 image   = model.AddRequirement(lib.GetType("containers::ncbi-datasets.oci"))
 fna     = model.AddProduct(lib.GetType("sequences::genome-like"))
 faa     = model.AddProduct(lib.GetType("sequences::orfs"))
@@ -11,23 +15,41 @@ gbk     = model.AddProduct(lib.GetType("sequences::gbk"))
 
 def protocol(context: ExecutionContext):
     dep_path=context.Input(dep)
-    fna_path=context.Output(fna)
+
+    with open(dep_path.local) as f:
+        acc = f.readline().strip()
 
     context.ExecWithContainer(
         image=image,
         cmd=f"""\
-            datasets download genome accession GCF_000005845.2 \
-                --include gff3,rna,cds,protein,genome,seq-report
+            datasets download genome accession {acc} \
+                --include gff3,protein,genome,gbff
         """,
     )
+    context.LocalShell(f"unzip ncbi_dataset.zip")
 
+    output_manifest = {}
+    def fix_out(dep, p: Path):
+        op = context.Output(dep)
+        shutil.move(p, op.local)
+        output_manifest[dep] = op.local
+    for f in glob.glob("ncbi_dataset/*/*/*"):
+        p = Path(f)
+        Log.Info(f"scanning file [{p}]")
+        match(p.name):
+            case "genomic.gff":
+                fix_out(gff, p)
+            case "genomic.gbff":
+                fix_out(gbk, p)
+            case "protein.faa":
+                fix_out(faa, p)
+        if not p.name.startswith("cds") and p.name.endswith("genomic.fna"):
+                fix_out(fna, p)
     return ExecutionResult(
         manifest=[
-            {
-                fna: dep_path.local,
-            },
+            output_manifest,
         ],
-        success=False,
+        success=len(output_manifest)==len(model.produces),
     )
 
 TransformInstance(
@@ -40,4 +62,9 @@ TransformInstance(
         faa: "orfs.faa",
         gff: "orfs.gff",
     },
+    resources=Resources(
+        cpus=1,
+        memory=Size.GB(1),
+        duration=Duration(hours=1),
+    )
 )

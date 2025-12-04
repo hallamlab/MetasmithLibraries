@@ -1,5 +1,6 @@
 manifest:
   ncbi-datasets.oci:
     type: containers::ncbi-datasets.oci
-remote_src: null
+  ppanggolin.oci:
+    type: containers::ppanggolin.oci
 schema: 0.11.4

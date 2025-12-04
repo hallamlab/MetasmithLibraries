@@ -1,5 +1,6 @@
 manifest:
   getNcbiAssembly.py:
     type: transforms::transform
-remote_src: null
+  scatterNcbiAccession.py:
+    type: transforms::transform
 schema: 0.11.4

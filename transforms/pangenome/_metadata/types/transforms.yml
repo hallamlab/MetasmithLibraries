@@ -5,11 +5,7 @@ ontology:
   version: '1.25'
 schema: 0.11.4
 types:
-  ncbi-datasets.oci:
+  transform:
     properties:
-      Format: OCI
-      provides: ncbi-datasets
-  ppanggolin.oci:
-    properties:
-      Format: OCI
-      provides: ppanggolin
+    - metasmith
+    - transform

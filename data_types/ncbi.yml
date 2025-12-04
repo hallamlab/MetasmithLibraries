@@ -1,5 +1,15 @@
 types:
-  genomeAccession:
+  accessionList:
     properties:
-      Accession: NCBI genome accession
-      Operation: Data retrieval
+      database: NCBI
+      Format: CSV
+      arity: N
+  accession:
+    properties:
+      database: NCBI
+      Format: TXT
+      arity: 1
+  genomeAccession:
+    extends: accession
+    properties:
+      complexity: genome

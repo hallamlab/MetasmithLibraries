@@ -1,0 +1,4 @@
+types:
+  ppanggolinRaw:
+    properties:
+      Data: raw ppanggolin outputs
