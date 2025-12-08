@@ -1,4 +1,6 @@
 manifest:
+  heatmap.py:
+    type: transforms::transform
   ppanggolin.py:
     type: transforms::transform
 schema: 0.11.4

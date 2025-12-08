@@ -1,3 +1,8 @@
 manifest:
-  ncbi-datasets.oci: 
-    type: ncbi::genomeAccession
+  hierarchical_clustering.py:
+    type: lib::hierarchical_clustering.py
+  local:
+    type: lib::local
+  pangenome_heatmap.py:
+    type: lib::pangenome_heatmap.py
+schema: 0.11.4

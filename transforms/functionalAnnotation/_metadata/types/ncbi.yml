@@ -10,11 +10,11 @@ types:
       Format: TXT
       arity: 1
       database: NCBI
-  accessionList:
+  accession_list:
     properties:
       Format: CSV
       arity: N
       database: NCBI
-  genomeAccession:
+  genome_accession:
     properties:
       complexity: genome

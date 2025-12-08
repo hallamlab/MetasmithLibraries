@@ -7,11 +7,11 @@ schema: 0.11.4
 types:
   example_input:
     properties:
-    - example_input
+    - example input
     - metasmith
   example_output:
     properties:
-    - example_output
+    - example output
     - metasmith
   transform:
     properties:

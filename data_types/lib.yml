@@ -1,0 +1,13 @@
+types:
+  hierarchical_clustering.py:
+    properties:
+      src: hierarchical_clustering
+      usage: library
+  local:
+    properties:
+      src: local
+      usage: library
+  pangenome_heatmap.py:
+    properties:
+      src: pangenome_heatmap
+      usage: command line

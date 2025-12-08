@@ -8,14 +8,18 @@ types:
   gbk:
     properties:
       Format: genbank file
+      ext: gbk
   genome-like:
     properties:
       Data: DNA sequence
       Format: FASTA
+      ext: fna
   gff:
     properties:
       Format: gene feature format
+      ext: gff
   orfs:
     properties:
       Data: AA sequence
       Format: FASTA
+      ext: faa

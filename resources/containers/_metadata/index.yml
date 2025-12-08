@@ -3,4 +3,6 @@ manifest:
     type: containers::ncbi-datasets.oci
   ppanggolin.oci:
     type: containers::ppanggolin.oci
+  python_for_data_science.oci:
+    type: containers::python_for_data_science.oci
 schema: 0.11.4

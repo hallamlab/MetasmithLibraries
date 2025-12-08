@@ -3,13 +3,17 @@ types:
     properties:
       Format: FASTA
       Data: DNA sequence
+      ext: fna
   gbk:
     properties:
       Format: genbank file
+      ext: gbk
   gff:
     properties:
       Format: gene feature format
+      ext: gff
   orfs:
     properties:
       Format: FASTA
       Data: AA sequence
+      ext: faa

@@ -5,6 +5,18 @@ ontology:
   version: '1.25'
 schema: 0.11.4
 types:
-  ppanggolinRaw:
+  heatmap:
+    properties:
+      Data: pangenome matrix
+      ext: svg
+  pangenome:
+    properties:
+      logistics: to group genomes into a pangenome
+  ppanggolin_matrix:
+    properties:
+      Data: ppanggolin matrix
+      ext: csv
+  ppanggolin_raw:
     properties:
       Data: raw ppanggolin outputs
+      ext: ppanggolin

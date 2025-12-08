@@ -1,15 +1,16 @@
 types:
-  accessionList:
+  accession_list:
     properties:
       database: NCBI
-      Format: CSV
       arity: N
+      ext: csv
   accession:
     properties:
       database: NCBI
-      Format: TXT
       arity: 1
-  genomeAccession:
+      ext: txt
+  genome_accession:
     extends: accession
     properties:
       complexity: genome
+      ext: txt

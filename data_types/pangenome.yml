@@ -1,4 +1,16 @@
 types:
-  ppanggolinRaw:
+  pangenome:
+    properties:
+      logistics: to group genomes into a pangenome
+  ppanggolin_raw:
     properties:
       Data: raw ppanggolin outputs
+      ext: ppanggolin
+  ppanggolin_matrix:
+    properties:
+      Data: ppanggolin matrix
+      ext: csv
+  heatmap:
+    properties:
+      Data: pangenome matrix
+      ext: svg

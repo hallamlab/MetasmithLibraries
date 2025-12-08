@@ -49,19 +49,13 @@ def protocol(context: ExecutionContext):
         manifest=[
             output_manifest,
         ],
-        success=len(output_manifest)==len(model.produces),
+        success=len(output_manifest)==len(model.produces[0]), # no branching
     )
 
 TransformInstance(
     protocol=protocol,
     model=model,
     group_by=dep,
-    output_signature={
-        fna: "genome.fna",
-        gbk: "genome.gbk",
-        faa: "orfs.faa",
-        gff: "orfs.gff",
-    },
     resources=Resources(
         cpus=1,
         memory=Size.GB(1),

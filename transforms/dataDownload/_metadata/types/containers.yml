@@ -13,3 +13,20 @@ types:
     properties:
       Format: OCI
       provides: ppanggolin
+  python_for_data_science.oci:
+    properties:
+      Format: OCI
+      provides:
+      - biopython
+      - jupyter
+      - matplotlib
+      - notebook
+      - numba
+      - numpy
+      - pandas
+      - plotly
+      - python=3.12
+      - requests
+      - scipy
+      - xmltodict
+      - yaml

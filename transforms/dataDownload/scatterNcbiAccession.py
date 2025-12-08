@@ -5,7 +5,7 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-dep     = model.AddRequirement(lib.GetType("ncbi::accessionList"))
+dep     = model.AddRequirement(lib.GetType("ncbi::accession_list"))
 acc     = model.AddProduct(lib.GetType("ncbi::accession"))
 
 def protocol(context: ExecutionContext):
@@ -28,9 +28,6 @@ TransformInstance(
     protocol=protocol,
     model=model,
     group_by=dep,
-    output_signature={
-        acc: "ncbi.acc",
-    },
     resources=Resources(
         cpus=1,
         memory=Size.GB(1),

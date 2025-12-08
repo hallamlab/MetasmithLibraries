@@ -53,8 +53,7 @@ case $1 in
         echo $msm
         $msm build \
         --types $HERE/data_types \
-        --uniques $HERE/resources/scripts \
-        --uniques $HERE/resources/containers \
+        --uniques $HERE/resources/* \
         --transforms $HERE/transforms/*
     ;;
     ###################################################

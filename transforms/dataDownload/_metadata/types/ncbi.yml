@@ -7,14 +7,15 @@ schema: 0.11.4
 types:
   accession:
     properties:
-      Format: TXT
       arity: 1
       database: NCBI
-  accessionList:
+      ext: txt
+  accession_list:
     properties:
-      Format: CSV
       arity: N
       database: NCBI
-  genomeAccession:
+      ext: csv
+  genome_accession:
     properties:
       complexity: genome
+      ext: txt
