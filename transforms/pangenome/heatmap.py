@@ -14,10 +14,24 @@ def protocol(context: ExecutionContext):
     imatrix=context.Input(matrix)
     iscript=context.Input(script)
     iout=context.Output(out)
+    # these are so the browser works correctly (with --no-home), which is used by kaleido, which is used by plotly
+    context.external_shell.Exec("""
+        mkdir -p $(pwd -P)/fake_home/.cache
+        mkdir -p $(pwd -P)/fake_home/.local
+        mkdir -p $(pwd -P)/fake_home/.config
+        mkdir -p $(pwd -P)/fake_home/.pki
+    """)
     context.ExecWithContainer(
         image=image,
+        binds=[
+            ("$(pwd -P)/fake_home/.cache",  "$HOME/.cache"),
+            ("$(pwd -P)/fake_home/.local",  "$HOME/.local"),
+            ("$(pwd -P)/fake_home/.config", "$HOME/.config"),
+            ("$(pwd -P)/fake_home/.pki",    "$HOME/.pki"),
+        ],
         cmd=f"""\
-            python {iscript.container} {imatrix.container} {iout.container}.svg && mv {iout.container}.svg {iout.container}
+            export NUMBA_CACHE_DIR=$TMPDIR
+            python {iscript.container} {imatrix.container} {iout.container}
         """,
     )
 
