@@ -3,7 +3,7 @@ ontology:
   name: EDAM
   strict: false
   version: '1.25'
-schema: 0.11.4
+schema: 0.12.0
 types:
   hierarchical_clustering.py:
     properties:
