@@ -1,6 +1,8 @@
 manifest:
   getNcbiAssembly.py:
     type: transforms::transform
+  pullContainer.py:
+    type: transforms::transform
   scatterNcbiAccession.py:
     type: transforms::transform
-schema: 0.12.0
+schema: 0.12.1

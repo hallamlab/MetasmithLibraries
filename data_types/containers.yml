@@ -1,17 +1,26 @@
 types:
-  ncbi-datasets.oci:
+  container:
     properties:
       Format: OCI
+  # proxy target for transform that prefetches containers
+  # for HPC platforms where compute nodes don't have internet access 
+  pulled_container:
+    properties:
+      ext: log
+      atomic_description: pulled OCI container
+  ncbi-datasets.oci:
+    extends: container
+    properties:
       provides: 
       - ncbi-datasets
   ppanggolin.oci:
+    extends: container
     properties:
-      Format: OCI
       provides: 
       - ppanggolin
   python_for_data_science.oci:
+    extends: container
     properties:
-      Format: OCI
       provides: 
       - python=3.12
       - numpy

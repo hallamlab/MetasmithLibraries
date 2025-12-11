@@ -56,6 +56,7 @@ TransformInstance(
     protocol=protocol,
     model=model,
     group_by=dep,
+    labels=["local"],
     resources=Resources(
         cpus=1,
         memory=Size.GB(1),

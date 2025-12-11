@@ -3,8 +3,11 @@ ontology:
   name: EDAM
   strict: false
   version: '1.25'
-schema: 0.12.0
+schema: 0.12.1
 types:
+  container:
+    properties:
+      Format: OCI
   ncbi-datasets.oci:
     properties:
       Format: OCI
@@ -13,6 +16,10 @@ types:
     properties:
       Format: OCI
       provides: ppanggolin
+  pulled_container:
+    properties:
+      atomic_description: pulled OCI container
+      ext: log
   python_for_data_science.oci:
     properties:
       Format: OCI
