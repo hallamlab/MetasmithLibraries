@@ -5,4 +5,4 @@ manifest:
     type: transforms::transform
   scatterNcbiAccession.py:
     type: transforms::transform
-schema: 0.12.6
+schema: v1

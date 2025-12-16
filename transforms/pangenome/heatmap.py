@@ -50,7 +50,7 @@ TransformInstance(
     group_by=matrix,
     resources=Resources(
         cpus=1,
-        memory=Size.GB(4),
+        memory=Size.GB(8),
         duration=Duration(hours=1),
     )
 )
