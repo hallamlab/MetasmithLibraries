@@ -15,11 +15,11 @@ def protocol(context: ExecutionContext):
     iscript=context.Input(script)
     iout=context.Output(out)
     # these are so the browser works correctly (with --no-home), which is used by kaleido, which is used by plotly
-    context.external_shell.Exec("""
-        mkdir -p $(pwd -P)/fake_home/.cache
-        mkdir -p $(pwd -P)/fake_home/.local
-        mkdir -p $(pwd -P)/fake_home/.config
-        mkdir -p $(pwd -P)/fake_home/.pki
+    context.LocalShell("""
+        mkdir -p ./fake_home/.cache
+        mkdir -p ./fake_home/.local
+        mkdir -p ./fake_home/.config
+        mkdir -p ./fake_home/.pki
     """)
     context.ExecWithContainer(
         image=image,

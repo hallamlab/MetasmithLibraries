@@ -23,14 +23,24 @@ smith = Agent(
     ]
 )
 
+# agent_home = SshSource(host="fir", path=Path("/scratch/phyberos/metasmith")).AsSource()
+# smith = Agent(
+#     home = agent_home,
+#     runtime=ContainerRuntime.APPTAINER,
+#     setup_commands=[
+#         'module load gcc/9.4.0',
+#         'module load apptainer/1.3.1',
+#     ]
+# )
+
 smith.Deploy()
 # sys.exit(0)
 
 notebook_name = Path(__file__).stem
 in_dir = base_dir/f"{notebook_name}/inputs.xgdb"
 
-containers = DataInstanceLibrary.Load("../resources/containers")
-logistics = TransformInstanceLibrary.Load(f"../transforms/logistics")
+containers = DataInstanceLibrary.Load(MLIB/"resources/containers")
+logistics = TransformInstanceLibrary.Load(MLIB/f"transforms/logistics")
 
 task = smith.GenerateWorkflow(
     samples=containers.AsSamples(),
@@ -39,7 +49,7 @@ task = smith.GenerateWorkflow(
     # targets=[inputs.GetType("sequences::gbk")]
     targets=[logistics.GetType("containers::pulled_container")]
 )
-task.plan.RenderDAG(base_dir/f"{notebook_name}/dag", blacklist_namespaces=set())
+task.plan.RenderDAG("pull_dag.svg", blacklist_namespaces=set())
 print(task.ok, len(task.plan.steps))
 
 smith.StageWorkflow(task, on_exist="clear")
@@ -55,3 +65,5 @@ smith.RunWorkflow(
         )
     }
 )
+
+smith.CheckWorkflow(task)

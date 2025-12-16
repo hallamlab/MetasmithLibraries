@@ -3,4 +3,4 @@ manifest:
     type: transforms::transform
   ppanggolin.py:
     type: transforms::transform
-schema: 0.12.1
+schema: 0.12.6

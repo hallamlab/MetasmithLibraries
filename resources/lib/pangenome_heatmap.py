@@ -38,7 +38,7 @@ print(gmat.shape)
 
 metric="cosine"
 seed = 42
-model = UMAP(n_components=1, metric=metric, transform_seed=seed)
+model = UMAP(n_components=1, n_neighbors= min(15, len(gmat)-1), metric=metric, transform_seed=seed)
 _emb = model.fit_transform(gmat)
 print("_emb.shape")
 print(_emb.shape)
@@ -192,4 +192,7 @@ fig.add_trace(
     ),
     row=1, col=3,
 )
+
+print("writing image")
 fig.write_image(path_out)
+print("done")
