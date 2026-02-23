@@ -147,6 +147,16 @@ types:
       Format: FASTA
       ext: fna
       method: flye using raw reads
+  forward_ora_reads:
+    properties:
+      Data: DNA read
+      Format: FASTQ
+      compression: ora
+      direction: forward
+      ext: fastq.ora
+      parity: paired end
+      qc: none
+      read_length: short
   forward_short_reads:
     properties:
       Data: nucleic acid sequence
@@ -244,6 +254,16 @@ types:
       compression: gzip
       ext: fq.gz
       qc: none
+  reverse_ora_reads:
+    properties:
+      Data: DNA read
+      Format: FASTQ
+      compression: ora
+      direction: reverse
+      ext: fastq.ora
+      parity: paired end
+      qc: none
+      read_length: short
   reverse_short_reads:
     properties:
       Data: nucleic acid sequence
