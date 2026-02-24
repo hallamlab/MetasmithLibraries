@@ -1,9 +1,43 @@
 types:
-  reference_database:
+  reference_data:
     properties:
       _: reference database
   genomad:
     extends:
-    - reference_database
+    - reference_data
     properties:
       _: for geNomad
+  uniref50_diamond_db:
+    extends:
+    - reference_data
+    properties:
+      _: DIAMOND-formatted UniRef50 database
+      ext: dmnd
+  kofamscan_profiles:
+    extends:
+    - reference_data
+    properties:
+      _: KofamScan HMM profile directory containing .hmm files
+      ext: tgz
+  kofamscan_ko_list:
+    extends:
+    - reference_data
+    properties:
+      _: KofamScan KO list file
+      ext: tsv
+  interproscan_data:
+    extends:
+    - reference_data
+    properties:
+      _: InterProScan data directory
+    ext: tgz
+  metabuli_ref:
+    extends:
+    - reference_data
+    properties:
+      _: metabuli reference database
+  gtdb:
+    extends:
+    - reference_data
+    properties:
+      _: genome taxonomy database

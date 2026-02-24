@@ -37,32 +37,3 @@ types:
       _: DIAMOND alignment to UniRef50
       Format: BLAST6
       ext: tsv
-
-  # Reference database types
-  uniref50_diamond_db:
-    properties:
-      _: DIAMOND-formatted UniRef50 database
-      ext: dmnd
-  uniref50_source:
-    properties:
-      _: Marker for UniRef50 database download
-
-  # KofamScan databases
-  kofamscan_profiles:
-    properties:
-      _: KofamScan HMM profile directory containing .hmm files
-  kofamscan_ko_list:
-    properties:
-      _: KofamScan KO list file
-      ext: tsv
-  kofamscan_source:
-    properties:
-      _: Marker for KofamScan database download
-
-  # InterProScan data
-  interproscan_data:
-    properties:
-      _: InterProScan data directory
-  interproscan_source:
-    properties:
-      _: Marker for InterProScan data location

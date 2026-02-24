@@ -8,6 +8,28 @@ types:
   genomad:
     properties:
     - for geNomad
+  gtdb:
+    properties:
+    - genome taxonomy database
+  interproscan_data:
+    properties:
+    - InterProScan data directory
+  kofamscan_ko_list:
+    properties:
+      _:
+      - KofamScan KO list file
+      ext: tsv
+  kofamscan_profiles:
+    properties:
+    - KofamScan HMM profile directory containing .hmm files
+  metabuli_ref:
+    properties:
+    - metabuli reference database
   reference_database:
     properties:
     - reference database
+  uniref50_diamond_db:
+    properties:
+      _:
+      - DIAMOND-formatted UniRef50 database
+      ext: dmnd

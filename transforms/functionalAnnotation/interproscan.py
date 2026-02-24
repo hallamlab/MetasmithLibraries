@@ -7,7 +7,7 @@ model = Transform()
 
 image = model.AddRequirement(lib.GetType("containers::interproscan.oci"))
 orfs = model.AddRequirement(lib.GetType("sequences::orfs"))
-data_dir = model.AddRequirement(lib.GetType("annotation::interproscan_data"))
+data_dir = model.AddRequirement(lib.GetType("ref::interproscan_data"))
 out_gff = model.AddProduct(lib.GetType("annotation::interproscan_results"))
 
 
@@ -48,17 +48,19 @@ def parse_interpro_gff(input_path, output_path):
 def protocol(context: ExecutionContext):
     iorfs = context.Input(orfs)
     idata = context.Input(data_dir)
-    ijson = context.Output(out_json)
     igff = context.Output(out_gff)
 
     cpus = context.params.get("cpus")
     cpus_string = "" if cpus is None else f"--cpu {cpus}"
 
+    # Extract InterProScan data archive locally
+    context.LocalShell(f"pigz -dc {idata.local} | tar xf -")
+
     # sed to remove stop codon asterisks from protein sequences
-    # Run InterProScan with external data directory
+    # Run InterProScan with extracted data directory
     context.ExecWithContainer(
         image=image,
-        binds=[(idata.external/"data", "/opt/interproscan/data")],
+        binds=[(context.external_cwd/"data", "/opt/interproscan/data")],
         cmd=f"""
             mkdir -p output
             sed '/^[^>]/s/\*//g' {iorfs.container} > ./{iorfs.container.stem}.clean.faa
@@ -73,11 +75,6 @@ def protocol(context: ExecutionContext):
         """,
     )
 
-    # Copy JSON output
-    json_files = list(Path("output").glob("*.json"))
-    if json_files:
-        context.LocalShell(f"cp {json_files[0]} {ijson.local}")
-
     # Parse GFF3 output into CSV
     gff_files = list(Path("output").glob("*.gff3"))
     if gff_files:
@@ -86,11 +83,10 @@ def protocol(context: ExecutionContext):
     return ExecutionResult(
         manifest=[
             {
-                out_json: ijson.local,
                 out_gff: igff.local,
             },
         ],
-        success=ijson.local.exists() and igff.local.exists(),
+        success=igff.local.exists(),
     )
 
 

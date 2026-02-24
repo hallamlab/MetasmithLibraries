@@ -38,7 +38,7 @@ types:
   deepec.oci:
     properties:
       Format: OCI
-      provides: deepEC
+      provides: deepec
   diamond.oci:
     properties:
       Format: OCI
@@ -130,7 +130,10 @@ types:
   polars.oci:
     properties:
       Format: OCI
-      provides: py/polars
+      provides:
+      - py/numpy
+      - py/polars
+      - python=3.12
   ppanggolin.oci:
     properties:
       Format: OCI

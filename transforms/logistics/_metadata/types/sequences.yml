@@ -149,8 +149,10 @@ types:
       method: flye using raw reads
   forward_ora_reads:
     properties:
-      Data: DNA read
+      Data: nucleic acid sequence
       Format: FASTQ
+      _:
+      - DNA reads
       compression: ora
       direction: forward
       ext: fastq.ora
@@ -256,8 +258,10 @@ types:
       qc: none
   reverse_ora_reads:
     properties:
-      Data: DNA read
+      Data: nucleic acid sequence
       Format: FASTQ
+      _:
+      - DNA reads
       compression: ora
       direction: reverse
       ext: fastq.ora
