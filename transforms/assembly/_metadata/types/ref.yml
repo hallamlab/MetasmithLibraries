@@ -21,7 +21,9 @@ types:
       ext: tsv
   kofamscan_profiles:
     properties:
-    - KofamScan HMM profile directory containing .hmm files
+      _:
+      - KofamScan HMM profile directory containing .hmm files
+      ext: tgz
   metabuli_ref:
     properties:
     - metabuli reference database
