@@ -139,6 +139,7 @@ types:
     extends:
     - clean_long_reads
     properties:
+      qc: read_depth_stratified
       coverage: 100x
   discarded_long_reads:
     extends:
@@ -224,6 +225,11 @@ types:
     - assembly
     properties:
       method: flye
+  megahit_assembly:
+    extends:
+    - assembly
+    properties:
+      method: megahit
   flye_raw_assembly:
     extends:
     - assembly

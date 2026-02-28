@@ -15,7 +15,7 @@ types:
       coverage: 100x
       ext: fq.gz
       parity: single
-      qc: filtered
+      qc: read_depth_stratified
       read_length: long
   assembly:
     properties:
@@ -202,6 +202,12 @@ types:
       parity: single
       qc: none
       read_length: long
+  megahit_assembly:
+    properties:
+      Data: nucleic acid sequence
+      Format: FASTA
+      ext: fna
+      method: megahit
   miniasm_gfa:
     properties:
       Format: graphical fragment assembly

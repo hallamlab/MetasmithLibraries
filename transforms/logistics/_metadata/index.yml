@@ -3,6 +3,8 @@ manifest:
     type: transforms::transform
   downloadKofamDB.py:
     type: transforms::transform
+  downloadMetabuliDB.py:
+    type: transforms::transform
   downloadSilvaDB.py:
     type: transforms::transform
   downloadUniRef50DB.py:
