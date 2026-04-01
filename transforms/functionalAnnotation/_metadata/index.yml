@@ -3,6 +3,8 @@ manifest:
     type: transforms::transform
   busco.py:
     type: transforms::transform
+  busco_full_table.py:
+    type: transforms::transform
   deepec.py:
     type: transforms::transform
   deeptfactor.py:

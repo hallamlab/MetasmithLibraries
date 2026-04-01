@@ -20,6 +20,12 @@ types:
       _:
       - Bakta non-coding annotation summary table
       ext: tsv
+  busco_full_table:
+    properties:
+      Format: TSV
+      _:
+      - BUSCO full results table with per-sequence marker assignments
+      ext: tsv
   busco_lineage:
     properties:
     - Pre-downloaded BUSCO lineage dataset directory
