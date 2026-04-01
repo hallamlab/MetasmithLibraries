@@ -5,26 +5,26 @@ ontology:
   version: '1.25'
 schema: v1
 types:
-  min_identity:
+  augmented_centroids:
     properties:
-      Data: minimum percent identity threshold for clustering
-      arity: 1
-      ext: txt
+      Data: representative AA sequences augmented with new ORFs
+      Format: FASTA
+      ext: faa
   centroids:
     properties:
-      Format: FASTA
       Data: representative AA sequences from clustering
+      Format: FASTA
       ext: faa
   cluster_table:
     properties:
       Data: diamond linclust cluster membership assignments
       Format: TSV
       ext: tsv
-  augmented_centroids:
+  min_identity:
     properties:
-      Format: FASTA
-      Data: representative AA sequences augmented with new ORFs
-      ext: faa
+      Data: minimum percent identity threshold for clustering
+      arity: 1
+      ext: txt
   new_cluster_assignments:
     properties:
       Data: cluster assignments for newly added ORFs

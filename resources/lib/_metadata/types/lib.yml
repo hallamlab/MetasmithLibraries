@@ -17,3 +17,7 @@ types:
     properties:
       src: pangenome_heatmap
       usage: command line
+  response_surface.py:
+    properties:
+      src: response_surface
+      usage: library

@@ -5,14 +5,14 @@ manifest:
     type: containers::bakta.oci
   bbtools.oci:
     type: containers::bbtools.oci
+  bedtools.oci:
+    type: containers::bedtools.oci
   blast.oci:
     type: containers::blast.oci
   braker3.oci:
     type: containers::braker3.oci
   busco.oci:
     type: containers::busco.oci
-  bedtools.oci:
-    type: containers::bedtools.oci
   checkm.oci:
     type: containers::checkm.oci
   deeptfactor.oci:
@@ -31,10 +31,10 @@ manifest:
     type: containers::flye.oci
   genomad.oci:
     type: containers::genomad.oci
-  gffread.oci:
-    type: containers::gffread.oci
   gfatools.oci:
     type: containers::gfatools.oci
+  gffread.oci:
+    type: containers::gffread.oci
   gtdbtk.oci:
     type: containers::gtdbtk.oci
   hifiasm-meta.oci:

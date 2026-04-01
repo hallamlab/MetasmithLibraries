@@ -5,51 +5,55 @@ ontology:
   version: '1.25'
 schema: v1
 types:
-  metabuli_ref:
+  ani_table:
     properties:
-      _: metabuli reference database
-  metabuli:
-    properties:
-      _: metabuli per contig classifications
+      _:
+      - fastani pairwise average nucleotide identity
       ext: tsv
-  metabuli_report:
-    properties:
-      _: metabuli report
-      ext: tsv
-  metabuli_krona:
-    properties:
-      _: metabuli krona report
-      ext: html
-
-  genomad_virus_summary:
-    properties:
-      _: genomad virus summary
-      ext: tsv
-  genomad_plasmid_summary:
-    properties:
-      _: genomad plasmid summary
-      ext: tsv
-
-  checkm_stats:
-    properties:
-      _: checkm quality stats
-      ext: csv
   checkm_raw:
     properties:
-      _: checkm workspace
-
+    - checkm workspace
+  checkm_stats:
+    properties:
+      _:
+      - checkm quality stats
+      ext: csv
+  genomad_plasmid_summary:
+    properties:
+      _:
+      - genomad plasmid summary
+      ext: tsv
+  genomad_virus_summary:
+    properties:
+      _:
+      - genomad virus summary
+      ext: tsv
   gtdb:
     properties:
-      _: genome taxonomy database
+    - genome taxonomy database
   gtdbtk:
     properties:
-      _: gtdbtk per contig classifications 
+      _:
+      - gtdbtk per contig classifications
       ext: tsv
   gtdbtk_raw:
     properties:
-      _: gtdbtk raw workspace
-
-  ani_table:
+    - gtdbtk raw workspace
+  metabuli:
     properties:
-      _: fastani pairwise average nucleotide identity
+      _:
+      - metabuli per contig classifications
+      ext: tsv
+  metabuli_krona:
+    properties:
+      _:
+      - metabuli krona report
+      ext: html
+  metabuli_ref:
+    properties:
+    - metabuli reference database
+  metabuli_report:
+    properties:
+      _:
+      - metabuli report
       ext: tsv

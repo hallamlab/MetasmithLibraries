@@ -5,24 +5,28 @@ ontology:
   version: '1.25'
 schema: v1
 types:
-  accession_list:
-    properties:
-      database: NCBI
-      arity: N
-      ext: csv
   accession:
     properties:
       Data: NCBI accession
       arity: 1
       ext: txt
+  accession_list:
+    properties:
+      arity: N
+      database: NCBI
+      ext: csv
   assembly_accession:
-    extends: accession
     properties:
+      Data: NCBI accession
+      arity: 1
       database: assemblies
+      ext: txt
   sra_accession:
-    extends: accession
     properties:
+      Data: NCBI accession
+      arity: 1
       database: SRA
+      ext: txt
   sra_cache:
     properties:
-      _: sra prefetch cache
+    - sra prefetch cache

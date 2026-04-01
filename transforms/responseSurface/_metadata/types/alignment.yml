@@ -7,9 +7,11 @@ schema: v1
 types:
   bam:
     properties:
-      _: binary alignment map
+      _:
+      - binary alignment map
       ext: bam
   csi:
     properties:
-      _: coordinate sorted index
+      _:
+      - coordinate sorted index
       ext: csi
