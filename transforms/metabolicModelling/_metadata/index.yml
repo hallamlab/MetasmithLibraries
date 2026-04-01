@@ -1,6 +1,4 @@
 manifest:
-  clustering_analysis.py:
-    type: transforms::transform
   differential_analysis.py:
     type: transforms::transform
   fba_constraint.py:
