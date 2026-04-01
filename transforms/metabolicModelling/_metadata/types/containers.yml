@@ -3,13 +3,274 @@ ontology:
   name: EDAM
   strict: false
   version: '1.25'
-schema: 0.11.4
+schema: v1
 types:
+  container:
+    properties:
+      Format: OCI
+  # proxy target for transform that prefetches containers
+  # for HPC platforms where compute nodes don't have internet access 
+  pulled_container:
+    properties:
+      ext: log
+      atomic_description: pulled OCI container
+  # -------------------------------------------------
+  # read qc
+  fastp.oci:
+    extends: container
+    properties:
+      provides: 
+      - fastp
+  fastqc.oci:
+    extends: container
+    properties:
+      provides: 
+      - fastqc
+  nanoplot.oci:
+    extends: container
+    properties:
+      provides: 
+      - nanoplot
+  filtlong.oci:
+    extends: container
+    properties:
+      provides: 
+      - filtlong
+  bbtools.oci:
+    extends: container
+    properties:
+      provides: 
+      - bbtools/reformat.sh
+      - bbtools/bbduk.sh
+      - bbtools/filterbyname.sh
+  seqkit.oci:
+    extends: container
+    properties:
+      provides: 
+      - seqkit
+      - seqkit/stat
+
+  # -------------------------------------------------
+  # read mapping
+  minimap2.oci:
+    extends: container
+    properties:
+      provides: 
+      - minimap2
+  bedtools.oci:
+    extends: container
+    properties:
+      provides: 
+      - bedtools
+      - bedtools/genomecov
+  samtools.oci:
+    extends: container
+    properties:
+      provides: 
+      - samtools
+
+  # -------------------------------------------------
+  # assembly
+  flye.oci:
+    extends: container
+    properties:
+      provides: 
+      - flye
+  megahit.oci:
+    extends: container
+    properties:
+      provides: 
+      - megahit
+  miniasm.oci:
+    extends: container
+    properties:
+      provides: 
+      - miniasm
+  hifiasm-meta.oci:
+    extends: container
+    properties:
+      provides: 
+      - hifiasm-meta
+  hifiasm.oci:
+    extends: container
+    properties:
+      provides: 
+      - hifiasm
+  gfatools.oci:
+    extends: container
+    properties:
+      provides: 
+      - gfatools
+
+  # -------------------------------------------------
+  # ncbi
   ncbi-datasets.oci:
+    extends: container
     properties:
-      Format: OCI
-      provides: ncbi-datasets
+      provides: 
+      - ncbi-datasets
+  sra-tools.oci:
+    extends: container
+    properties:
+      provides: 
+      - fasterq-dump
+      - sratk/prefetch
+      - sratk/vdb-validate
+
+  # -------------------------------------------------
+  # taxonomy
+  checkm.oci:
+    extends: container
+    properties:
+      provides: 
+      - checkm
+  metabuli.oci:
+    extends: container
+    properties:
+      provides: 
+      - metabuli
+  gtdbtk.oci:
+    extends: container
+    properties:
+      provides: 
+      - gtdbtk
+  fastani.oci:
+    extends: container
+    properties:
+      provides: 
+      - fastani
+  genomad.oci:
+    extends: container
+    properties:
+      provides:
+        - genomad
+
+  # -------------------------------------------------
+  # proteins
+  pprodigal.oci:
+    extends: container
+    properties:
+      provides: 
+      - pprodigal
+  diamond.oci:
+    extends: container
+    properties:
+      provides:
+        - diamond
+        - diamond/makedb
+        - diamond/blastp
+        - diamond/linclust
+
+  # -------------------------------------------------
+  # pangenome
   ppanggolin.oci:
+    extends: container
     properties:
-      Format: OCI
-      provides: ppanggolin
+      provides: 
+      - ppanggolin
+  # -------------------------------------------------
+  # functional annotation
+  antismash.oci:
+    extends: container
+    properties:
+      provides:
+        - antismash
+  busco.oci:
+    extends: container
+    properties:
+      provides:
+      - busco
+  bakta.oci:
+    extends: container
+    properties:
+      provides:
+      - bakta
+  deeptfactor.oci:
+    extends: container
+    properties:
+      provides:
+      - deeptfactor
+  predictf.oci:
+    extends: container
+    properties:
+      provides:
+      - predictf
+
+  # -------------------------------------------------
+  # transcriptomics
+  braker3.oci:
+    extends: container
+    properties:
+      provides:
+      - braker3
+  star.oci:
+    extends: container
+    properties:
+      provides:
+      - STAR
+  salmon.oci:
+    extends: container
+    properties:
+      provides:
+      - salmon
+  stringtie.oci:
+    extends: container
+    properties:
+      provides:
+      - stringtie
+  gffread.oci:
+    extends: container
+    properties:
+      provides:
+      - gffread
+  pydeseq2.oci:
+    extends: container
+    properties:
+      provides:
+      - py/pydeseq2
+
+  # -------------------------------------------------
+  # metabolomics
+  metabolomics-python.oci:
+    extends: container
+    properties:
+      provides:
+      - py/cobra
+      - py/escher
+
+  # -------------------------------------------------
+  # logistics
+  blast.oci:
+    extends: container
+    properties:
+      provides:
+      - blastn
+      - makeblastdb
+  orad.oci:
+    extends: container
+    properties:
+      provides:
+      - orad
+  skani.oci:
+    extends: container
+    properties:
+      provides:
+      - skani
+
+  python_for_data_science.oci:
+    extends: container
+    properties:
+      provides:
+      - python=3.12
+      - py/numpy
+      - py/scipy
+      - py/pandas
+      - py/numba
+      - py/yaml
+      - py/requests
+      - py/xmltodict
+      - py/plotly
+      - py/matplotlib
+      - py/biopython
+      - py/jupyter
+      - py/notebook

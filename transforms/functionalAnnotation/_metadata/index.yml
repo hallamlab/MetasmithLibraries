@@ -3,8 +3,16 @@ manifest:
     type: transforms::transform
   antismash.py:
     type: transforms::transform
+  bakta_noncoding.py:
+    type: transforms::transform
+  busco_full_table.py:
+    type: transforms::transform
+  deeptfactor.py:
+    type: transforms::transform
   diamond_linclust.py:
     type: transforms::transform
   pprodigal.py:
+    type: transforms::transform
+  predictf.py:
     type: transforms::transform
 schema: v1

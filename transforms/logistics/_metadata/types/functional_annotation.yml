@@ -5,21 +5,77 @@ ontology:
   version: '1.25'
 schema: v1
 types:
-  antismash_db:
-    properties:
-    - antiSMASH database directory (Pfam, ClusterBlast, MIBiG, Resfams)
+  # antiSMASH
   antismash_json:
     properties:
+      _: antiSMASH JSON results per assembly
       Format: JSON
-      _:
-      - antiSMASH JSON results per assembly
       ext: json
   antismash_regions_gbk:
     properties:
+      _: antiSMASH GenBank region files (tar)
       Format: GenBank
-      _:
-      - antiSMASH GenBank region files (tar)
       ext: tar.gz
+
+  # antiSMASH database
+  antismash_db:
+    properties:
+      _: antiSMASH database directory (Pfam, ClusterBlast, MIBiG, Resfams)
   antismash_source:
     properties:
-    - Marker for antiSMASH database download
+      _: Marker for antiSMASH database download
+
+  # BUSCO
+  busco_results:
+    properties:
+      _: BUSCO completeness assessment summary
+      Format: JSON
+      ext: json
+  busco_full_table:
+    properties:
+      _: BUSCO full results table with per-sequence marker assignments
+      Format: TSV
+      ext: tsv
+  busco_lineage:
+    properties:
+      _: Pre-downloaded BUSCO lineage dataset directory
+  busco_source:
+    properties:
+      _: Marker for BUSCO lineage dataset specification
+
+  # Bakta
+  bakta_db:
+    properties:
+      _: Bakta light database directory
+  bakta_gff:
+    properties:
+      _: Bakta non-coding annotation in GFF3 format (tRNA, rRNA, ncRNA, CRISPR, riboswitches)
+      Format: GFF3
+      ext: gff3
+  bakta_tsv:
+    properties:
+      _: Bakta non-coding annotation summary table
+      Format: TSV
+      ext: tsv
+
+  # DeepTFactor
+  deeptfactor_results:
+    properties:
+      _: DeepTFactor TF predictions (binary TF/non-TF with probability score)
+      Format: TSV
+      ext: tsv
+
+  # PredicTF
+  predictf_db:
+    properties:
+      _: PredicTF database directory (deeparg-largerepo + model files)
+  predictf_results:
+    properties:
+      _: PredicTF high-confidence TF predictions with family classification
+      Format: TSV
+      ext: tsv
+  predictf_potential:
+    properties:
+      _: PredicTF lower-confidence potential TF predictions
+      Format: TSV
+      ext: tsv

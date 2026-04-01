@@ -1,0 +1,55 @@
+ontology:
+  doi: https://doi.org/10.1093/bioinformatics/btt113
+  name: EDAM
+  strict: false
+  version: '1.25'
+schema: v1
+types:
+  metabuli_ref:
+    properties:
+      _: metabuli reference database
+  metabuli:
+    properties:
+      _: metabuli per contig classifications
+      ext: tsv
+  metabuli_report:
+    properties:
+      _: metabuli report
+      ext: tsv
+  metabuli_krona:
+    properties:
+      _: metabuli krona report
+      ext: html
+
+  genomad_virus_summary:
+    properties:
+      _: genomad virus summary
+      ext: tsv
+  genomad_plasmid_summary:
+    properties:
+      _: genomad plasmid summary
+      ext: tsv
+
+  checkm_stats:
+    properties:
+      _: checkm quality stats
+      ext: csv
+  checkm_raw:
+    properties:
+      _: checkm workspace
+
+  gtdb:
+    properties:
+      _: genome taxonomy database
+  gtdbtk:
+    properties:
+      _: gtdbtk per contig classifications 
+      ext: tsv
+  gtdbtk_raw:
+    properties:
+      _: gtdbtk raw workspace
+
+  ani_table:
+    properties:
+      _: fastani pairwise average nucleotide identity
+      ext: tsv

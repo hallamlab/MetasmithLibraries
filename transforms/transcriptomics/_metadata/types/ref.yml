@@ -1,0 +1,20 @@
+ontology:
+  doi: https://doi.org/10.1093/bioinformatics/btt113
+  name: EDAM
+  strict: false
+  version: '1.25'
+schema: v1
+types:
+  reference_database:
+    properties:
+      _: reference database
+  genomad:
+    extends:
+    - reference_database
+    properties:
+      _: for geNomad
+  antismash:
+    extends:
+    - reference_database
+    properties:
+      _: for antiSMASH
