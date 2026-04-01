@@ -169,6 +169,87 @@ types:
     properties:
       provides:
         - antismash
+  busco.oci:
+    extends: container
+    properties:
+      provides:
+      - busco
+  bakta.oci:
+    extends: container
+    properties:
+      provides:
+      - bakta
+  deeptfactor.oci:
+    extends: container
+    properties:
+      provides:
+      - deeptfactor
+  predictf.oci:
+    extends: container
+    properties:
+      provides:
+      - predictf
+
+  # -------------------------------------------------
+  # transcriptomics
+  braker3.oci:
+    extends: container
+    properties:
+      provides:
+      - braker3
+  star.oci:
+    extends: container
+    properties:
+      provides:
+      - STAR
+  salmon.oci:
+    extends: container
+    properties:
+      provides:
+      - salmon
+  stringtie.oci:
+    extends: container
+    properties:
+      provides:
+      - stringtie
+  gffread.oci:
+    extends: container
+    properties:
+      provides:
+      - gffread
+  pydeseq2.oci:
+    extends: container
+    properties:
+      provides:
+      - py/pydeseq2
+
+  # -------------------------------------------------
+  # metabolomics
+  metabolomics-python.oci:
+    extends: container
+    properties:
+      provides:
+      - py/cobra
+      - py/escher
+
+  # -------------------------------------------------
+  # logistics
+  blast.oci:
+    extends: container
+    properties:
+      provides:
+      - blastn
+      - makeblastdb
+  orad.oci:
+    extends: container
+    properties:
+      provides:
+      - orad
+  skani.oci:
+    extends: container
+    properties:
+      provides:
+      - skani
 
   python_for_data_science.oci:
     extends: container
