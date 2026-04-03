@@ -43,6 +43,7 @@ types:
   checkm.oci:
     properties:
       Format: OCI
+      provides: checkm
   comebin.oci:
     properties:
       Format: OCI

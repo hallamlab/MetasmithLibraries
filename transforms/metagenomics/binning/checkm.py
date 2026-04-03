@@ -30,7 +30,7 @@ def protocol(context: ExecutionContext):
     context.ExecWithContainer(
         image = image,
         cmd = f"""
-            export PATH=/opt/conda/bin:$PATH
+            export PATH=/opt/conda/bin:/opt/conda/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
             checkm lineage_wf {threads} -x {ext} ./input ./{temp_ws}
             checkm qa ./{temp_ws}/lineage.ms ./{temp_ws} --out_format 2 --tab_table --file {qa_file}
         """
