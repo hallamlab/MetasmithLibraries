@@ -57,7 +57,6 @@ types:
     properties:
       Format: OCI
       provides: SemiBin2
-      provides: checkm
   container:
     properties:
       Format: OCI

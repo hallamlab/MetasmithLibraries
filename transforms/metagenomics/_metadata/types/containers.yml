@@ -194,7 +194,7 @@ types:
   semibin.oci:
     properties:
       Format: OCI
-      provides: checkm
+      provides: SemiBin2
   seqkit.oci:
     properties:
       Format: OCI
