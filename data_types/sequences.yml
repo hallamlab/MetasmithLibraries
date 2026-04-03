@@ -149,6 +149,16 @@ types:
       parity: single
       read_length: long
 # -----------------------------------------
+# pacbio
+  pacbio_hifi_bam:
+    properties:
+      _: PacBio HiFi reads in BAM format
+      Format: BAM
+      Data: nucleic acid sequence
+      read_length: long
+      parity: single
+      ext: bam
+# -----------------------------------------
 # reports
   read_metadata:
     properties:

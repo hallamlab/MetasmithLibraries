@@ -13,6 +13,10 @@ types:
     properties:
       Format: OCI
       provides: bakta
+  bam2fastx.oci:
+    properties:
+      Format: OCI
+      provides: bam2fastq
   bbtools.oci:
     properties:
       Format: OCI
@@ -43,7 +47,10 @@ types:
   checkm.oci:
     properties:
       Format: OCI
-      provides: checkm
+  comebin.oci:
+    properties:
+      Format: OCI
+      provides: run_comebin.sh
   container:
     properties:
       Format: OCI
@@ -107,6 +114,12 @@ types:
     properties:
       Format: OCI
       provides: megahit
+  metabat2.oci:
+    properties:
+      Format: OCI
+      provides:
+      - jgi_summarize_bam_contig_depths
+      - metabat2
   metabolomics-python.oci:
     properties:
       Format: OCI
@@ -182,6 +195,10 @@ types:
     properties:
       Format: OCI
       provides: samtools
+  semibin.oci:
+    properties:
+      Format: OCI
+      provides: checkm
   seqkit.oci:
     properties:
       Format: OCI

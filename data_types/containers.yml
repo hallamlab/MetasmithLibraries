@@ -9,6 +9,13 @@ types:
       ext: log
       atomic_description: pulled OCI container
   # -------------------------------------------------
+  # format conversion
+  bam2fastx.oci:
+    extends: container
+    properties:
+      provides:
+      - bam2fastq
+  # -------------------------------------------------
   # read qc
   fastp.oci:
     extends: container
@@ -116,8 +123,24 @@ types:
   checkm.oci:
     extends: container
     properties:
-      provides: 
+      provides:
       - checkm
+  metabat2.oci:
+    extends: container
+    properties:
+      provides:
+      - metabat2
+      - jgi_summarize_bam_contig_depths
+  semibin.oci:
+    extends: container
+    properties:
+      provides:
+      - SemiBin2
+  comebin.oci:
+    extends: container
+    properties:
+      provides:
+      - run_comebin.sh
   metabuli.oci:
     extends: container
     properties:

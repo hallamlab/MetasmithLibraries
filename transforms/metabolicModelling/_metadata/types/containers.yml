@@ -43,6 +43,20 @@ types:
   checkm.oci:
     properties:
       Format: OCI
+  comebin.oci:
+    properties:
+      Format: OCI
+      provides: run_comebin.sh
+  metabat2.oci:
+    properties:
+      Format: OCI
+      provides:
+      - jgi_summarize_bam_contig_depths
+      - metabat2
+  semibin.oci:
+    properties:
+      Format: OCI
+      provides: SemiBin2
       provides: checkm
   container:
     properties:
