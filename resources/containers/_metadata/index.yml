@@ -19,12 +19,16 @@ manifest:
     type: containers::checkm.oci
   comebin.oci:
     type: containers::comebin.oci
+  deepec.oci:
+    type: containers::deepec.oci
   deeptfactor.oci:
     type: containers::deeptfactor.oci
   diamond.oci:
     type: containers::diamond.oci
   dram.oci:
     type: containers::dram.oci
+  eggnog-mapper.oci:
+    type: containers::eggnog-mapper.oci
   fastani.oci:
     type: containers::fastani.oci
   fastp.oci:
@@ -47,6 +51,10 @@ manifest:
     type: containers::hifiasm-meta.oci
   hifiasm.oci:
     type: containers::hifiasm.oci
+  interproscan.oci:
+    type: containers::interproscan.oci
+  kofamscan.oci:
+    type: containers::kofamscan.oci
   megahit.oci:
     type: containers::megahit.oci
   metabat2.oci:
@@ -65,12 +73,18 @@ manifest:
     type: containers::ncbi-datasets.oci
   orad.oci:
     type: containers::orad.oci
+  polars.oci:
+    type: containers::polars.oci
   ppanggolin.oci:
     type: containers::ppanggolin.oci
   pprodigal.oci:
     type: containers::pprodigal.oci
   predictf.oci:
     type: containers::predictf.oci
+  promotech.oci:
+    type: containers::promotech.oci
+  proteinbert.oci:
+    type: containers::proteinbert.oci
   pydeseq2.oci:
     type: containers::pydeseq2.oci
   python_for_data_science.oci:
@@ -91,4 +105,6 @@ manifest:
     type: containers::star.oci
   stringtie.oci:
     type: containers::stringtie.oci
+  virsorter2.oci:
+    type: containers::virsorter2.oci
 schema: v1

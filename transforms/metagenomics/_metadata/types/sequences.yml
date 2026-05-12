@@ -224,6 +224,15 @@ types:
       Format: FASTA
       content: open reading frames
       ext: faa
+  pacbio_hifi_bam:
+    properties:
+      Data: nucleic acid sequence
+      Format: BAM
+      _:
+      - PacBio HiFi reads in BAM format
+      ext: bam
+      parity: single
+      read_length: long
   read_metadata:
     properties:
       _:

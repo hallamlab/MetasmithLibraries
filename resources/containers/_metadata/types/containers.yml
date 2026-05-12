@@ -55,15 +55,14 @@ types:
   container:
     properties:
       Format: OCI
+  deepec.oci:
+    properties:
+      Format: OCI
+      provides: deepec
   deeptfactor.oci:
     properties:
       Format: OCI
       provides: deeptfactor
-  dram.oci:
-    extends: container
-    properties:
-      provides:
-      - DRAM-v.py
   diamond.oci:
     properties:
       Format: OCI
@@ -72,6 +71,14 @@ types:
       - diamond/blastp
       - diamond/linclust
       - diamond/makedb
+  dram.oci:
+    properties:
+      Format: OCI
+      provides: DRAM-v.py
+  eggnog-mapper.oci:
+    properties:
+      Format: OCI
+      provides: emapper.py
   fastani.oci:
     properties:
       Format: OCI
@@ -116,6 +123,14 @@ types:
     properties:
       Format: OCI
       provides: hifiasm
+  interproscan.oci:
+    properties:
+      Format: OCI
+      provides: interproscan
+  kofamscan.oci:
+    properties:
+      Format: OCI
+      provides: kofamscan
   megahit.oci:
     properties:
       Format: OCI
@@ -156,6 +171,10 @@ types:
     properties:
       Format: OCI
       provides: orad
+  polars.oci:
+    properties:
+      Format: OCI
+      provides: py/polars
   ppanggolin.oci:
     properties:
       Format: OCI
@@ -168,6 +187,14 @@ types:
     properties:
       Format: OCI
       provides: predictf
+  promotech.oci:
+    properties:
+      Format: OCI
+      provides: promotech
+  proteinbert.oci:
+    properties:
+      Format: OCI
+      provides: proteinbert
   pulled_container:
     properties:
       atomic_description: pulled OCI container
@@ -230,3 +257,7 @@ types:
     properties:
       Format: OCI
       provides: stringtie
+  virsorter2.oci:
+    properties:
+      Format: OCI
+      provides: virsorter
