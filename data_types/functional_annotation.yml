@@ -73,3 +73,128 @@ types:
       _: PredicTF lower-confidence potential TF predictions
       Format: TSV
       ext: tsv
+
+  # InterProScan
+  interproscan_json:
+    properties:
+      _: InterProScan annotations in JSON format
+      Format: JSON
+      ext: json
+  interproscan_gff:
+    properties:
+      _: InterProScan annotations in GFF3 format
+      Format: GFF3
+      ext: gff3
+  interproscan_data:
+    properties:
+      _: InterProScan data directory
+  interproscan_source:
+    properties:
+      _: Marker for InterProScan data location
+
+  # KofamScan
+  kofamscan_results:
+    properties:
+      _: KEGG KO assignments from KofamScan
+      Format: TSV
+      ext: txt
+  kofamscan_profiles:
+    properties:
+      _: KofamScan HMM profile directory containing .hmm files
+  kofamscan_ko_list:
+    properties:
+      _: KofamScan KO list file
+      ext: tsv
+  kofamscan_source:
+    properties:
+      _: Marker for KofamScan database download
+
+  # eggNOG-mapper
+  eggnog_data:
+    properties:
+      _: eggNOG-mapper database directory
+  eggnog_source:
+    properties:
+      _: Marker for eggNOG database download
+  eggnog_results:
+    properties:
+      _: eggNOG-mapper functional annotations (GO, KEGG, Pfam, COG)
+      Format: TSV
+      ext: tsv
+
+  # DeepEC
+  deepec_predictions:
+    properties:
+      _: DeepEC EC number predictions
+      ext: tsv
+
+  # DIAMOND UniRef50
+  diamond_uniref50_results:
+    properties:
+      _: DIAMOND alignment to UniRef50
+      Format: BLAST6
+      ext: tsv
+  uniref50_diamond_db:
+    properties:
+      _: DIAMOND-formatted UniRef50 database
+      ext: dmnd
+  uniref50_source:
+    properties:
+      _: Marker for UniRef50 database download
+
+  # ProteinBERT
+  proteinbert_embeddings:
+    properties:
+      _: ProteinBERT embedding vectors
+      Format: Parquet
+      ext: parquet
+  proteinbert_index:
+    properties:
+      _: ProteinBERT sequence index
+      Format: CSV
+      ext: csv
+
+  # VirSorter2
+  virsorter2_viral_sequences:
+    properties:
+      _: VirSorter2 identified viral sequences
+      Format: FASTA
+      ext: fa
+  virsorter2_scores:
+    properties:
+      _: VirSorter2 viral scores and metadata
+      ext: tsv
+  virsorter2_affi_contigs:
+    properties:
+      _: VirSorter2 gene affiliation table for DRAM-v
+      ext: tab
+  virsorter2_boundary:
+    properties:
+      _: VirSorter2 viral boundary positions
+      ext: tsv
+  virsorter2_db:
+    properties:
+      _: VirSorter2 reference database directory
+
+  # DRAM-v
+  dramv_annotations:
+    properties:
+      _: DRAM-v gene annotations for viral contigs
+      ext: tsv
+  dramv_distill:
+    properties:
+      _: DRAM-v distilled AMG summary and visualizations
+  dram_db:
+    properties:
+      _: DRAM database directory
+  dram_annotations:
+    properties:
+      _: DRAM gene annotations (dbCAN/KOfam/Pfam) TSV
+      ext: tsv
+
+  # PromoTech
+  promotech_predictions:
+    properties:
+      _: PromoTech bacterial promoter predictions per assembly
+      Format: TSV
+      ext: tsv

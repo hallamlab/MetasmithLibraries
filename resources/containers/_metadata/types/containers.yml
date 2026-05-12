@@ -59,6 +59,11 @@ types:
     properties:
       Format: OCI
       provides: deeptfactor
+  dram.oci:
+    extends: container
+    properties:
+      provides:
+      - DRAM-v.py
   diamond.oci:
     properties:
       Format: OCI

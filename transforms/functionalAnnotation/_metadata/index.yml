@@ -11,6 +11,8 @@ manifest:
     type: transforms::transform
   diamond_linclust.py:
     type: transforms::transform
+  dram_annotate_genes.py:
+    type: transforms::transform
   pprodigal.py:
     type: transforms::transform
   predictf.py:

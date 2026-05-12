@@ -291,3 +291,48 @@ types:
       - py/biopython
       - py/jupyter
       - py/notebook
+  deepec.oci:
+    extends: container
+    properties:
+      provides:
+      - deepec
+  eggnog-mapper.oci:
+    extends: container
+    properties:
+      provides:
+      - emapper.py
+  interproscan.oci:
+    extends: container
+    properties:
+      provides:
+      - interproscan
+  kofamscan.oci:
+    extends: container
+    properties:
+      provides:
+      - kofamscan
+  proteinbert.oci:
+    extends: container
+    properties:
+      provides:
+      - proteinbert
+  virsorter2.oci:
+    extends: container
+    properties:
+      provides:
+      - virsorter
+  dram.oci:
+    extends: container
+    properties:
+      provides:
+      - DRAM-v.py
+  promotech.oci:
+    extends: container
+    properties:
+      provides:
+      - promotech
+  polars.oci:
+    extends: container
+    properties:
+      provides:
+      - py/polars
