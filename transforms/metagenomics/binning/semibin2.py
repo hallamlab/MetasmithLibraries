@@ -23,6 +23,7 @@ def protocol(context: ExecutionContext):
     context.ExecWithContainer(
         image = image,
         cmd = f"""
+            export PATH=/opt/conda/bin:$PATH
             SemiBin2 single_easy_bin \
                 -i {iasm.container} \
                 -b {ibam.container} \

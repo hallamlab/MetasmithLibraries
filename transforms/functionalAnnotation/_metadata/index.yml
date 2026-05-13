@@ -1,11 +1,25 @@
 manifest:
   add_orfs_to_centroids.py:
     type: transforms::transform
+  antismash.py:
+    type: transforms::transform
+  bakta_noncoding.py:
+    type: transforms::transform
+  busco_full_table.py:
+    type: transforms::transform
   deepec.py:
+    type: transforms::transform
+  deeptfactor.py:
     type: transforms::transform
   diamond_linclust.py:
     type: transforms::transform
   diamond_uniref50.py:
+    type: transforms::transform
+  dram_annotate_genes.py:
+    type: transforms::transform
+  dramv.py:
+    type: transforms::transform
+  eggnog_mapper.py:
     type: transforms::transform
   interproscan.py:
     type: transforms::transform
@@ -13,6 +27,12 @@ manifest:
     type: transforms::transform
   pprodigal.py:
     type: transforms::transform
+  predictf.py:
+    type: transforms::transform
+  promotech.py:
+    type: transforms::transform
   proteinbert.py:
+    type: transforms::transform
+  virsorter2.py:
     type: transforms::transform
 schema: v1

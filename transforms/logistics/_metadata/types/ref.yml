@@ -5,6 +5,9 @@ ontology:
   version: '1.25'
 schema: v1
 types:
+  antismash:
+    properties:
+    - for antiSMASH
   genomad:
     properties:
     - for geNomad
@@ -13,7 +16,9 @@ types:
     - genome taxonomy database
   interproscan_data:
     properties:
-    - InterProScan data directory
+      _:
+      - InterProScan data directory
+      ext: tgz
   kofamscan_ko_list:
     properties:
       _:

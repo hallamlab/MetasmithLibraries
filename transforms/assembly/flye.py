@@ -64,6 +64,5 @@ TransformInstance(
         cpus=8,
         memory=Size.GB(32),
         duration=Duration(hours=18),
-    ),
-    priority=1000,
+    )
 )

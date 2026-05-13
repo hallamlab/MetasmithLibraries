@@ -30,7 +30,7 @@ types:
     - reference_data
     properties:
       _: InterProScan data directory
-    ext: tgz
+      ext: tgz
   metabuli_ref:
     extends:
     - reference_data
@@ -41,3 +41,8 @@ types:
     - reference_data
     properties:
       _: genome taxonomy database
+  antismash:
+    extends:
+    - reference_data
+    properties:
+      _: for antiSMASH

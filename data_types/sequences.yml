@@ -122,6 +122,26 @@ types:
     properties:
       parity: single
 # -----------------------------------------
+# ORA reads
+  forward_ora_reads:
+    extends:
+    - reads
+    properties:
+      parity: paired end
+      direction: forward
+      read_length: short
+      ext: fastq.ora
+      compression: ora
+  reverse_ora_reads:
+    extends:
+    - reads
+    properties:
+      parity: paired end
+      direction: reverse
+      read_length: short
+      ext: fastq.ora
+      compression: ora
+# -----------------------------------------
 # long reads
   long_reads:
     extends:
@@ -147,6 +167,16 @@ types:
     properties:
       parity: single
       read_length: long
+# -----------------------------------------
+# pacbio
+  pacbio_hifi_bam:
+    properties:
+      _: PacBio HiFi reads in BAM format
+      Format: BAM
+      Data: nucleic acid sequence
+      read_length: long
+      parity: single
+      ext: bam
 # -----------------------------------------
 # reports
   read_metadata:
