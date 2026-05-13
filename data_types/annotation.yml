@@ -1,4 +1,62 @@
 types:
+  # InterProScan
+  interproscan_results:
+    properties:
+      _: Parsed InterProScan protein matches
+      Format: CSV
+      ext: csv
+  interproscan_json:
+    properties:
+      _: InterProScan annotations in JSON format
+      Format: JSON
+      ext: json
+  interproscan_gff:
+    properties:
+      _: InterProScan annotations in GFF3 format
+      Format: GFF3
+      ext: gff3
+  interproscan_source:
+    properties:
+      _: Marker for InterProScan data location
+
+  # KofamScan
+  kofamscan_results:
+    properties:
+      _: Filtered KofamScan KO assignments
+      Format: CSV
+      ext: csv
+  kofamscan_source:
+    properties:
+      _: Marker for KofamScan database download
+
+  # ProteinBERT
+  proteinbert_embeddings:
+    properties:
+      _: ProteinBERT embedding vectors
+      Format: Parquet
+      ext: parquet
+  proteinbert_index:
+    properties:
+      _: ProteinBERT sequence index
+      Format: CSV
+      ext: csv
+
+  # DeepEC
+  deepec_predictions:
+    properties:
+      _: DeepEC EC number predictions
+      ext: tsv
+
+  # DIAMOND UniRef50
+  diamond_uniref50_results:
+    properties:
+      _: DIAMOND alignment to UniRef50
+      Format: BLAST6
+      ext: tsv
+  uniref50_source:
+    properties:
+      _: Marker for UniRef50 database download
+
   # antiSMASH
   antismash_json:
     properties:
@@ -10,8 +68,6 @@ types:
       _: antiSMASH GenBank region files (tar)
       Format: GenBank
       ext: tar.gz
-
-  # antiSMASH database
   antismash_db:
     properties:
       _: antiSMASH database directory (Pfam, ClusterBlast, MIBiG, Resfams)
@@ -74,41 +130,6 @@ types:
       Format: TSV
       ext: tsv
 
-  # InterProScan
-  interproscan_json:
-    properties:
-      _: InterProScan annotations in JSON format
-      Format: JSON
-      ext: json
-  interproscan_gff:
-    properties:
-      _: InterProScan annotations in GFF3 format
-      Format: GFF3
-      ext: gff3
-  interproscan_data:
-    properties:
-      _: InterProScan data directory
-  interproscan_source:
-    properties:
-      _: Marker for InterProScan data location
-
-  # KofamScan
-  kofamscan_results:
-    properties:
-      _: KEGG KO assignments from KofamScan
-      Format: TSV
-      ext: txt
-  kofamscan_profiles:
-    properties:
-      _: KofamScan HMM profile directory containing .hmm files
-  kofamscan_ko_list:
-    properties:
-      _: KofamScan KO list file
-      ext: tsv
-  kofamscan_source:
-    properties:
-      _: Marker for KofamScan database download
-
   # eggNOG-mapper
   eggnog_data:
     properties:
@@ -121,38 +142,6 @@ types:
       _: eggNOG-mapper functional annotations (GO, KEGG, Pfam, COG)
       Format: TSV
       ext: tsv
-
-  # DeepEC
-  deepec_predictions:
-    properties:
-      _: DeepEC EC number predictions
-      ext: tsv
-
-  # DIAMOND UniRef50
-  diamond_uniref50_results:
-    properties:
-      _: DIAMOND alignment to UniRef50
-      Format: BLAST6
-      ext: tsv
-  uniref50_diamond_db:
-    properties:
-      _: DIAMOND-formatted UniRef50 database
-      ext: dmnd
-  uniref50_source:
-    properties:
-      _: Marker for UniRef50 database download
-
-  # ProteinBERT
-  proteinbert_embeddings:
-    properties:
-      _: ProteinBERT embedding vectors
-      Format: Parquet
-      ext: parquet
-  proteinbert_index:
-    properties:
-      _: ProteinBERT sequence index
-      Format: CSV
-      ext: csv
 
   # VirSorter2
   virsorter2_viral_sequences:

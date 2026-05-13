@@ -89,6 +89,8 @@ manifest:
     type: containers::pydeseq2.oci
   python_for_data_science.oci:
     type: containers::python_for_data_science.oci
+  qiime2.oci:
+    type: containers::qiime2.oci
   salmon.oci:
     type: containers::salmon.oci
   samtools.oci:
@@ -107,4 +109,6 @@ manifest:
     type: containers::stringtie.oci
   virsorter2.oci:
     type: containers::virsorter2.oci
+  vsearch.oci:
+    type: containers::vsearch.oci
 schema: v1

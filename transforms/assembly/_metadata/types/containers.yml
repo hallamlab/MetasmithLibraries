@@ -220,6 +220,10 @@ types:
       - py/xmltodict
       - py/yaml
       - python=3.12
+  qiime2.oci:
+    properties:
+      Format: OCI
+      provides: qiime
   salmon.oci:
     properties:
       Format: OCI
@@ -261,3 +265,7 @@ types:
     properties:
       Format: OCI
       provides: virsorter
+  vsearch.oci:
+    properties:
+      Format: OCI
+      provides: vsearch
