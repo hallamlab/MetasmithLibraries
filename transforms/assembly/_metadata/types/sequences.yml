@@ -14,6 +14,7 @@ types:
       compression: gzip
       coverage: 100x
       ext: fq.gz
+      pair_state: complete
       parity: single
       qc: read_depth_stratified
       read_length: long
@@ -22,6 +23,7 @@ types:
       Data: nucleic acid sequence
       Format: FASTA
       ext: fna
+      origin: assembler
   assembly_per_bp_coverage:
     properties:
       _:
@@ -43,6 +45,23 @@ types:
       - fraction_reads_mapped
       - length
       - number_of_contigs
+  bin_fasta:
+    properties:
+      Data: nucleic acid sequence
+      Format: FASTA
+      _:
+      - a single metagenomic bin FASTA file
+      ext: fna
+      genome_scope: single
+  chromosomal_contig:
+    properties:
+      Data: nucleic acid sequence
+      Format: FASTA
+      _:
+      - curated single-chromosome contig from a long-read assembly
+      ext: fna
+      genome_scope: single
+      origin: long_read_pseudo_bin
   clean_long_reads:
     properties:
       Data: nucleic acid sequence
@@ -51,6 +70,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       parity: single
       qc: filtered
       read_length: long
@@ -62,6 +82,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       qc: filtered
   clean_short_reads:
     properties:
@@ -71,6 +92,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       qc: filtered
       read_length: short
   clean_short_reads_pe:
@@ -81,6 +103,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       parity: interleaved
       qc: filtered
       read_length: short
@@ -92,9 +115,19 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       parity: single
       qc: filtered
       read_length: short
+  comebin_bin_fasta:
+    properties:
+      Data: nucleic acid sequence
+      Format: FASTA
+      _:
+      - a single metagenomic bin FASTA file
+      ext: fna
+      genome_scope: single
+      method: comebin
   discarded_long_reads:
     properties:
       Data: nucleic acid sequence
@@ -103,6 +136,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       parity: single
       qc: discarded
       read_length: long
@@ -114,6 +148,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       qc: discarded
   discarded_short_reads:
     properties:
@@ -123,6 +158,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       qc: discarded
       read_length: short
   fastqc_html_report:
@@ -141,21 +177,22 @@ types:
       Format: FASTA
       ext: fna
       method: flye
+      origin: assembler
   flye_raw_assembly:
     properties:
       Data: nucleic acid sequence
       Format: FASTA
       ext: fna
       method: flye using raw reads
+      origin: assembler
   forward_ora_reads:
     properties:
       Data: nucleic acid sequence
       Format: FASTQ
-      _:
-      - DNA reads
       compression: ora
       direction: forward
       ext: fastq.ora
+      pair_state: half
       parity: paired end
       qc: none
       read_length: short
@@ -163,11 +200,10 @@ types:
     properties:
       Data: nucleic acid sequence
       Format: FASTQ
-      _:
-      - DNA reads
       compression: none
       direction: forward
       ext: fq
+      pair_state: half
       parity: paired end
       qc: none
       read_length: short
@@ -185,11 +221,14 @@ types:
       Format: FASTA
       ext: fna
       method: hifiasm-meta
+      origin: assembler
   isolate_assembly:
     properties:
       Data: nucleic acid sequence
       Format: FASTA
       ext: fna
+      genome_scope: single
+      origin: assembler
       subject: isolate
   long_reads:
     properties:
@@ -199,6 +238,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       parity: single
       qc: none
       read_length: long
@@ -208,6 +248,16 @@ types:
       Format: FASTA
       ext: fna
       method: megahit
+      origin: assembler
+  metabat2_bin_fasta:
+    properties:
+      Data: nucleic acid sequence
+      Format: FASTA
+      _:
+      - a single metagenomic bin FASTA file
+      ext: fna
+      genome_scope: single
+      method: metabat2
   miniasm_gfa:
     properties:
       Format: graphical fragment assembly
@@ -239,6 +289,12 @@ types:
       ext: bam
       parity: single
       read_length: long
+  putative_genome:
+    properties:
+      Data: nucleic acid sequence
+      Format: FASTA
+      ext: fna
+      genome_scope: single
   read_metadata:
     properties:
       _:
@@ -270,16 +326,16 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       qc: none
   reverse_ora_reads:
     properties:
       Data: nucleic acid sequence
       Format: FASTQ
-      _:
-      - DNA reads
       compression: ora
       direction: reverse
       ext: fastq.ora
+      pair_state: half
       parity: paired end
       qc: none
       read_length: short
@@ -287,14 +343,22 @@ types:
     properties:
       Data: nucleic acid sequence
       Format: FASTQ
-      _:
-      - DNA reads
       compression: none
       direction: reverse
       ext: fq
+      pair_state: half
       parity: paired end
       qc: none
       read_length: short
+  semibin2_bin_fasta:
+    properties:
+      Data: nucleic acid sequence
+      Format: FASTA
+      _:
+      - a single metagenomic bin FASTA file
+      ext: fna
+      genome_scope: single
+      method: semibin2
   short_reads:
     properties:
       Data: nucleic acid sequence
@@ -303,6 +367,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       qc: none
       read_length: short
   short_reads_pe:
@@ -313,6 +378,7 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       parity: interleaved
       qc: none
       read_length: short
@@ -324,18 +390,26 @@ types:
       - DNA reads
       compression: gzip
       ext: fq.gz
+      pair_state: complete
       parity: single
       qc: none
       read_length: short
+  unpaired_read_half:
+    properties:
+      Data: nucleic acid sequence
+      Format: FASTQ
+      compression: gzip
+      ext: fq.gz
+      pair_state: half
+      qc: none
   zipped_forward_short_reads:
     properties:
       Data: nucleic acid sequence
       Format: FASTQ
-      _:
-      - DNA reads
       compression: gzip
       direction: forward
       ext: fq.gz
+      pair_state: half
       parity: paired end
       qc: none
       read_length: short
@@ -343,11 +417,10 @@ types:
     properties:
       Data: nucleic acid sequence
       Format: FASTQ
-      _:
-      - DNA reads
       compression: gzip
       direction: reverse
       ext: fq.gz
+      pair_state: half
       parity: paired end
       qc: none
       read_length: short

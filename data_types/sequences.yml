@@ -4,6 +4,13 @@ types:
       Format: FASTA
       Data: nucleic acid sequence
       ext: fna
+      origin: assembler
+  putative_genome:
+    properties:
+      Format: FASTA
+      Data: nucleic acid sequence
+      ext: fna
+      genome_scope: single
   gbk:
     properties:
       Format: genbank file
@@ -20,6 +27,15 @@ types:
       Data: nucleic acid sequence
       compression: gzip
       ext: fq.gz
+      pair_state: complete
+  unpaired_read_half:
+    properties:
+      qc: none
+      Format: FASTQ
+      Data: nucleic acid sequence
+      compression: gzip
+      ext: fq.gz
+      pair_state: half
   clean_reads:
     extends:
     - reads
@@ -52,7 +68,7 @@ types:
       atomic: a pair of read files
   forward_short_reads:
     extends:
-    - reads
+    - unpaired_read_half
     properties:
       parity: paired end
       direction: forward
@@ -61,14 +77,14 @@ types:
       compression: none
   zipped_forward_short_reads:
     extends:
-    - reads
+    - unpaired_read_half
     properties:
       parity: paired end
       direction: forward
       read_length: short
   reverse_short_reads:
     extends:
-    - reads
+    - unpaired_read_half
     properties:
       parity: paired end
       direction: reverse
@@ -78,14 +94,14 @@ types:
       compression: none
   zipped_reverse_short_reads:
     extends:
-    - reads
+    - unpaired_read_half
     properties:
       parity: paired end
       direction: reverse
       read_length: short
   forward_ora_reads:
     extends:
-    - reads
+    - unpaired_read_half
     properties:
       parity: paired end
       direction: forward
@@ -94,7 +110,7 @@ types:
       compression: ora
   reverse_ora_reads:
     extends:
-    - reads
+    - unpaired_read_half
     properties:
       parity: paired end
       direction: reverse
@@ -121,26 +137,6 @@ types:
     - clean_short_reads
     properties:
       parity: single
-# -----------------------------------------
-# ORA reads
-  forward_ora_reads:
-    extends:
-    - reads
-    properties:
-      parity: paired end
-      direction: forward
-      read_length: short
-      ext: fastq.ora
-      compression: ora
-  reverse_ora_reads:
-    extends:
-    - reads
-    properties:
-      parity: paired end
-      direction: reverse
-      read_length: short
-      ext: fastq.ora
-      compression: ora
 # -----------------------------------------
 # long reads
   long_reads:
@@ -243,8 +239,15 @@ types:
   isolate_assembly:
     extends:
     - assembly
+    - putative_genome
     properties:
       subject: isolate
+  chromosomal_contig:
+    extends:
+    - putative_genome
+    properties:
+      _: curated single-chromosome contig from a long-read assembly
+      origin: long_read_pseudo_bin
   hifiasm_meta_assembly:
     extends:
     - assembly
@@ -265,6 +268,28 @@ types:
     - assembly
     properties:
       method: flye using raw reads
+# -----------------------------------------
+# metagenomic bins (putative single-genome FASTAs from a binner)
+  bin_fasta:
+    extends:
+    - putative_genome
+    properties:
+      _: a single metagenomic bin FASTA file
+  metabat2_bin_fasta:
+    extends:
+    - bin_fasta
+    properties:
+      method: metabat2
+  semibin2_bin_fasta:
+    extends:
+    - bin_fasta
+    properties:
+      method: semibin2
+  comebin_bin_fasta:
+    extends:
+    - bin_fasta
+    properties:
+      method: comebin
 # -----------------------------------------
 # protein
   orfs:
