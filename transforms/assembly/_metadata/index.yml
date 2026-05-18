@@ -21,8 +21,6 @@ manifest:
     type: transforms::transform
   megahit.py:
     type: transforms::transform
-  reads_to_assembly_bam.py:
-    type: transforms::transform
   seqkit_reads.py:
     type: transforms::transform
 schema: v1
