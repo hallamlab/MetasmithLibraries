@@ -39,7 +39,11 @@ p.add_argument("--chunk-size", type=int, default=64,
                help="ESMFold trunk chunk size; lower=less memory, slower")
 a = p.parse_args()
 
-os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+# Note: PYTORCH_CUDA_ALLOC_CONF must be set before torch initializes CUDA,
+# which happens at the first CUDA call below. We set it via the apptainer
+# `--env` flag on ExecWithContainer (see protocol() below), not here, because
+# `os.environ.setdefault` after `import torch` is too late to influence the
+# allocator's startup configuration.
 device = torch.device(a.device if (a.device == "cpu" or torch.cuda.is_available()) else "cpu")
 tok = AutoTokenizer.from_pretrained(a.weights)
 mdl = EsmForProteinFolding.from_pretrained(a.weights, low_cpu_mem_usage=True).to(device).eval()
@@ -75,6 +79,12 @@ with torch.no_grad():
         output = mdl(**inputs)
         cif = mdl.output_to_pdb(output)[0]
         (out_dir / f"{sid}.pdb").write_text(cif)
+        # ESMFold per-sequence intermediates can leave the caching allocator
+        # holding many GB across iterations on metag-scale workloads; without
+        # this flush we OOM mid-shard despite per-call peak < slice capacity.
+        del inputs, output, cif
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
 print(f"esmfold done: folded {len(ids)-skipped}, skipped {skipped} (>{a.max_len} AA)", flush=True)
 '''
 
@@ -100,7 +110,11 @@ def protocol(context: ExecutionContext):
             (context.external_cwd/"structures", "/out"),
             (context.external_cwd/script.name, f"/work/{script.name}"),
         ],
-        args=["--nv", "--env", f"CUDA_VISIBLE_DEVICES={os.environ.get('CUDA_VISIBLE_DEVICES','')}"],
+        args=[
+            "--nv",
+            "--env", f"CUDA_VISIBLE_DEVICES={os.environ.get('CUDA_VISIBLE_DEVICES','')}",
+            "--env", "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
+        ],
         cmd=f"""
             python /work/{script.name} \
                 --weights /weights \

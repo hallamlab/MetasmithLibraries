@@ -101,6 +101,15 @@ TARGETS = {
     "saprot":        ("annotation::saprot_embeddings",    "med",   "saprot",       "saprot"),
 }
 
+# Additional weight keys needed transitively when a target is selected. Without
+# these, the planner introduces download* transforms for missing weights, which
+# crashes on the cgroup-limited Compute Canada login node (xlocalx executor).
+# foldseek_3di + saprot consume esmfold's predicted_structures → need esmfold weights.
+TRANSITIVE_WEIGHTS = {
+    "saprot":       ["esmfold"],
+    "foldseek_3di": ["esmfold"],
+}
+
 # GPU tier → SLURM --gpus= MIG slice
 GPU_SLICE = {
     "small": "nvidia_h100_80gb_hbm3_1g.10gb:1",
@@ -230,15 +239,16 @@ def run_one(
     """Generate, stage, and run a workflow over one set of targets."""
     print(f"\n{'='*60}\nworkflow: {name}\n{'='*60}")
 
-    # collect needed weights (deduped, preserves order)
+    # collect needed weights (deduped, preserves order) — includes transitive deps
     seen = set()
     needed_weights = []
     transform_gpu_map = {}
     for t in targets_to_run:
         type_str, tier, w_key, tname = TARGETS[t]
-        if w_key and w_key not in seen:
-            needed_weights.append(w_key)
-            seen.add(w_key)
+        for w in [w_key, *TRANSITIVE_WEIGHTS.get(t, [])]:
+            if w and w not in seen:
+                needed_weights.append(w)
+                seen.add(w)
         # key by transform module name so withName: '.*__<tname>' matches Nextflow's p<N>__<tname>
         transform_gpu_map[tname] = GPU_SLICE[tier]
 
@@ -260,11 +270,16 @@ def run_one(
     smith = get_agent()
 
     print("generating workflow...")
+    # MCTS seed=42 (metasmith default) lands in a local optimum for the 6-target
+    # `--only all` search that adds a redundant downloadESMFoldWeights step
+    # despite the weight tarball being pre-staged. Seeds 1/7/99/2024 find the
+    # optimal 7-step plan; see main/probe_planner.py for the sweep.
     task = smith.GenerateWorkflow(
         samples=list(inputs.AsSamples("sequences::orfs")),
         resources=[containers, inputs],
         transforms=transforms,
         targets=tb,
+        seed=1,
     )
 
     if not task.ok or len(task.plan.steps) == 0:
@@ -286,15 +301,12 @@ def run_one(
         executor=dict(queueSize=queue_size),
         process=dict(array=20, tries=2),
     )
-    user_params = {}
     if shard_size is not None:
-        user_params["shard_size"] = shard_size
-        print(f"  shard_size override: {shard_size}")
+        print(f"  WARN: --shard-size {shard_size} ignored; SHARD_SIZE is baked into shardFasta.py")
     smith.RunWorkflow(
         task=task,
         config_file=config,
         params=params,
-        user_params=user_params,
     )
     print(f"submitted [{name}]: {task.GetKey()}")
     return task.GetKey()
