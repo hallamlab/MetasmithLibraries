@@ -298,3 +298,26 @@ types:
       Data: protein sequence
       content: open reading frames
       ext: faa
+  orfs_shard:
+    extends:
+    - orfs
+    properties:
+      _: Length-balanced shard of an ORF FASTA; fans out embedding transforms
+      ext: faa
+# -----------------------------------------
+# protein structures
+  predicted_structures:
+    properties:
+      _: Predicted protein structures keyed by ORF id (tar of mmCIF files)
+      Format: mmCIF
+      ext: tar.gz
+  structure_3di_tokens:
+    properties:
+      _: Foldseek 3Di token strings per ORF (sequence_id -> 3di)
+      Format: Parquet
+      ext: parquet
+  boltz_structures:
+    properties:
+      _: Boltz-2 predicted structures (tar of mmCIF files)
+      Format: mmCIF
+      ext: tar.gz
