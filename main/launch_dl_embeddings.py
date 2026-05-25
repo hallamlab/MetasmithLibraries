@@ -110,6 +110,16 @@ TRANSITIVE_WEIGHTS = {
     "foldseek_3di": ["esmfold"],
 }
 
+# Transforms pulled in by the planner as transitive producers. Each entry must
+# also be registered in TARGETS so we can look up its GPU tier; without this,
+# `--only saprot` plans esmfold + foldseek_3di but their clusterOptions fall
+# through to the default (def-shallam_cpu, no GPU) — silently runs ESMFold on
+# CPU which never produces output before walltime.
+TRANSITIVE_TRANSFORMS = {
+    "saprot":       ["esmfold", "foldseek_3di"],
+    "foldseek_3di": ["esmfold"],
+}
+
 # GPU tier → SLURM --gpus= MIG slice
 GPU_SLICE = {
     "small": "nvidia_h100_80gb_hbm3_1g.10gb:1",
@@ -250,7 +260,10 @@ def run_one(
                 needed_weights.append(w)
                 seen.add(w)
         # key by transform module name so withName: '.*__<tname>' matches Nextflow's p<N>__<tname>
-        transform_gpu_map[tname] = GPU_SLICE[tier]
+        # Include transitive transforms so all pulled-in steps get the right GPU tier.
+        for tt in [t, *TRANSITIVE_TRANSFORMS.get(t, [])]:
+            _, tt_tier, _, tt_tname = TARGETS[tt]
+            transform_gpu_map[tt_tname] = GPU_SLICE[tt_tier]
 
     inputs = build_input_library(orfs_path, needed_weights, name, force_rebuild=True)
 
