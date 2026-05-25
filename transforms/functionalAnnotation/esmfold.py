@@ -69,8 +69,9 @@ with open(a.fasta) as f:
         ids.append(sid); seqs.append("".join(buf))
 
 skipped = 0
+total = len(ids)
 with torch.no_grad():
-    for sid, seq in zip(ids, seqs):
+    for i, (sid, seq) in enumerate(zip(ids, seqs)):
         if len(seq) > a.max_len:
             sys.stderr.write(f"skip {sid}: len {len(seq)} > {a.max_len}\n")
             skipped += 1
@@ -79,6 +80,8 @@ with torch.no_grad():
         output = mdl(**inputs)
         cif = mdl.output_to_pdb(output)[0]
         (out_dir / f"{sid}.pdb").write_text(cif)
+        if (i + 1) % 50 == 0:
+            print(f"hb {i+1}/{total}", flush=True)
         # ESMFold per-sequence intermediates can leave the caching allocator
         # holding many GB across iterations on metag-scale workloads; without
         # this flush we OOM mid-shard despite per-call peak < slice capacity.

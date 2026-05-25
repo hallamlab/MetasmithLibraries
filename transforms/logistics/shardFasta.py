@@ -22,13 +22,13 @@ image = model.AddRequirement(lib.GetType("containers::polars.oci"))
 orfs  = model.AddRequirement(lib.GetType("sequences::orfs"))
 shard = model.AddProduct(lib.GetType("sequences::orfs_shard"))
 
-# Per-shard target. Sized to fit one fosmid OR one metag run on the same
-# constant: 4786 fosmid ORFs → 1 shard, 1.44M metag ORFs → 8 shards. Each
-# shard ran ~6:30 on a 3g.40gb MIG slice in qKsXpL4y.
+# Per-shard target. Sized so esmfold (~28 ORFs/min on gpu_med) finishes one
+# shard within the 5h SLURM walltime: 6000 ORFs / 28 ≈ 3.6h, leaves headroom
+# for model load + tar stage-back. 1.44M metag ORFs → ~241 shards.
 # Per metasmith/dev guidance (msg #153): edit this constant per-run instead
 # of routing values through context.params (the user_params channel was
 # reverted on dev).
-SHARD_SIZE = 196000
+SHARD_SIZE = 6000
 
 SHARDER = r'''
 import argparse, math, os, sys

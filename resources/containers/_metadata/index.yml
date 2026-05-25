@@ -1,4 +1,6 @@
 manifest:
+  ankh.oci:
+    type: containers::ankh.oci
   antismash.oci:
     type: containers::antismash.oci
   bakta.oci:
@@ -29,6 +31,10 @@ manifest:
     type: containers::dram.oci
   eggnog-mapper.oci:
     type: containers::eggnog-mapper.oci
+  esmc.oci:
+    type: containers::esmc.oci
+  esmfold.oci:
+    type: containers::esmfold.oci
   fastani.oci:
     type: containers::fastani.oci
   fastp.oci:
@@ -39,6 +45,8 @@ manifest:
     type: containers::filtlong.oci
   flye.oci:
     type: containers::flye.oci
+  foldseek.oci:
+    type: containers::foldseek.oci
   genomad.oci:
     type: containers::genomad.oci
   gfatools.oci:
@@ -85,6 +93,8 @@ manifest:
     type: containers::promotech.oci
   proteinbert.oci:
     type: containers::proteinbert.oci
+  prott5.oci:
+    type: containers::prott5.oci
   pydeseq2.oci:
     type: containers::pydeseq2.oci
   python_for_data_science.oci:
@@ -95,6 +105,8 @@ manifest:
     type: containers::salmon.oci
   samtools.oci:
     type: containers::samtools.oci
+  saprot.oci:
+    type: containers::saprot.oci
   semibin.oci:
     type: containers::semibin.oci
   seqkit.oci:
