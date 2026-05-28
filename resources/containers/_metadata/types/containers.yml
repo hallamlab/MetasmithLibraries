@@ -219,6 +219,12 @@ types:
     properties:
       Format: OCI
       provides: orad
+  phyloflash.oci:
+    properties:
+      Format: OCI
+      provides:
+      - phyloFlash.pl
+      - phyloFlash_makedb.pl
   polars.oci:
     properties:
       Format: OCI

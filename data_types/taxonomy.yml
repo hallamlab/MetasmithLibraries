@@ -99,3 +99,21 @@ types:
     properties:
       _: MetaPhlAn 4 bowtie2 alignment SAM (companion artifact via --mapout - SAM format)
       ext: sam
+
+  # phyloFlash (SSU rRNA reconstruction + taxonomic profile from PE reads)
+  phyloflash_report_html:
+    properties:
+      _: phyloFlash run HTML report (interactive summary - <lib>.phyloFlash.html)
+      ext: html
+  phyloflash_summary:
+    properties:
+      _: phyloFlash run summary report (key,value CSV - <lib>.phyloFlash.report.csv)
+      ext: csv
+  phyloflash_ntu_abundance:
+    properties:
+      _: phyloFlash NTU abundance table (2 cols CSV - taxonomy,read_count - <lib>.phyloFlash.NTUabundance.csv)
+      ext: csv
+  phyloflash_ssu_spades:
+    properties:
+      _: phyloFlash SPAdes-reconstructed full-length SSU rRNA sequences (<lib>.spades_rRNAs.final.fasta)
+      ext: fasta

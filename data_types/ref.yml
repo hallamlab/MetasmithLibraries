@@ -67,6 +67,11 @@ types:
     - reference_data
     properties:
       _: MetaPhlAn 4 database directory (mpa_v*_CHOCOPhlAnSGB_*.bt2l indexes + .pkl + .nwk)
+  phyloflash_db:
+    extends:
+    - reference_data
+    properties:
+      _: phyloFlash SILVA SSU database directory (bbmap index + UDB + tax tree, output of phyloFlash_makedb.pl)
   antismash:
     extends:
     - reference_data
