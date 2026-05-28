@@ -70,15 +70,13 @@ types:
       ext: tgz
   kraken2_db:
     properties:
-    - Kraken2 database directory (hash.k2d, opts.k2d, taxo.k2d + Bracken databaseNNNmers.kmer_distrib
-      files)
+    - Kraken2 database directory (hash.k2d + Bracken kmer_distrib)
   metabuli_ref:
     properties:
     - metabuli reference database
   metaphlan_db:
     properties:
-    - MetaPhlAn 4 database directory (mpa_v*_CHOCOPhlAnSGB_*.bt2l indexes + .pkl +
-      .nwk)
+    - MetaPhlAn 4 database directory (bowtie2 + .pkl + .nwk)
   protein_model_weights:
     properties:
     - Weights bundle for a protein deep-learning model
