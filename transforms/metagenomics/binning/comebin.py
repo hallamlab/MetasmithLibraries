@@ -7,7 +7,7 @@ model       = Transform()
 image       = model.AddRequirement(lib.GetType("containers::comebin.oci"))
 asm         = model.AddRequirement(lib.GetType("sequences::assembly"))
 bam         = model.AddRequirement(lib.GetType("alignment::bam"), parents={asm})
-bin_fasta   = model.AddProduct(lib.GetType("binning::comebin_bin_fasta"))
+bin_fasta   = model.AddProduct(lib.GetType("sequences::comebin_bin_fasta"))
 table       = model.AddProduct(lib.GetType("binning::comebin_contig_to_bin_table"))
 
 def protocol(context: ExecutionContext):
@@ -56,8 +56,8 @@ TransformInstance(
     model=model,
     group_by=asm,
     resources=Resources(
-        cpus=8,
+        cpus=16,
         memory=Size.GB(32),
-        duration=Duration(hours=12),
+        duration=Duration(hours=48),
     )
 )
