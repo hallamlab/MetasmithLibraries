@@ -26,6 +26,9 @@ types:
   boltz_msa_db:
     properties:
     - ColabFold MSA databases for Boltz-2 (~2 TB; unused stub)
+  centrifuger_db:
+    properties:
+    - Centrifuger FM-index prefix (.1.cfr .. .4.cfr files share a common prefix)
   esm_c_300m_weights:
     properties:
       _:
@@ -41,6 +44,9 @@ types:
       _:
       - ESMFold v1 weights (facebook/esmfold_v1)
       ext: tgz
+  ganon2_db:
+    properties:
+    - ganon2 database prefix (.hibf + .tax files share a common prefix)
   genomad:
     properties:
     - for geNomad
@@ -62,9 +68,17 @@ types:
       _:
       - KofamScan HMM profile directory containing .hmm files
       ext: tgz
+  kraken2_db:
+    properties:
+    - Kraken2 database directory (hash.k2d, opts.k2d, taxo.k2d + Bracken databaseNNNmers.kmer_distrib
+      files)
   metabuli_ref:
     properties:
     - metabuli reference database
+  metaphlan_db:
+    properties:
+    - MetaPhlAn 4 database directory (mpa_v*_CHOCOPhlAnSGB_*.bt2l indexes + .pkl +
+      .nwk)
   protein_model_weights:
     properties:
     - Weights bundle for a protein deep-learning model
@@ -81,6 +95,11 @@ types:
       _:
       - SaProt 650M AF2 weights (westlake-repl/SaProt_650M_AF2)
       ext: tgz
+  sylph_db:
+    properties:
+      _:
+      - sylph sketch database (single .syldb file)
+      ext: syldb
   uniref50_diamond_db:
     properties:
       _:

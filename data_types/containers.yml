@@ -161,6 +161,41 @@ types:
     properties:
       provides:
         - genomad
+  kraken2.oci:
+    extends: container
+    properties:
+      provides:
+        - kraken2
+        - kraken2-build
+  bracken.oci:
+    extends: container
+    properties:
+      provides:
+        - bracken
+        - bracken-build
+  centrifuger.oci:
+    extends: container
+    properties:
+      provides:
+        - centrifuger
+        - centrifuger-build
+        - centrifuger-kreport
+        - centrifuger-quant
+  sylph.oci:
+    extends: container
+    properties:
+      provides:
+        - sylph
+  ganon.oci:
+    extends: container
+    properties:
+      provides:
+        - ganon
+  metaphlan.oci:
+    extends: container
+    properties:
+      provides:
+        - metaphlan
 
   # -------------------------------------------------
   # proteins
