@@ -77,6 +77,9 @@ types:
   metaphlan_db:
     properties:
     - MetaPhlAn 4 database directory (bowtie2 + .pkl + .nwk)
+  phyloflash_db:
+    properties:
+    - phyloFlash SILVA SSU DB dir (bbmap + UDB + tax tree)
   protein_model_weights:
     properties:
     - Weights bundle for a protein deep-learning model

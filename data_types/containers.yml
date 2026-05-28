@@ -196,6 +196,12 @@ types:
     properties:
       provides:
         - metaphlan
+  phyloflash.oci:
+    extends: container
+    properties:
+      provides:
+        - phyloFlash.pl
+        - phyloFlash_makedb.pl
 
   # -------------------------------------------------
   # proteins

@@ -25,6 +25,8 @@ manifest:
     type: transforms::transform
   taxonomy/metaphlan.py:
     type: transforms::transform
+  taxonomy/phyloflash.py:
+    type: transforms::transform
   taxonomy/sylph.py:
     type: transforms::transform
 schema: v1

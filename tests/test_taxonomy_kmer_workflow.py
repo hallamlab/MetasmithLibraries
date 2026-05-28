@@ -128,6 +128,14 @@ class TestTaxprofilePlanning:
         if not task.ok or len(task.plan.steps) == 0:
             pytest.skip("metaphlan workflow requires a metaphlan_db resource")
 
+    def test_can_plan_phyloflash_workflow(
+        self, agent, taxprofile_resources, taxprofile_transforms, paired_reads_input
+    ):
+        task = self._plan(agent, taxprofile_resources, taxprofile_transforms,
+                          paired_reads_input, "taxonomy::phyloflash_summary")
+        if not task.ok or len(task.plan.steps) == 0:
+            pytest.skip("phyloflash workflow requires a phyloflash_db resource")
+
 
 # ---------------------------------------------------------------------------
 # Bridge: Kraken2 vs Centrifuger over the same input

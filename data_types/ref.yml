@@ -67,6 +67,11 @@ types:
     - reference_data
     properties:
       _: MetaPhlAn 4 database directory (bowtie2 + .pkl + .nwk)
+  phyloflash_db:
+    extends:
+    - reference_data
+    properties:
+      _: phyloFlash SILVA SSU DB dir (bbmap + UDB + tax tree)
   antismash:
     extends:
     - reference_data
