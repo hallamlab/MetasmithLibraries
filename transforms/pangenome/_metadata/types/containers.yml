@@ -44,6 +44,12 @@ types:
     properties:
       Format: OCI
       provides: boltz
+  bracken.oci:
+    properties:
+      Format: OCI
+      provides:
+      - bracken
+      - bracken-build
   braker3.oci:
     properties:
       Format: OCI
@@ -52,6 +58,14 @@ types:
     properties:
       Format: OCI
       provides: busco
+  centrifuger.oci:
+    properties:
+      Format: OCI
+      provides:
+      - centrifuger
+      - centrifuger-build
+      - centrifuger-kreport
+      - centrifuger-quant
   checkm.oci:
     properties:
       Format: OCI
@@ -119,6 +133,10 @@ types:
     properties:
       Format: OCI
       provides: foldseek
+  ganon.oci:
+    properties:
+      Format: OCI
+      provides: ganon
   genomad.oci:
     properties:
       Format: OCI
@@ -151,6 +169,12 @@ types:
     properties:
       Format: OCI
       provides: kofamscan
+  kraken2.oci:
+    properties:
+      Format: OCI
+      provides:
+      - kraken2
+      - kraken2-build
   megahit.oci:
     properties:
       Format: OCI
@@ -171,6 +195,10 @@ types:
     properties:
       Format: OCI
       provides: metabuli
+  metaphlan.oci:
+    properties:
+      Format: OCI
+      provides: metaphlan
   miniasm.oci:
     properties:
       Format: OCI
@@ -289,6 +317,10 @@ types:
     properties:
       Format: OCI
       provides: stringtie
+  sylph.oci:
+    properties:
+      Format: OCI
+      provides: sylph
   virsorter2.oci:
     properties:
       Format: OCI
