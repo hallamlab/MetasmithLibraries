@@ -57,12 +57,15 @@ def protocol(context: ExecutionContext):
     context.LocalShell(f"pigz -dc {idata.local} | tar xf -")
 
     # sed to remove stop codon asterisks from protein sequences
-    # Run InterProScan with extracted data directory
+    # Run InterProScan with extracted data directory. I5OPTS bumps the
+    # JVM heap so the Java side can address most of the container RAM
+    # (default Xmx is too small and OOMs on full-sample protein FASTAs).
     context.ExecWithContainer(
         image=image,
         binds=[(context.external_cwd/"data", "/opt/interproscan/data")],
         cmd=f"""
             mkdir -p output
+            export I5OPTS="-Xms4g -Xmx48g"
             sed '/^[^>]/s/\*//g' {iorfs.container} > ./{iorfs.container.stem}.clean.faa
             /opt/interproscan/interproscan.sh \
                 --disable-precalc \
@@ -96,7 +99,7 @@ TransformInstance(
     group_by=orfs,
     resources=Resources(
         cpus=16,
-        memory=Size.GB(32),
+        memory=Size.GB(64),
         duration=Duration(hours=24),
     ),
 )

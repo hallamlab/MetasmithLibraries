@@ -41,6 +41,37 @@ types:
     - reference_data
     properties:
       _: genome taxonomy database
+  kraken2_db:
+    extends:
+    - reference_data
+    properties:
+      _: Kraken2 database directory (hash.k2d + Bracken kmer_distrib)
+  centrifuger_db:
+    extends:
+    - reference_data
+    properties:
+      _: Centrifuger FM-index prefix (.1.cfr .. .4.cfr files share a common prefix)
+  sylph_db:
+    extends:
+    - reference_data
+    properties:
+      _: sylph sketch database (single .syldb file)
+      ext: syldb
+  ganon2_db:
+    extends:
+    - reference_data
+    properties:
+      _: ganon2 database prefix (.hibf + .tax files share a common prefix)
+  metaphlan_db:
+    extends:
+    - reference_data
+    properties:
+      _: MetaPhlAn 4 database directory (bowtie2 + .pkl + .nwk)
+  phyloflash_db:
+    extends:
+    - reference_data
+    properties:
+      _: phyloFlash SILVA SSU DB dir (bbmap + UDB + tax tree)
   antismash:
     extends:
     - reference_data

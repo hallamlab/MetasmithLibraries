@@ -49,12 +49,20 @@ case $1 in
     ###################################################
     # build
     -b) # update std xgdbs
-        $(which msm) && msm=msm || msm="$HERE/../Metasmith/dev.sh -r"
-        echo $msm
-        args=(--types "$HERE/data_types")
-        for u in "$HERE"/resources/*; do args+=(--uniques "$u"); done
-        for t in "$HERE"/transforms/*; do args+=(--transforms "$t"); done
-        $msm build all "${args[@]}"
+        # msm's argparse uses nargs='*' for --transforms and --uniques, so
+        # repeating the flag overwrites instead of appending. Glob-expand all
+        # paths into a single flag occurrence (shell-side word splitting
+        # supplies multiple values to one nargs='*' arg).
+        if command -v msm >/dev/null 2>&1; then
+            msm=msm
+        else
+            msm="$HERE/../Metasmith/dev.sh -r"
+        fi
+        echo "$msm"
+        $msm build \
+            --types     "$HERE/data_types" \
+            --uniques   "$HERE"/resources/* \
+            --transforms "$HERE"/transforms/*
     ;;
     ###################################################
     # test

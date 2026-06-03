@@ -55,7 +55,7 @@ TransformInstance(
     group_by=orfs,
     resources=Resources(
         cpus=8,
-        memory=Size.GB(16),
+        memory=Size.GB(64),
         duration=Duration(hours=4),
     ),
 )

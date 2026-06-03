@@ -43,6 +43,6 @@ TransformInstance(
     resources=Resources(
         cpus=4,
         memory=Size.GB(4),
-        duration=Duration(hours=2),
+        duration=Duration(hours=6),
     ),
 )

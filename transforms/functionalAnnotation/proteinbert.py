@@ -27,7 +27,7 @@ def protocol(context: ExecutionContext):
                 -o pbert_output \
                 --threads {threads} \
                 --protein_size 512 \
-                --model_batch 2048 \
+                --model_batch 1024 \
                 -x 1
         """,
     )

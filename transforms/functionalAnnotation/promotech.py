@@ -1,5 +1,7 @@
-from metasmith.python_api import *
+import shutil
 from pathlib import Path
+
+from metasmith.python_api import *
 
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
@@ -7,43 +9,40 @@ model = Transform()
 image      = model.AddRequirement(lib.GetType("containers::promotech.oci"))
 assembly   = model.AddRequirement(lib.GetType("sequences::assembly"))
 gff        = model.AddRequirement(lib.GetType("sequences::gff"))
-extractor  = model.AddRequirement(lib.GetType("lib::extract_noncoding_chunks.py"))
-merger     = model.AddRequirement(lib.GetType("lib::merge_promotech_results.py"))
 
 out_pred = model.AddProduct(lib.GetType("annotation::promotech_predictions"))
 
-
-def _resolve(path):
-    """Return container path, handling both absolute and relative cases."""
-    return path.container if path.container.is_absolute() else Path("/ws") / path.container
+# Helpers next to this transform file, copied into /ws at runtime
+# (same pattern as bakta_noncoding's _piler_cr_to_gff3.py).
+EXTRACT = Path(__file__).parent / "_extract_noncoding_chunks.py"
+MERGE   = Path(__file__).parent / "_merge_promotech_results.py"
 
 
 def protocol(context: ExecutionContext):
     iasm = context.Input(assembly)
     igff = context.Input(gff)
-    iextract = context.Input(extractor)
-    imerge = context.Input(merger)
     opred = context.Output(out_pred)
 
-    # /ws is the writable workspace inside the container (Nextflow work dir)
-    chunks_dir = "/ws/pt_chunks"
+    shutil.copy(EXTRACT, Path.cwd() / "_extract_noncoding_chunks.py")
+    shutil.copy(MERGE,   Path.cwd() / "_merge_promotech_results.py")
+
+    chunks_dir  = "/ws/pt_chunks"
     results_dir = "/ws/pt_results"
 
-    # Step 1: Extract non-coding intervals into ≤1Mbp chunk FASTAs
+    # Step 1: Extract non-coding intervals into <=1Mbp chunk FASTAs
     context.ExecWithContainer(
         image=image,
         cmd=f"""
-            python {_resolve(iextract)} \
-                --fasta {_resolve(iasm)} \
-                --gff {_resolve(igff)} \
+            python /ws/_extract_noncoding_chunks.py \
+                --fasta {iasm.container} \
+                --gff {igff.container} \
                 --outdir {chunks_dir} \
                 --max-chunk-bp 1000000 &&
             cd /ws
         """,
     )
 
-    # Step 2: Run PromoTech parse + predict on each chunk in parallel
-    # xargs -P runs N chunks concurrently (1 thread each)
+    # Step 2: Run PromoTech parse + predict on each chunk in parallel.
     cpus = context.params.get("cpus", 4)
     context.ExecWithContainer(
         image=image,
@@ -70,7 +69,7 @@ def protocol(context: ExecutionContext):
     context.ExecWithContainer(
         image=image,
         cmd=f"""
-            python {_resolve(imerge)} \
+            python /ws/_merge_promotech_results.py \
                 --manifest {chunks_dir}/manifest.json \
                 --results-dir {results_dir} \
                 --output /ws/pt_merged.tsv &&
