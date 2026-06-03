@@ -53,12 +53,15 @@ tests/               # Pytest-based workflow & E2E tests
 
 ## Driver scripts (`main/`)
 
-Top-level scripts that exercise the library end-to-end (build inputs, plan, optionally stage/run). See `main/diamond_uniref50_from_assembly.py` for the minimal planning-only shape:
+Top-level scripts that exercise the library end-to-end (build inputs, plan, optionally stage/run). See `main/diamond_uniref50_from_assembly.py` for the planning-only shape — it now plans the full metagenomics workflow from `(assembly, short_reads)`: prodigal → diamond_uniref50 + kofamscan; metabuli; assembly_stats → 3 binners → checkm2 → aggregator → skani_dedup; gtdbtk; phyloFlash.
 
-- mock module-level constants (e.g. `ASSEMBLY = Path("<assembly>")`) instead of argparse
-- single `AddTypeLibrary` call for the input type, no guards, no error handling
-- include `transforms/logistics` to let the planner auto-resolve external DBs (e.g. UniRef50)
-- end with `task.plan.RenderDAG(out, format="svg")` for a planning-only driver
+Conventions:
+
+- Mock module-level constants (e.g. `ASSEMBLY = Path("<assembly>")`) instead of argparse
+- Use `inputs.AddValue(name, dict, "namespace::type")` for inline values (e.g. `read_metadata`) and `inputs.AddItem(path, type, parents={...})` to chain lineage (meta → reads → assembly is the canonical metag pattern)
+- Include `transforms/logistics` so the planner auto-resolves external DBs (UniRef50, KOFAM, metabuli, GTDB, phyloFlash)
+- To force all sibling transforms (e.g. all 3 binners), target a downstream that requires them all (`binning_local::cluster_table` pulls metabat2 + semibin2 + comebin + per-binner checkm + aggregator + skani_dedup)
+- End with `task.plan.RenderDAG(out, format="svg")` for a planning-only driver
 
 Longer drivers (`launch_dl_embeddings.py`, `probe_planner.py`, `render_dag.py`) keep the same structure but add CLI parsing, remote SshSource agents, and full stage/run/wait flows.
 
