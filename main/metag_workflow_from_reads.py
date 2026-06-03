@@ -55,13 +55,21 @@ targets.Add("sequences::assembly_per_bp_coverage")
 targets.Add("annotation::diamond_uniref50_results")
 targets.Add("annotation::kofamscan_results")
 targets.Add("taxonomy::metabuli")
-targets.Add("taxonomy::checkm_stats")
-targets.Add("taxonomy::gtdbtk")
+targets.Add("taxonomy::phyloflash_summary")
+targets.Add("binning_local::cluster_table")
+
+# Per-binner fan-out: distinct TargetSpec parents force a separate
+# checkm + gtdbtk instance for each binner's bins (without parent
+# constraints the planner would pick one binner to satisfy each).
+mb_bin = targets.Add("sequences::metabat2_bin_fasta")
+sb_bin = targets.Add("sequences::semibin2_bin_fasta")
+cb_bin = targets.Add("sequences::comebin_bin_fasta")
+for parent in (mb_bin, sb_bin, cb_bin):
+    targets.Add("taxonomy::checkm_stats", parents={parent})
+    targets.Add("taxonomy::gtdbtk",       parents={parent})
 targets.Add("binning::metabat2_contig_to_bin_table")
 targets.Add("binning::semibin2_contig_to_bin_table")
 targets.Add("binning::comebin_contig_to_bin_table")
-targets.Add("binning_local::cluster_table")
-targets.Add("taxonomy::phyloflash_summary")
 
 task = smith.GenerateWorkflow(
     samples=list(inputs.AsSamples("sequences::read_metadata")),
