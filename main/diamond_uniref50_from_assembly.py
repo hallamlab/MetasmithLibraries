@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Plan the full metagenomics workflow for a nucleotide assembly + short reads.
+"""Plan the full metagenomics workflow starting from short reads.
 
 Stops at DAG generation. The planner resolves:
 
+  reads --> seqkit_reads --> read_qc_stats
+  reads + read_qc_stats --> bbduk --> clean_short_reads
+  clean_short_reads --> megahit --> assembly
   assembly --> prodigal --> orfs --> diamond_uniref50 + kofamscan
   assembly --> metabuli                                      (per-contig taxonomy)
-  reads + assembly --> assembly_stats --> bam
-       --> metabat2 / semibin2 / comebin --> bin_fasta
+  reads + assembly --> assembly_stats --> bam + per-contig/per-bp coverage
+       --> metabat2 / semibin2 / comebin --> bin_fasta + contig_to_bin_table
             --> checkm2 --> aggregator --> quality_bin_fasta
                                           --> skani_dedup --> cluster_table
        (one binner's bin_fasta) --> gtdbtk                   (per-bin taxonomy)
@@ -25,28 +28,35 @@ from metasmith.python_api import (
     TargetBuilder,
 )
 
-ASSEMBLY = Path("/home/tony/agentic_workspace/data/scadc/references/pcc1.genbank.fna")  # <assembly>
-READS    = Path("/home/tony/agentic_workspace/projects/metasmith-libraries/phyloflash/tests/test_data/small_reads_R1.fq.gz")  # <interleaved short reads>
-OUT_DIR  = Path("results/metag_workflow")
+READS   = Path("/home/tony/agentic_workspace/projects/metasmith-libraries/phyloflash/tests/test_data/small_reads_R1.fq.gz")  # <interleaved short reads>
+OUT_DIR = Path("results/metag_workflow")
 
 MLIB = Path(__file__).resolve().parent.parent
 
 inputs = DataInstanceLibrary(OUT_DIR.resolve() / "inputs.xgdb")
-for tl in ["sequences.yml", "alignment.yml", "ref.yml", "annotation.yml", "taxonomy.yml", "binning_local.yml"]:
+for tl in ["sequences.yml", "alignment.yml", "ref.yml", "annotation.yml", "taxonomy.yml", "binning.yml", "binning_local.yml"]:
     inputs.AddTypeLibrary(MLIB / "data_types" / tl)
 
-meta  = inputs.AddValue("reads_metadata.json", {"parity": "paired", "length_class": "short"}, "sequences::read_metadata")
-reads = inputs.AddItem(READS.resolve(),    "sequences::short_reads", parents={meta})
-inputs.AddItem(ASSEMBLY.resolve(), "sequences::assembly",    parents={reads})
+meta = inputs.AddValue("reads_metadata.json", {"parity": "paired", "length_class": "short"}, "sequences::read_metadata")
+inputs.AddItem(READS.resolve(), "sequences::short_reads", parents={meta})
 inputs.Save()
 
 smith = Agent(home=Source.FromLocal(OUT_DIR.resolve() / "msm_home"), runtime=ContainerRuntime.DOCKER)
 
 targets = TargetBuilder()
+targets.Add("sequences::read_qc_stats")
+targets.Add("sequences::orfs")
+targets.Add("sequences::assembly_stats")
+targets.Add("sequences::assembly_per_contig_coverage")
+targets.Add("sequences::assembly_per_bp_coverage")
 targets.Add("annotation::diamond_uniref50_results")
 targets.Add("annotation::kofamscan_results")
 targets.Add("taxonomy::metabuli")
+targets.Add("taxonomy::checkm_stats")
 targets.Add("taxonomy::gtdbtk")
+targets.Add("binning::metabat2_contig_to_bin_table")
+targets.Add("binning::semibin2_contig_to_bin_table")
+targets.Add("binning::comebin_contig_to_bin_table")
 targets.Add("binning_local::cluster_table")
 targets.Add("taxonomy::phyloflash_summary")
 
