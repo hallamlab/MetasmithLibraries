@@ -66,21 +66,51 @@ def protocol(context: ExecutionContext):
         """
     )
     
+    # collect rows from summary tables (per-domain classification results)
     file_candidates = [p for p in out_raw.glob("classify/*summary.tsv")]
-    assert len(file_candidates)>0, "no *summary.tsv files"
     rows = {}
+    last_header = None
     for table in file_candidates:
         with open(table) as tsv:
             header = tsv.readline()
+            last_header = header
             for l in tsv:
                 toks = l.strip().split("\t")
                 k = toks[0]
                 rows[k] = l, header
 
+    # genomes that gtdbtk placed but couldn't classify end up in
+    # tree.unclassified.tsv / failed_genomes.tsv rather than *summary.tsv —
+    # accept them with empty taxonomy so downstream consumers still see the bin
+    aux_candidates = (
+        list(out_raw.glob("classify/*.tree.unclassified.tsv"))
+        + list(out_raw.glob("classify/*failed_genomes*.tsv"))
+        + list(out_raw.glob("identify/*failed_genomes*.tsv"))
+        + list(out_raw.glob("*failed_genomes*.tsv"))
+    )
+    aux_keys = set()
+    for table in aux_candidates:
+        with open(table) as tsv:
+            _hdr = tsv.readline()
+            for l in tsv:
+                toks = l.strip().split("\t")
+                if toks:
+                    aux_keys.add(toks[0])
+
+    fallback_header = last_header or "user_genome\tclassification\n"
+    n_cols = len(fallback_header.rstrip("\n").split("\t"))
+
     # have output file creation order match input order, since paranoid
     manifest = []
     for _asm, (_tax_name, _tax_handle) in in2out.items():
-        row, header = rows[_asm]
+        if _asm in rows:
+            row, header = rows[_asm]
+        else:
+            # genome missing from summary.tsv — emit a row with N/A taxonomy
+            Log.Warn(f"genome [{_asm}] absent from summary.tsv (aux={_asm in aux_keys}); emitting N/A row")
+            empty_fields = [_asm] + ["N/A"] * max(0, n_cols - 1)
+            row = "\t".join(empty_fields) + "\n"
+            header = fallback_header
         if row[:-1] != "\n": row+="\n"
         if header[:-1] != "\n": header+="\n"
         with open(_tax_name, "w") as out:
@@ -100,7 +130,7 @@ TransformInstance(
     batch_size=25,
     resources=Resources(
         cpus=2,
-        memory=Size.GB(120), # r226 used 107 GB
+        memory=Size.GB(240), # r232 sketches.db needs >120GB; r226 used 107 GB
         duration=Duration(hours=12),
     )
 )

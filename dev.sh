@@ -49,12 +49,19 @@ case $1 in
     ###################################################
     # build
     -b) # update std xgdbs
-        $(which msm) && msm=msm || msm="$HERE/../Metasmith/dev.sh -r"
-        echo $msm
-        args=(--types "$HERE/data_types")
-        for u in "$HERE"/resources/*; do args+=(--uniques "$u"); done
-        for t in "$HERE"/transforms/*; do args+=(--transforms "$t"); done
-        $msm build all "${args[@]}"
+        # msm build's STEP positional must precede the flags; --types,
+        # --uniques, --transforms are now single-value/repeatable. Build
+        # the flag list by repeating each flag once per resolved path.
+        if command -v msm >/dev/null 2>&1; then
+            msm=msm
+        else
+            msm="$HERE/../Metasmith/dev.sh -r"
+        fi
+        echo "$msm"
+        args=(build all --types "$HERE/data_types")
+        for d in "$HERE"/resources/*/; do args+=(--uniques "${d%/}"); done
+        for d in "$HERE"/transforms/*/; do args+=(--transforms "${d%/}"); done
+        $msm "${args[@]}"
     ;;
     ###################################################
     # test

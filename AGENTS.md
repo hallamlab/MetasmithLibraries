@@ -51,6 +51,23 @@ tests/               # Pytest-based workflow & E2E tests
 - Mark E2E tests with `@pytest.mark.slow`
 - Run tests with: `conda run -n msm_env pytest tests/<file>.py -k "<pattern>" -v`
 
+## Driver scripts (`main/`)
+
+Top-level scripts that exercise the library end-to-end (build inputs, plan, optionally stage/run).
+
+- `main/diamond_uniref50_from_assembly.py` — minimal planning-only driver: one input type (`sequences::assembly`), one target (`annotation::diamond_uniref50_results`). The canonical example of the simplest possible DAG-generating shape.
+- `main/metag_workflow_from_reads.py` — full metagenomics workflow starting from short reads: seqkit_reads → bbduk → megahit → prodigal → {diamond_uniref50, kofamscan}; metabuli; assembly_stats → 3 binners (metabat2/semibin2/comebin) → checkm2 → aggregator → skani_dedup; gtdbtk; phyloFlash. Targets every intermediate (read_qc_stats, orfs, assembly stats/coverage, per-binner contig_to_bin tables, checkm_stats, …) so they all appear in the rendered DAG.
+
+Conventions:
+
+- Mock module-level constants (e.g. `ASSEMBLY = Path("<assembly>")`) instead of argparse
+- Use `inputs.AddValue(name, dict, "namespace::type")` for inline values (e.g. `read_metadata`) and `inputs.AddItem(path, type, parents={...})` to chain lineage (meta → reads → … is the canonical metag pattern when starting from reads)
+- Include `transforms/logistics` so the planner auto-resolves external DBs (UniRef50, KOFAM, metabuli, GTDB, phyloFlash)
+- To force all sibling transforms (e.g. all 3 binners), target a downstream that requires them all (`binning_local::cluster_table` pulls metabat2 + semibin2 + comebin + per-binner checkm + aggregator + skani_dedup), or list each sibling's product as a target
+- End with `task.plan.RenderDAG(out, format="svg")` for a planning-only driver
+
+Longer drivers (`launch_dl_embeddings.py`, `probe_planner.py`, `render_dag.py`) keep the same structure but add CLI parsing, remote SshSource agents, and full stage/run/wait flows.
+
 ## Conda environment
 
 - Use `msm_env` for running `msm build` and `pytest`

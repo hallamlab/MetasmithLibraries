@@ -13,10 +13,14 @@ manifest:
     type: containers::bedtools.oci
   blast.oci:
     type: containers::blast.oci
+  bracken.oci:
+    type: containers::bracken.oci
   braker3.oci:
     type: containers::braker3.oci
   busco.oci:
     type: containers::busco.oci
+  centrifuger.oci:
+    type: containers::centrifuger.oci
   checkm.oci:
     type: containers::checkm.oci
   comebin.oci:
@@ -47,6 +51,8 @@ manifest:
     type: containers::flye.oci
   foldseek.oci:
     type: containers::foldseek.oci
+  ganon.oci:
+    type: containers::ganon.oci
   genomad.oci:
     type: containers::genomad.oci
   gfatools.oci:
@@ -63,6 +69,8 @@ manifest:
     type: containers::interproscan.oci
   kofamscan.oci:
     type: containers::kofamscan.oci
+  kraken2.oci:
+    type: containers::kraken2.oci
   megahit.oci:
     type: containers::megahit.oci
   metabat2.oci:
@@ -71,6 +79,8 @@ manifest:
     type: containers::metabolomics-python.oci
   metabuli.oci:
     type: containers::metabuli.oci
+  metaphlan.oci:
+    type: containers::metaphlan.oci
   miniasm.oci:
     type: containers::miniasm.oci
   minimap2.oci:
@@ -81,6 +91,8 @@ manifest:
     type: containers::ncbi-datasets.oci
   orad.oci:
     type: containers::orad.oci
+  phyloflash.oci:
+    type: containers::phyloflash.oci
   polars.oci:
     type: containers::polars.oci
   ppanggolin.oci:
@@ -119,6 +131,8 @@ manifest:
     type: containers::star.oci
   stringtie.oci:
     type: containers::stringtie.oci
+  sylph.oci:
+    type: containers::sylph.oci
   virsorter2.oci:
     type: containers::virsorter2.oci
   vsearch.oci:
