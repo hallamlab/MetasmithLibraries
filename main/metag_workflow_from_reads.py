@@ -28,7 +28,8 @@ from metasmith.python_api import (
     TargetBuilder,
 )
 
-READS   = Path("/home/tony/agentic_workspace/projects/metasmith-libraries/phyloflash/tests/test_data/small_reads_R1.fq.gz")  # <interleaved short reads>
+R1      = Path("/home/tony/agentic_workspace/projects/metasmith-libraries/phyloflash/tests/test_data/small_reads_R1.fq.gz")  # <reads R1>
+R2      = Path("/home/tony/agentic_workspace/projects/metasmith-libraries/phyloflash/tests/test_data/small_reads_R2.fq.gz")  # <reads R2>
 OUT_DIR = Path("results/metag_workflow")
 
 MLIB = Path(__file__).resolve().parent.parent
@@ -38,7 +39,9 @@ for tl in ["sequences.yml", "alignment.yml", "ref.yml", "annotation.yml", "taxon
     inputs.AddTypeLibrary(MLIB / "data_types" / tl)
 
 meta = inputs.AddValue("reads_metadata.json", {"parity": "paired", "length_class": "short"}, "sequences::read_metadata")
-inputs.AddItem(READS.resolve(), "sequences::short_reads", parents={meta})
+pair = inputs.AddValue("read_pair.txt", "sample_1", "sequences::read_pair", parents={meta})
+inputs.AddItem(R1.resolve(), "sequences::zipped_forward_short_reads", parents={pair})
+inputs.AddItem(R2.resolve(), "sequences::zipped_reverse_short_reads", parents={pair})
 inputs.Save()
 
 smith = Agent(home=Source.FromLocal(OUT_DIR.resolve() / "msm_home"), runtime=ContainerRuntime.DOCKER)
