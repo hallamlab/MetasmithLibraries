@@ -51,6 +51,17 @@ tests/               # Pytest-based workflow & E2E tests
 - Mark E2E tests with `@pytest.mark.slow`
 - Run tests with: `conda run -n msm_env pytest tests/<file>.py -k "<pattern>" -v`
 
+## Driver scripts (`main/`)
+
+Top-level scripts that exercise the library end-to-end (build inputs, plan, optionally stage/run). See `main/diamond_uniref50_from_assembly.py` for the minimal planning-only shape:
+
+- mock module-level constants (e.g. `ASSEMBLY = Path("<assembly>")`) instead of argparse
+- single `AddTypeLibrary` call for the input type, no guards, no error handling
+- include `transforms/logistics` to let the planner auto-resolve external DBs (e.g. UniRef50)
+- end with `task.plan.RenderDAG(out, format="svg")` for a planning-only driver
+
+Longer drivers (`launch_dl_embeddings.py`, `probe_planner.py`, `render_dag.py`) keep the same structure but add CLI parsing, remote SshSource agents, and full stage/run/wait flows.
+
 ## Conda environment
 
 - Use `msm_env` for running `msm build` and `pytest`
