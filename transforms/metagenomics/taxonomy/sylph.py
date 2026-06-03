@@ -48,7 +48,10 @@ TransformInstance(
     group_by=reads,
     resources=Resources(
         cpus=4,
-        memory=Size.GB(8),
+        memory=Size.GB(64),  # r220 c200 (Wp5jjOW2) SLURM peak RSS 22-26 GB; r232
+                             # c200 sketch is ~1.8x bigger (24 GB on disk vs
+                             # 13 GB for r220) -> projected peak ~44 GB.
+                             # 64 GB keeps ~20 GB headroom.
         duration=Duration(hours=1),
     )
 )

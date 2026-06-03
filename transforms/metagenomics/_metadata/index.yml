@@ -1,4 +1,6 @@
 manifest:
+  binning/aggregator.py:
+    type: transforms::transform
   binning/checkm.py:
     type: transforms::transform
   binning/comebin.py:
@@ -6,6 +8,8 @@ manifest:
   binning/metabat2.py:
     type: transforms::transform
   binning/semibin2.py:
+    type: transforms::transform
+  binning/skani_dedup.py:
     type: transforms::transform
   prodigal.py:
     type: transforms::transform

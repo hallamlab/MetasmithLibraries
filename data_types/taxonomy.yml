@@ -45,8 +45,8 @@ types:
   # kraken2 + bracken (k-mer LCA bridge slot - same kreport format as centrifuger)
   kraken2_classifications:
     properties:
-      _: kraken2 per-read classifications (5 cols, no header - C/U readID taxID lenR1|lenR2 kmer_hits)
-      ext: tsv
+      _: kraken2 per-read classifications (5 cols, no header - C/U readID taxID lenR1|lenR2 kmer_hits), zstd-compressed parquet
+      ext: parquet
   kraken2_report:
     properties:
       _: kraken2 sample report (kraken-style 6-col format - pct reads_clade reads_taxon rank taxid indented_name)
@@ -63,8 +63,8 @@ types:
   # centrifuger (k-mer LCA bridge slot)
   centrifuger_classifications:
     properties:
-      _: centrifuger per-read classifications (8 cols WITH header - readID seqID taxID score 2ndBestScore hitLength queryLength numMatches)
-      ext: tsv
+      _: centrifuger per-read classifications (8 cols WITH header - readID seqID taxID score 2ndBestScore hitLength queryLength numMatches), zstd-compressed parquet
+      ext: parquet
   centrifuger_kreport:
     properties:
       _: centrifuger kraken-style report via centrifuger-kreport (same 6-col format as kraken2_report - the bridge target)

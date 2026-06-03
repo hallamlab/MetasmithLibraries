@@ -124,7 +124,7 @@ types:
     extends: container
     properties:
       provides:
-      - checkm
+      - checkm2
   metabat2.oci:
     extends: container
     properties:

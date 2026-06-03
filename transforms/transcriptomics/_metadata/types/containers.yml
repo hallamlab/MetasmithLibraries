@@ -69,7 +69,7 @@ types:
   checkm.oci:
     properties:
       Format: OCI
-      provides: checkm
+      provides: checkm2
   comebin.oci:
     properties:
       Format: OCI

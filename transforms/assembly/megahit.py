@@ -22,11 +22,15 @@ def protocol(context: ExecutionContext):
         parg = "-r"
     threads = context.params.get('cpus')
     threads = "" if threads is None else f"--num-cpu-threads {threads}"
-    # memory defaults to 0.9 of available [--memory 0.9]
+    # megahit's default --memory 0.9 reads the *node's* RAM, which blows
+    # past the SLURM cgroup limit. Pin to the allocation we actually got
+    # (85% of it, matching bbtools' headroom convention).
+    mem_gb = context.params.get('memory')
+    mem = f"--memory {int(mem_gb * 0.85 * 1024**3)}" if mem_gb else ""
     context.ExecWithContainer(
         image=image,
         cmd=f"""\
-            megahit {threads} \
+            megahit {threads} {mem} \
                 {parg} {ireads.container} \
                 -o megahit_ws
             [[ $(head megahit_ws/final.contigs.fa | wc --chars) -ne 0 ]] && mv megahit_ws/final.contigs.fa {iout.container} || echo "assembly was empty"

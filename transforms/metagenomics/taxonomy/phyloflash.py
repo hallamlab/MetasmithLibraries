@@ -44,7 +44,14 @@ def protocol(context: ExecutionContext):
             mv pf_out.phyloFlash.html             {ihtml.container}
             mv pf_out.phyloFlash.report.csv       {isumm.container}
             mv pf_out.phyloFlash.NTUabundance.csv {intu.container}
-            mv pf_out.spades_rRNAs.final.fasta    {issu.container}
+            # SPAdes runs only when phyloFlash recovers enough SSU reads.
+            # Sparse samples (e.g. bbduk discards) skip it — emit an empty
+            # marker so downstream curation has a uniform product set.
+            if [ -f pf_out.spades_rRNAs.final.fasta ]; then
+                mv pf_out.spades_rRNAs.final.fasta {issu.container}
+            else
+                : > {issu.container}
+            fi
         """
     )
 

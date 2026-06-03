@@ -26,8 +26,8 @@ types:
     properties:
       _:
       - centrifuger per-read classifications (8 cols WITH header - readID seqID taxID
-        score 2ndBestScore hitLength queryLength numMatches)
-      ext: tsv
+        score 2ndBestScore hitLength queryLength numMatches), zstd-compressed parquet
+      ext: parquet
   centrifuger_kreport:
     properties:
       _:
@@ -81,8 +81,8 @@ types:
     properties:
       _:
       - kraken2 per-read classifications (5 cols, no header - C/U readID taxID lenR1|lenR2
-        kmer_hits)
-      ext: tsv
+        kmer_hits), zstd-compressed parquet
+      ext: parquet
   kraken2_report:
     properties:
       _:
