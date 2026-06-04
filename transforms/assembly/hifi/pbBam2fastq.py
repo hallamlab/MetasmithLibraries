@@ -15,7 +15,9 @@ def protocol(context: ExecutionContext):
     context.ExecWithContainer(
         image=img,
         cmd=f"""
-        bam2fastq -o {temp_prefix} {ibam.container}
+        ln -sf {ibam.container} /ws/input.bam
+        pbindex /ws/input.bam
+        bam2fastq -o {temp_prefix} /ws/input.bam
         """
     )
 
