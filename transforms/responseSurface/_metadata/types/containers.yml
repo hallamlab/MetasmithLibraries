@@ -73,6 +73,7 @@ types:
   comebin.oci:
     properties:
       Format: OCI
+      hardware: gpu
       provides: run_comebin.sh
   container:
     properties:
