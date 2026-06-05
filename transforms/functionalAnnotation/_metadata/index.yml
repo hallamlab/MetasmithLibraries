@@ -39,6 +39,8 @@ manifest:
     type: transforms::transform
   kofamscan.py:
     type: transforms::transform
+  pathologic.py:
+    type: transforms::transform
   predictf.py:
     type: transforms::transform
   promotech.py:
@@ -46,6 +48,8 @@ manifest:
   proteinbert.py:
     type: transforms::transform
   prott5.py:
+    type: transforms::transform
+  ptools_annotation_gather.py:
     type: transforms::transform
   saprot.py:
     type: transforms::transform

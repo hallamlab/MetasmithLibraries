@@ -219,6 +219,12 @@ types:
     properties:
       Format: OCI
       provides: orad
+  pathologic.oci:
+    properties:
+      Format: OCI
+      provides:
+      - dump_pgdb_csvs
+      - pathologic
   phyloflash.oci:
     properties:
       Format: OCI
