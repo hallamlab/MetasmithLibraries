@@ -82,10 +82,10 @@ TransformInstance(
     protocol=protocol,
     model=model,
     group_by=asm,
-    batch_size=25,
+    batch_size=200,
     resources=Resources(
-        cpus=2,
-        memory=Size.GB(16),  # checkm2 is lighter than v1 (~12 GB peak); revisit after smoke
-        duration=Duration(hours=1),
+        cpus=8,
+        memory=Size.GB(32),  # batch=200 amortizes DiamondDB load; 8 cpus speeds the diamond pass
+        duration=Duration(hours=4),
     )
 )
