@@ -91,6 +91,8 @@ manifest:
     type: containers::ncbi-datasets.oci
   orad.oci:
     type: containers::orad.oci
+  pathologic.oci:
+    type: containers::pathologic.oci
   phyloflash.oci:
     type: containers::phyloflash.oci
   polars.oci:

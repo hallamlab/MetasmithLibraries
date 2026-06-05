@@ -203,6 +203,50 @@ class TestAnnotationWorkflowGeneration:
         if not task.ok:
             pytest.skip("PredicTF workflow requires database")
 
+    def test_can_plan_ptools_annotation_gather_workflow(
+        self, agent, annotation_resources, annotation_transforms, orfs_input
+    ):
+        """Verify the combiner can be planned: orfs -> {deepec, kofamscan, diamond_uniref50} -> ptools_annotation_table."""
+        targets = TargetBuilder()
+        targets.Add("annotation::ptools_annotation_table")
+
+        task = agent.GenerateWorkflow(
+            samples=list(orfs_input.AsSamples("sequences::orfs")),
+            resources=annotation_resources + [orfs_input],
+            transforms=annotation_transforms,
+            targets=targets,
+        )
+
+        if not task.ok:
+            pytest.skip("ptools_annotation_gather requires UniRef50/KofamScan DBs to be resolvable")
+
+        type_names = [step.transform_instance.transform_name for step in task.plan.steps]
+        assert any("deepec" in n for n in type_names), "DeepEC step missing"
+        assert any("kofamscan" in n for n in type_names), "KofamScan step missing"
+        assert any("diamond_uniref50" in n for n in type_names), "DIAMOND UniRef50 step missing"
+        assert any("ptools_annotation_gather" in n for n in type_names), "Gather step missing"
+
+    def test_can_plan_pathologic_workflow(
+        self, agent, annotation_resources, annotation_transforms, orfs_input
+    ):
+        """Verify the full pathologic chain plans through to pgdb_archive."""
+        targets = TargetBuilder()
+        targets.Add("annotation::pgdb_archive")
+        targets.Add("annotation::pgdb_csv_tables")
+
+        task = agent.GenerateWorkflow(
+            samples=list(orfs_input.AsSamples("sequences::orfs")),
+            resources=annotation_resources + [orfs_input],
+            transforms=annotation_transforms,
+            targets=targets,
+        )
+
+        if not task.ok:
+            pytest.skip("pathologic chain requires UniRef50/KofamScan DBs to be resolvable")
+
+        type_names = [step.transform_instance.transform_name for step in task.plan.steps]
+        assert any("pathologic" in n for n in type_names), "Pathologic step missing"
+
     def test_can_plan_bakta_noncoding_workflow(
         self, agent, annotation_resources, annotation_transforms, orfs_input, tmp_inputs, test_data_dir
     ):
