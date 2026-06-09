@@ -6,9 +6,9 @@ lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 image = model.AddRequirement(lib.GetType("containers::interproscan.oci"))
-orfs = model.AddRequirement(lib.GetType("sequences::orfs"))
+orfs = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
 data_dir = model.AddRequirement(lib.GetType("ref::interproscan_data"))
-out_gff = model.AddProduct(lib.GetType("annotation::interproscan_results"))
+out_gff = model.AddProduct(lib.GetType("annotation::interproscan_results_chunk"))
 
 
 def parse_interpro_gff(input_path, output_path):

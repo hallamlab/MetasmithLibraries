@@ -280,6 +280,16 @@ types:
       _:
       - nanoplot raw report
       ext: gz
+  orf_chunk:
+    properties:
+      Data: protein sequence
+      Format: FASTA
+      _:
+      - Fixed-size (~5000 ORF) chunk of a per-sample ORF FASTA; fans out CPU/IO-bound
+        annotators (distinct sibling of orfs, like forward_short_reads is to short_reads)
+      content: open reading frames
+      ext: faa
+      granularity: chunk
   orfs:
     properties:
       Data: protein sequence

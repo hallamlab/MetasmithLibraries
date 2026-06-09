@@ -304,3 +304,88 @@ types:
       _: DIAMOND alignment to TCDB (batch 2)
       Format: BLAST6
       ext: tsv
+
+  # -----------------------------------------
+  # Per-chunk siblings of the ORF-annotation outputs.
+  # Each is a DISTINCT sibling (no `extends`) of its non-chunk counterpart
+  # so the metasmith solver requires the matching merge_<tool> transform to
+  # produce the per-sample target dtype — chunk outputs can never satisfy
+  # the target directly. See chunkOrfsForAnnotation + merge_<tool>.py.
+  interproscan_results_chunk:
+    properties:
+      _: Per-chunk InterProScan CSV (sibling of interproscan_results)
+      Format: CSV
+      granularity: chunk
+      ext: csv
+  kofamscan_results_chunk:
+    properties:
+      _: Per-chunk KofamScan CSV (sibling of kofamscan_results)
+      Format: CSV
+      granularity: chunk
+      ext: csv
+  proteinbert_embeddings_chunk:
+    properties:
+      _: Per-chunk ProteinBERT embeddings (sibling of proteinbert_embeddings)
+      Format: Parquet
+      granularity: chunk
+      ext: parquet
+  proteinbert_index_chunk:
+    properties:
+      _: Per-chunk ProteinBERT index (sibling of proteinbert_index)
+      Format: CSV
+      granularity: chunk
+      ext: csv
+  deepec_predictions_chunk:
+    properties:
+      _: Per-chunk DeepEC TSV (sibling of deepec_predictions)
+      Format: TSV
+      granularity: chunk
+      ext: tsv
+  diamond_uniref50_results_chunk:
+    properties:
+      _: Per-chunk DIAMOND UniRef50 BLAST6 (sibling of diamond_uniref50_results)
+      Format: BLAST6
+      granularity: chunk
+      ext: tsv
+  busco_full_table_chunk:
+    properties:
+      _: Per-chunk BUSCO full_table.tsv (sibling of busco_full_table)
+      Format: TSV
+      granularity: chunk
+      ext: tsv
+  deeptfactor_results_chunk:
+    properties:
+      _: Per-chunk DeepTFactor TSV (sibling of deeptfactor_results)
+      Format: TSV
+      granularity: chunk
+      ext: tsv
+  predictf_results_chunk:
+    properties:
+      _: Per-chunk PredicTF TF mapping (sibling of predictf_results)
+      Format: TSV
+      granularity: chunk
+      ext: tsv
+  predictf_potential_chunk:
+    properties:
+      _: Per-chunk PredicTF potential TF mapping (sibling of predictf_potential)
+      Format: TSV
+      granularity: chunk
+      ext: tsv
+  eggnog_results_chunk:
+    properties:
+      _: Per-chunk eggNOG-mapper annotations (sibling of eggnog_results)
+      Format: TSV
+      granularity: chunk
+      ext: tsv
+  dram_annotations_chunk:
+    properties:
+      _: Per-chunk DRAM annotations.tsv (sibling of dram_annotations)
+      Format: TSV
+      granularity: chunk
+      ext: tsv
+  diamond_tcdb_results_chunk:
+    properties:
+      _: Per-chunk DIAMOND TCDB BLAST6 (sibling of diamond_tcdb_results)
+      Format: BLAST6
+      granularity: chunk
+      ext: tsv

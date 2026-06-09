@@ -304,6 +304,14 @@ types:
     properties:
       _: Length-balanced shard of an ORF FASTA; fans out embedding transforms
       ext: faa
+  orf_chunk:
+    properties:
+      _: Fixed-size (~5000 ORF) chunk of a per-sample ORF FASTA; fans out CPU/IO-bound annotators (distinct sibling of orfs, like forward_short_reads is to short_reads)
+      Format: FASTA
+      Data: protein sequence
+      content: open reading frames
+      granularity: chunk
+      ext: faa
 # -----------------------------------------
 # protein structures
   predicted_structures:

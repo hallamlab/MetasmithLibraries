@@ -39,6 +39,28 @@ manifest:
     type: transforms::transform
   kofamscan.py:
     type: transforms::transform
+  merge_busco_full_table.py:
+    type: transforms::transform
+  merge_deepec.py:
+    type: transforms::transform
+  merge_deeptfactor.py:
+    type: transforms::transform
+  merge_diamond_tcdb.py:
+    type: transforms::transform
+  merge_diamond_uniref50.py:
+    type: transforms::transform
+  merge_dram_annotate_genes.py:
+    type: transforms::transform
+  merge_eggnog_mapper.py:
+    type: transforms::transform
+  merge_interproscan.py:
+    type: transforms::transform
+  merge_kofamscan.py:
+    type: transforms::transform
+  merge_predictf.py:
+    type: transforms::transform
+  merge_proteinbert.py:
+    type: transforms::transform
   predictf.py:
     type: transforms::transform
   promotech.py:

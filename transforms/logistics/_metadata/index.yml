@@ -1,4 +1,6 @@
 manifest:
+  chunkOrfsForAnnotation.py:
+    type: transforms::transform
   downloadAnkhWeights.py:
     type: transforms::transform
   downloadAntiSmashDB.py:
