@@ -1,4 +1,6 @@
 manifest:
+  bsr_histogram.py:
+    type: lib::bsr_histogram.py
   extract_noncoding_chunks.py:
     type: lib::extract_noncoding_chunks.py
   hierarchical_clustering.py:

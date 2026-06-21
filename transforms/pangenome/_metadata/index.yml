@@ -1,4 +1,8 @@
 manifest:
+  bsr_histogram.py:
+    type: transforms::transform
+  diamond_all_vs_all.py:
+    type: transforms::transform
   heatmap.py:
     type: transforms::transform
   ppanggolin.py:
