@@ -5,9 +5,9 @@ lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 image = model.AddRequirement(lib.GetType("containers::diamond.oci"))
-orfs = model.AddRequirement(lib.GetType("sequences::orfs"))
+orfs = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
 db = model.AddRequirement(lib.GetType("ref::uniref50_diamond_db"))
-out_results = model.AddProduct(lib.GetType("annotation::diamond_uniref50_results"))
+out_results = model.AddProduct(lib.GetType("annotation::diamond_uniref50_results_chunk"))
 
 
 def protocol(context: ExecutionContext):

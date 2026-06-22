@@ -141,6 +141,7 @@ types:
     properties:
       provides:
       - run_comebin.sh
+      hardware: gpu
   metabuli.oci:
     extends: container
     properties:

@@ -1,11 +1,17 @@
 manifest:
+  chunkOrfsForAnnotation.py:
+    type: transforms::transform
   downloadAnkhWeights.py:
     type: transforms::transform
   downloadAntiSmashDB.py:
     type: transforms::transform
+  downloadBaktaDB.py:
+    type: transforms::transform
   downloadBuscoLineage.py:
     type: transforms::transform
   downloadCentrifugerDB.py:
+    type: transforms::transform
+  downloadDramDB.py:
     type: transforms::transform
   downloadESMCWeights.py:
     type: transforms::transform
@@ -29,6 +35,8 @@ manifest:
     type: transforms::transform
   downloadPhyloflashDB.py:
     type: transforms::transform
+  downloadPredictfDB.py:
+    type: transforms::transform
   downloadProtT5XLWeights.py:
     type: transforms::transform
   downloadSaProtWeights.py:
@@ -36,6 +44,8 @@ manifest:
   downloadSilvaDB.py:
     type: transforms::transform
   downloadSylphDB.py:
+    type: transforms::transform
+  downloadTcdbDB.py:
     type: transforms::transform
   downloadUniRef50DB.py:
     type: transforms::transform

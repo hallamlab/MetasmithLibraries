@@ -68,6 +68,13 @@ types:
       _:
       - BUSCO full results table with per-sequence marker assignments
       ext: tsv
+  busco_full_table_chunk:
+    properties:
+      Format: TSV
+      _:
+      - Per-chunk BUSCO full_table.tsv (sibling of busco_full_table)
+      ext: tsv
+      granularity: chunk
   busco_lineage:
     properties:
     - Pre-downloaded BUSCO lineage dataset directory
@@ -85,12 +92,26 @@ types:
       _:
       - DeepEC EC number predictions
       ext: tsv
+  deepec_predictions_chunk:
+    properties:
+      Format: TSV
+      _:
+      - Per-chunk DeepEC TSV (sibling of deepec_predictions)
+      ext: tsv
+      granularity: chunk
   deeptfactor_results:
     properties:
       Format: TSV
       _:
       - DeepTFactor TF predictions (binary TF/non-TF with probability score)
       ext: tsv
+  deeptfactor_results_chunk:
+    properties:
+      Format: TSV
+      _:
+      - Per-chunk DeepTFactor TSV (sibling of deeptfactor_results)
+      ext: tsv
+      granularity: chunk
   diamond_tcdb2_results:
     properties:
       Format: BLAST6
@@ -103,17 +124,38 @@ types:
       _:
       - DIAMOND alignment to TCDB (Transporter Classification Database)
       ext: tsv
+  diamond_tcdb_results_chunk:
+    properties:
+      Format: BLAST6
+      _:
+      - Per-chunk DIAMOND TCDB BLAST6 (sibling of diamond_tcdb_results)
+      ext: tsv
+      granularity: chunk
   diamond_uniref50_results:
     properties:
       Format: BLAST6
       _:
       - DIAMOND alignment to UniRef50
       ext: tsv
+  diamond_uniref50_results_chunk:
+    properties:
+      Format: BLAST6
+      _:
+      - Per-chunk DIAMOND UniRef50 BLAST6 (sibling of diamond_uniref50_results)
+      ext: tsv
+      granularity: chunk
   dram_annotations:
     properties:
       _:
       - DRAM gene annotations (dbCAN/KOfam/Pfam) TSV
       ext: tsv
+  dram_annotations_chunk:
+    properties:
+      Format: TSV
+      _:
+      - Per-chunk DRAM annotations.tsv (sibling of dram_annotations)
+      ext: tsv
+      granularity: chunk
   dram_db:
     properties:
     - DRAM database directory
@@ -134,6 +176,13 @@ types:
       _:
       - eggNOG-mapper functional annotations (GO, KEGG, Pfam, COG)
       ext: tsv
+  eggnog_results_chunk:
+    properties:
+      Format: TSV
+      _:
+      - Per-chunk eggNOG-mapper annotations (sibling of eggnog_results)
+      ext: tsv
+      granularity: chunk
   eggnog_source:
     properties:
     - Marker for eggNOG database download
@@ -167,6 +216,13 @@ types:
       _:
       - Parsed InterProScan protein matches
       ext: csv
+  interproscan_results_chunk:
+    properties:
+      Format: CSV
+      _:
+      - Per-chunk InterProScan CSV (sibling of interproscan_results)
+      ext: csv
+      granularity: chunk
   interproscan_source:
     properties:
     - Marker for InterProScan data location
@@ -176,6 +232,13 @@ types:
       _:
       - Filtered KofamScan KO assignments
       ext: csv
+  kofamscan_results_chunk:
+    properties:
+      Format: CSV
+      _:
+      - Per-chunk KofamScan CSV (sibling of kofamscan_results)
+      ext: csv
+      granularity: chunk
   kofamscan_source:
     properties:
     - Marker for KofamScan database download
@@ -201,12 +264,26 @@ types:
       _:
       - PredicTF lower-confidence potential TF predictions
       ext: tsv
+  predictf_potential_chunk:
+    properties:
+      Format: TSV
+      _:
+      - Per-chunk PredicTF potential TF mapping (sibling of predictf_potential)
+      ext: tsv
+      granularity: chunk
   predictf_results:
     properties:
       Format: TSV
       _:
       - PredicTF high-confidence TF predictions with family classification
       ext: tsv
+  predictf_results_chunk:
+    properties:
+      Format: TSV
+      _:
+      - Per-chunk PredicTF TF mapping (sibling of predictf_results)
+      ext: tsv
+      granularity: chunk
   promotech_predictions:
     properties:
       Format: TSV
@@ -237,12 +314,26 @@ types:
       _:
       - ProteinBERT embedding vectors
       ext: parquet
+  proteinbert_embeddings_chunk:
+    properties:
+      Format: Parquet
+      _:
+      - Per-chunk ProteinBERT embeddings (sibling of proteinbert_embeddings)
+      ext: parquet
+      granularity: chunk
   proteinbert_index:
     properties:
       Format: CSV
       _:
       - ProteinBERT sequence index
       ext: csv
+  proteinbert_index_chunk:
+    properties:
+      Format: CSV
+      _:
+      - Per-chunk ProteinBERT index (sibling of proteinbert_index)
+      ext: csv
+      granularity: chunk
   prott5_embeddings:
     properties:
       Format: Parquet
