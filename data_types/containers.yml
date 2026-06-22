@@ -254,6 +254,12 @@ types:
     properties:
       provides:
       - predictf
+  pathologic.oci:
+    extends: container
+    properties:
+      provides:
+      - pathologic
+      - dump_pgdb_csvs
 
   # -------------------------------------------------
   # transcriptomics

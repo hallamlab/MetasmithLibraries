@@ -242,6 +242,19 @@ types:
   kofamscan_source:
     properties:
     - Marker for KofamScan database download
+  pgdb_archive:
+    properties:
+      Format: tar.gz
+      _:
+      - Canonical PathoLogic "cyc" folder (data/, kb/, reports/) packaged as a tarball
+      ext: tgz
+  pgdb_csv_tables:
+    properties:
+      Format: tar.gz
+      _:
+      - Parsed PGDB tables (proteins, reactions, enzymes, pathways, genes, compounds
+        + linkages) as plain CSVs packaged in a tarball
+      ext: tgz
   predictf_db:
     properties:
     - PredicTF database directory (deeparg-largerepo + model files)
@@ -333,6 +346,13 @@ types:
       _:
       - ProtT5 sequence index
       ext: csv
+  ptools_annotation_table:
+    properties:
+      Format: Parquet
+      _:
+      - Long-format per-ORF functional annotations (EC / GO / KEGG / UniProt / FUNCTION)
+        for ingestion by Pathway Tools
+      ext: parquet
   saprot_embeddings:
     properties:
       Format: Parquet

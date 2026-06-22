@@ -67,6 +67,4 @@ manifest:
     type: transforms::transform
   scatterNcbiAccession.py:
     type: transforms::transform
-  shardFasta.py:
-    type: transforms::transform
 schema: v1

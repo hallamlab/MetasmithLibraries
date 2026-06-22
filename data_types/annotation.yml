@@ -289,6 +289,23 @@ types:
       Format: TSV
       ext: tsv
 
+  # Pathway Tools (PathoLogic / ptools)
+  ptools_annotation_table:
+    properties:
+      _: Long-format per-ORF functional annotations (EC / GO / KEGG / UniProt / FUNCTION) for ingestion by Pathway Tools
+      Format: Parquet
+      ext: parquet
+  pgdb_archive:
+    properties:
+      _: Canonical PathoLogic "cyc" folder (data/, kb/, reports/) packaged as a tarball
+      Format: tar.gz
+      ext: tgz
+  pgdb_csv_tables:
+    properties:
+      _: Parsed PGDB tables (proteins, reactions, enzymes, pathways, genes, compounds + linkages) as plain CSVs packaged in a tarball
+      Format: tar.gz
+      ext: tgz
+
   # DIAMOND TCDB
   tcdb_diamond_db:
     properties:
