@@ -45,6 +45,8 @@ manifest:
     type: transforms::transform
   downloadMetaphlanDB.py:
     type: transforms::transform
+  downloadPathofactDB.py:
+    type: transforms::transform
   downloadPhyloflashDB.py:
     type: transforms::transform
   downloadPredictfDB.py:
