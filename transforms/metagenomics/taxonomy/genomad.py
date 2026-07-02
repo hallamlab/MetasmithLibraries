@@ -5,7 +5,9 @@ lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 image    = model.AddRequirement(lib.GetType("containers::genomad.oci"))
-assembly = model.AddRequirement(lib.GetType("sequences::assembly"))
+# ~5 Mbp contig batch (w4_rebatch.py), sample-prefixed headers; per-sample
+# regroup happens in w4_recompile.py. Sibling of assembly, not a subtype.
+assembly = model.AddRequirement(lib.GetType("sequences::contig_batch"))
 ref  = model.AddRequirement(lib.GetType("ref::genomad"))
 
 virus_summary_out   = model.AddProduct(lib.GetType("taxonomy::genomad_virus_summary"))

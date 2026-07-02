@@ -4,7 +4,9 @@ lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 image       = model.AddRequirement(lib.GetType("containers::virsorter2.oci"))
-asm         = model.AddRequirement(lib.GetType("sequences::assembly"))
+# ~5 Mbp contig batch (w4_rebatch.py), sample-prefixed headers; per-sample
+# regroup happens in w4_recompile.py. Sibling of assembly, not a subtype.
+asm         = model.AddRequirement(lib.GetType("sequences::contig_batch"))
 db          = model.AddRequirement(lib.GetType("annotation::virsorter2_db"))
 out_seqs    = model.AddProduct(lib.GetType("annotation::virsorter2_viral_sequences"))
 out_scores  = model.AddProduct(lib.GetType("annotation::virsorter2_scores"))

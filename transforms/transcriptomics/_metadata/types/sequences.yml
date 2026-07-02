@@ -134,6 +134,19 @@ types:
       ext: fna
       genome_scope: single
       method: comebin
+  contig_batch:
+    properties:
+      Data: nucleic acid sequence
+      Format: FASTA
+      _:
+      - Fixed-size (~5 Mbp) batch of a per-sample contig FASTA; fans out contig-level
+        annotators (genomad, virsorter2, integron_finder). Distinct sibling of assembly
+        (NOT a subtype, like orf_chunk to orfs) so the solver routes batches only
+        to batch-consuming contig tools, never to whole-assembly consumers. Headers
+        are reversibly sample-prefixed (SG<id>~k141_N) by w4_rebatch.py; w4_recompile.py
+        strips the prefix + regroups results per sample.
+      ext: fna
+      granularity: batch
   discarded_long_reads:
     properties:
       Data: nucleic acid sequence
@@ -296,6 +309,7 @@ types:
       Format: FASTA
       content: open reading frames
       ext: faa
+      granularity: whole
   orfs_shard:
     properties:
       Data: protein sequence
@@ -304,6 +318,7 @@ types:
       - Length-balanced shard of an ORF FASTA; fans out embedding transforms
       content: open reading frames
       ext: faa
+      granularity: whole
   pacbio_hifi_bam:
     properties:
       Data: nucleic acid sequence

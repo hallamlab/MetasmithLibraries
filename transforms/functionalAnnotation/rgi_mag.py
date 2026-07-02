@@ -33,7 +33,7 @@ def protocol(context: ExecutionContext):
                 --output_file rgi_mag_out \
                 --input_type contig \
                 --local \
-                --num_threads {threads} \
+                -n {threads} \
                 --include_loose \
                 --clean
         """,

@@ -34,7 +34,7 @@ def protocol(context: ExecutionContext):
                 --output_file rgi_out \
                 --input_type protein \
                 --local \
-                --num_threads {threads} \
+                -n {threads} \
                 --include_loose \
                 --clean
         """,

@@ -1,25 +1,45 @@
 from metasmith.python_api import *
 
-lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
-model = Transform()
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))
-db    = model.AddProduct(lib.GetType("annotation::megares_diamond_db"))
+lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
+model   = Transform()
+image   = model.AddRequirement(lib.GetType("containers::diamond.oci"))
+img_sqk = model.AddRequirement(lib.GetType("containers::seqkit.oci"))
+db      = model.AddProduct(lib.GetType("annotation::megares_diamond_db"))
 
-# MEGARes v3.00 nucleotide+protein DB. The DIAMOND path needs protein FASTA;
-# MEGARes ships a single combined FASTA — diamond makedb reads it as protein.
+# MEGARes v3.00 ships a *nucleotide* CDS FASTA (ARG reference genes). megares.py
+# aligns with `diamond blastp`, so the DB must be protein — the CDS must be
+# translated (frame 1, standard table) before `diamond makedb`. tcdb/bacmet/vfdb
+# skip this only because their sources are already protein. meglab.org's TLS
+# chain trips wget verification, hence --no-check-certificate.
 MEGARES_URL = "https://www.meglab.org/downloads/megares_v3.00/megares_database_v3.00.fasta"
 
 
 def protocol(context: ExecutionContext):
     idb = context.Output(db)
 
-    # mounts the .dmnd's parent at /db and references by name (tcdb pattern),
-    # so the product is a single `.dmnd` file (ext: dmnd).
+    # 1) fetch the nucleotide CDS FASTA (diamond image has wget, per tcdb).
+    context.ExecWithContainer(
+        image=image,
+        cmd=f"wget -q --no-check-certificate {MEGARES_URL} -O megares.fasta",
+    )
+
+    # 2) translate CDS -> protein. --clean maps internal '*' stops to 'X' and
+    #    --trim strips trailing X/* so `diamond makedb` sees no '*' (which it
+    #    rejects). No --append-frame: the MEGARes accession in each header must
+    #    stay intact for downstream hit -> ARG-annotation mapping.
+    context.ExecWithContainer(
+        image=img_sqk,
+        cmd="seqkit translate --frame 1 --transl-table 1 --clean --trim "
+            "megares.fasta -o megares_prot.fasta",
+    )
+
+    # 3) build the protein DIAMOND DB. megares.py mounts the .dmnd's parent at
+    #    /db and references by name (tcdb pattern), so the product is a single
+    #    `.dmnd` file (ext: dmnd).
     context.ExecWithContainer(
         image=image,
         cmd=f"""
-            wget -q --no-check-certificate {MEGARES_URL} -O megares.fasta
-            diamond makedb --in megares.fasta -d megares
+            diamond makedb --in megares_prot.fasta -d megares
             mv megares.dmnd {idb.container}
         """,
     )

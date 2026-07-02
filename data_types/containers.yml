@@ -47,9 +47,10 @@ types:
   seqkit.oci:
     extends: container
     properties:
-      provides: 
+      provides:
       - seqkit
       - seqkit/stat
+      - seqkit/translate
 
   # -------------------------------------------------
   # read mapping
