@@ -32,6 +32,7 @@ Usage examples:
   # Show last task keys
   python launch_dl_embeddings.py status
 """
+import os
 import sys
 import json
 import argparse
@@ -39,8 +40,10 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-MSM_SRC = Path("/home/tony/agentic_workspace/projects/metasmith/dev/src")
-sys.path.insert(0, str(MSM_SRC))
+# metasmith must be importable; set MSM_SRC to a source checkout if not installed.
+if os.environ.get("MSM_SRC"):
+    sys.path.insert(0, os.environ["MSM_SRC"])
+import metasmith
 from metasmith.python_api import (
     Agent, Source, SshSource,
     DataInstanceLibrary, TransformInstanceLibrary,
@@ -54,30 +57,25 @@ MLIB = DL_LIB.parent
 CACHE_DIR = ROOT / "cache"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-# ─── HPC constants ──────────────────────────────────────────────────────────
-HPC_HOST = "fir"
-HPC_SCRATCH = Path("/scratch/phyberos")
+# ─── HPC constants (set via env vars or edit) ───────────────────────────────
+HPC_HOST = os.environ.get("MSM_HPC_HOST", "fir")
+HPC_SCRATCH = Path(os.environ.get("MSM_HPC_SCRATCH", "<cluster-scratch-dir>"))
 HPC_MSM_HOME = HPC_SCRATCH / "metasmith"
-HPC_DL = HPC_SCRATCH / "dl_testing_claude"
+HPC_DL = HPC_SCRATCH / "dl_work"
 
-# Account preference: RAC (rrg-) matches cyanoverse/scadc precedent. The first
-# GPU submit will tell us whether this account has GPU allocation. If not, swap
-# to def-shallam_gpu (proven good on gpubase_bygpu_b1 in the manual verify jobs).
-# Confirmed via sshare: phyberos has def-shallam_cpu, def-shallam_gpu,
-# rpp-shallam_cpu, rrg-shallam-ab_cpu. The cyanoverse-style 'rrg-shallam-ab'
-# without suffix only works for CPU-on-cpubase partitions and gets rejected
-# for GPU. def-shallam_gpu is the only one usable from these workflows.
-SLURM_ACCOUNT = "def-shallam_gpu"
+# GPU allocation to submit under — must have access to a GPU partition (a
+# CPU-only allocation gets rejected for GPU jobs).
+SLURM_ACCOUNT = os.environ.get("MSM_SLURM_ACCOUNT", "<gpu-allocation>")
 
 # ─── Inputs (paths resolve on fir; cyanoverse pattern) ──────────────────────
 HPC_INPUTS = HPC_DL / "inputs"
 FOSMIDS_FAA = HPC_INPUTS / "fosmids_orfprediction.faa"
 FOSMIDS_TEST5_FAA = HPC_INPUTS / "fosmids_orfprediction.head5.faa"
-METAG_FAA = HPC_INPUTS / "scadc_metag.faa"
+METAG_FAA = HPC_INPUTS / "metag.faa"
 # Local source paths (used only if we need to (re-)upload)
-LOCAL_DATA = Path("/home/tony/agentic_workspace/data/scadc")
-LOCAL_FOSMIDS_FAA = LOCAL_DATA / "raw_runs/orf_prediction/fosmids_orfprediction/fosmids_orfprediction/orf_prediction/fosmids_orfprediction.faa"
-LOCAL_METAG_FAA = LOCAL_DATA / "scadc_metag.faa"
+LOCAL_DATA = Path(os.environ.get("MSM_LOCAL_DATA", "<local-data-dir>"))
+LOCAL_FOSMIDS_FAA = LOCAL_DATA / "fosmids_orfprediction.faa"
+LOCAL_METAG_FAA = LOCAL_DATA / "metag.faa"
 
 # ─── HPC weights (staged out-of-band; tarballs match data_type ext: tgz) ────
 HPC_WEIGHTS = HPC_DL / "weights"
@@ -113,7 +111,7 @@ TRANSITIVE_WEIGHTS = {
 # Transforms pulled in by the planner as transitive producers. Each entry must
 # also be registered in TARGETS so we can look up its GPU tier; without this,
 # `--only saprot` plans esmfold + foldseek_3di but their clusterOptions fall
-# through to the default (def-shallam_cpu, no GPU) — silently runs ESMFold on
+# through to the default (CPU account, no GPU) — silently runs ESMFold on
 # CPU which never produces output before walltime.
 TRANSITIVE_TRANSFORMS = {
     "saprot":       ["esmfold", "foldseek_3di"],
@@ -213,9 +211,7 @@ def make_fir_slurm_config(transform_gpu_map: dict[str, str]) -> Path:
       transform_gpu_map: { transform_name: SLURM --gpus= value or None }
         e.g. {"esm_c": "nvidia_h100_80gb_hbm3_1g.10gb:1", "foldseek_3di": None}
     """
-    base = MSM_SRC.parent.joinpath(
-        "src/metasmith/nextflow_config/slurm.nf"
-    )
+    base = Path(metasmith.__file__).parent / "nextflow_config" / "slurm.nf"
     base_text = base.read_text()
 
     overrides = ["", "process {"]

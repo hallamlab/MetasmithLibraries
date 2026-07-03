@@ -57,12 +57,13 @@ Top-level scripts that exercise the library end-to-end (build inputs, plan, opti
 
 - `main/diamond_uniref50_from_assembly.py` — minimal planning-only driver: one input type (`sequences::assembly`), one target (`annotation::diamond_uniref50_results`). The canonical example of the simplest possible DAG-generating shape.
 - `main/metag_workflow_from_reads.py` — full metagenomics workflow starting from short reads: seqkit_reads → bbduk → megahit → prodigal → {diamond_uniref50, kofamscan}; metabuli; assembly_stats → 3 binners (metabat2/semibin2/comebin) → checkm2 → aggregator → skani_dedup; gtdbtk; phyloFlash. Targets every intermediate (read_qc_stats, orfs, assembly stats/coverage, per-binner contig_to_bin tables, checkm_stats, …) so they all appear in the rendered DAG.
+- `main/{diamond_uniref50_from_assembly,metag_workflow_from_reads}_sockeye.py` — HPC (Sockeye-style: SSH + APPTAINER + allocation-coded `/scratch`) end-to-end ports of the two drivers above. Reference inputs/DBs by REMOTE paths, supply pre-staged DBs as resources to prune the `local`-labeled `download*` steps, and run Deploy → Generate → Stage → Run → Wait. The metag one is a **W0/W1 pair**: run `main/metag_setup_sockeye.py --run` first (prefetch the 17 tool containers via `containers::pulled_container`, upload reads, verify DBs), then `main/metag_workflow_from_reads_sockeye.py --run`.
 
 Conventions:
 
-- Mock module-level constants (e.g. `ASSEMBLY = Path("<assembly>")`) instead of argparse
+- **Public-repo-safe config** — no hardcoded absolute paths, allocations, usernames, or DB paths. All site-specific values come from env vars with `<placeholder>` defaults (`MSM_SRC`, `MSM_ASSEMBLY`, `MSM_READS_R1/R2`, `MSM_HPC_HOST`, `MSM_SLURM_ACCOUNT`, `MSM_REF_DB_DIR`, …); `MSM_SRC` optionally prepends a metasmith source checkout to `sys.path` (else an installed metasmith is used). HPC drivers `require_configured()` and exit if a placeholder is unfilled.
 - Use `inputs.AddValue(name, dict, "namespace::type")` for inline values (e.g. `read_metadata`) and `inputs.AddItem(path, type, parents={...})` to chain lineage (meta → reads → … is the canonical metag pattern when starting from reads)
-- Include `transforms/logistics` so the planner auto-resolves external DBs (UniRef50, KOFAM, metabuli, GTDB, phyloFlash)
+- Include `transforms/logistics` so the planner auto-resolves external DBs (UniRef50, KOFAM, metabuli, GTDB, phyloFlash) — or supply them as pre-staged resources (`ref::uniref50_diamond_db`, `ref::kofamscan_profiles`/`_ko_list`, `ref::metabuli_ref`, `ref::gtdb`, `ref::phyloflash_db`) to skip the (login-node-only) downloads on HPC
 - To force all sibling transforms (e.g. all 3 binners), target a downstream that requires them all (`binning_local::cluster_table` pulls metabat2 + semibin2 + comebin + per-binner checkm + aggregator + skani_dedup), or list each sibling's product as a target
 - End with `task.plan.RenderDAG(out, format="svg")` for a planning-only driver
 

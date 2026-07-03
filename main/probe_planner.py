@@ -5,11 +5,13 @@ which transforms got selected. No staging, no remote work.
 Designed to isolate why `--only all` adds `downloadESMFoldWeights` but
 `--only esmc` doesn't, despite both having pre-staged weight tarballs.
 """
+import os
 import sys
 from pathlib import Path
 
-MSM_SRC = Path("/home/tony/agentic_workspace/projects/metasmith/dev/src")
-sys.path.insert(0, str(MSM_SRC))
+# metasmith must be importable; set MSM_SRC to a source checkout if not installed.
+if os.environ.get("MSM_SRC"):
+    sys.path.insert(0, os.environ["MSM_SRC"])
 
 from metasmith.python_api import (
     Agent, SshSource, DataInstanceLibrary, TransformInstanceLibrary,
@@ -20,8 +22,10 @@ ROOT = Path(__file__).resolve().parent
 DL_LIB = ROOT.parent
 CACHE_DIR = ROOT / "cache"
 
-HPC_HOST = "fir"
-HPC_MSM_HOME = Path("/scratch/phyberos/metasmith")
+HPC_HOST = os.environ.get("MSM_HPC_HOST", "fir")
+HPC_BASE = Path(os.environ.get("MSM_HPC_BASE", "<cluster-scratch-dir>"))
+HPC_MSM_HOME = HPC_BASE / "metasmith"
+HPC_WORK = HPC_BASE / "dl_work"
 
 # Targets identical to launch_dl_embeddings.py TARGETS table.
 TARGETS = {
@@ -34,14 +38,14 @@ TARGETS = {
 }
 
 WEIGHTS = {
-    "esmc":   ("/scratch/phyberos/dl_testing_claude/weights/esmc_300m.tgz",  "ref::esm_c_300m_weights"),
-    "ankh":   ("/scratch/phyberos/dl_testing_claude/weights/ankh_base.tgz",  "ref::ankh_base_weights"),
-    "prott5": ("/scratch/phyberos/dl_testing_claude/weights/prott5_xl.tgz",  "ref::prott5_xl_uniref50_weights"),
-    "saprot": ("/scratch/phyberos/dl_testing_claude/weights/saprot_650m.tgz","ref::saprot_650m_weights"),
-    "esmfold":("/scratch/phyberos/dl_testing_claude/weights/esmfold_v1.tgz", "ref::esmfold_weights"),
+    "esmc":   (HPC_WORK / "weights" / "esmc_300m.tgz",   "ref::esm_c_300m_weights"),
+    "ankh":   (HPC_WORK / "weights" / "ankh_base.tgz",   "ref::ankh_base_weights"),
+    "prott5": (HPC_WORK / "weights" / "prott5_xl.tgz",   "ref::prott5_xl_uniref50_weights"),
+    "saprot": (HPC_WORK / "weights" / "saprot_650m.tgz", "ref::saprot_650m_weights"),
+    "esmfold":(HPC_WORK / "weights" / "esmfold_v1.tgz",  "ref::esmfold_weights"),
 }
 
-ORFS_PATH = Path("/scratch/phyberos/dl_testing_claude/inputs/scadc_metag.faa")
+ORFS_PATH = HPC_WORK / "inputs" / "orfs.faa"
 
 
 def get_agent():

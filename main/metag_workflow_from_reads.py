@@ -17,19 +17,26 @@ Stops at DAG generation. The planner resolves:
 
 External DBs (UniRef50, KOFAM, metabuli, GTDB, phyloFlash) are auto-resolved
 by including the transforms/logistics library in the plan.
+
+Configuration — set via environment (or edit the defaults):
+  MSM_READS_R1/R2   paired short reads to plan from   (REQUIRED)
+  MSM_SRC           metasmith source checkout         (optional; else installed)
 """
+import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/home/tony/agentic_workspace/projects/metasmith/dev/src")
+# metasmith must be importable; set MSM_SRC to a source checkout if not installed.
+if os.environ.get("MSM_SRC"):
+    sys.path.insert(0, os.environ["MSM_SRC"])
 from metasmith.python_api import (
     Agent, Source, ContainerRuntime,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder,
 )
 
-R1      = Path("/home/tony/agentic_workspace/projects/metasmith-libraries/phyloflash/tests/test_data/small_reads_R1.fq.gz")  # <reads R1>
-R2      = Path("/home/tony/agentic_workspace/projects/metasmith-libraries/phyloflash/tests/test_data/small_reads_R2.fq.gz")  # <reads R2>
+R1      = Path(os.environ.get("MSM_READS_R1", "<reads-R1.fq.gz>"))  # paired reads R1
+R2      = Path(os.environ.get("MSM_READS_R2", "<reads-R2.fq.gz>"))  # paired reads R2
 OUT_DIR = Path("results/metag_workflow")
 
 MLIB = Path(__file__).resolve().parent.parent

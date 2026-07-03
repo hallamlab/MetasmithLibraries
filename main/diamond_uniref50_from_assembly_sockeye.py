@@ -1,53 +1,76 @@
 #!/usr/bin/env python3
-"""Run a DIAMOND UniRef50 annotation workflow for a nucleotide assembly FASTA on SOCKEYE.
+"""Run a DIAMOND UniRef50 annotation workflow for a nucleotide assembly FASTA on
+an HPC cluster.
 
-Sockeye port of diamond_uniref50_from_assembly.py. Minimal differences:
-  - Agent retargeted to sockeye over SSH with the APPTAINER runtime and sockeye's
-    module quirk (`module load gcc/9.4.0` BEFORE `module load apptainer`; a bare
-    `module load apptainer` silently no-ops on sockeye).
-  - The input FASTA is uploaded to sockeye and referenced by its REMOTE path —
+Cluster port of diamond_uniref50_from_assembly.py. Written against a Sockeye-style
+cluster (module system + apptainer + allocation-coded /scratch). Minimal
+differences vs. the local driver:
+  - Agent retargeted to the cluster over SSH with the APPTAINER runtime. Note the
+    Sockeye module quirk (`module load gcc/9.4.0` BEFORE `module load apptainer`;
+    a bare `module load apptainer` silently no-ops there).
+  - The input FASTA is uploaded to the cluster and referenced by its REMOTE path —
     metasmith does not auto-transfer non-resident inputs (it fails fast instead),
     so the .xgdb item must point at a path that already exists on the agent host.
-  - Deploys to $HOME (sockeye's /scratch is allocation-coded and refuses mkdir).
+  - Deploys to allocation-coded /scratch (many clusters forbid SLURM jobs from
+    $HOME, and Nextflow's work dir must live under scratch).
   - Runs end-to-end (Deploy -> Generate -> Stage -> Run -> Wait -> Result) rather
     than stopping at DAG generation.
 
-Set MSM_SLURM_ACCOUNT=<allocation> to submit through the SLURM executor;
-unset it to use the default (local) executor.
+Configuration — set via environment (or edit the defaults):
+  MSM_HPC_HOST       ssh host alias for the cluster        (default: sockeye)
+  MSM_SLURM_ACCOUNT  SLURM allocation to submit under      (REQUIRED)
+  MSM_REF_DB_DIR     cluster dir holding the reference DBs (REQUIRED)
+  MSM_ASSEMBLY       local nucleotide assembly FASTA       (REQUIRED)
+  MSM_SRC            metasmith source checkout to import    (optional; else use
+                                                             an installed metasmith)
 
-NOTE: our sockeye deploy smoke reached Deploy GREEN (use-sif) but StageWorkflow
-currently trips the open #240 lib-bind bug; this script is wired correctly and
-will complete once #240 is resolved.
+The pre-built UniRef50 DIAMOND DB is expected at
+$MSM_REF_DB_DIR/diamond/uniref50.dmnd. Supplying it as a
+ref::uniref50_diamond_db resource lets the planner SKIP downloadUniRef50DB
+(hard-labeled `local` → pinned to the login node, where its 64GB ask + 60GB wget
++ `diamond makedb` cannot run). Pattern mirrors launch_dl_embeddings.
 """
 import os
 import sys
 import subprocess
 from pathlib import Path
 
-sys.path.insert(0, "/home/tony/agentic_workspace/projects/metasmith/dev/src")
+# metasmith must be importable; set MSM_SRC to a source checkout if not installed.
+if os.environ.get("MSM_SRC"):
+    sys.path.insert(0, os.environ["MSM_SRC"])
 from metasmith.python_api import (
     Agent, SshSource, ContainerRuntime,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder,
 )
 
-# ── sockeye target ───────────────────────────────────────────────────────────
-HPC_HOST = "sockeye"
-SETUP_COMMANDS = ["module load gcc/9.4.0", "module load apptainer"]
-# prodigal (16GB) and diamond (64GB) exceed the 8GB local cap, so they must run
-# on SLURM. txyliu's standard (CPU) allocation; override via MSM_SLURM_ACCOUNT.
-DEFAULT_SLURM_ACCOUNT = "st-shallam-1"
+# ── site config — set via env vars or edit the defaults ──────────────────────
+HPC_HOST      = os.environ.get("MSM_HPC_HOST", "sockeye")            # ssh host alias
+SLURM_ACCOUNT = os.environ.get("MSM_SLURM_ACCOUNT", "<slurm-allocation>")
+SETUP_COMMANDS = ["module load gcc/9.4.0", "module load apptainer"]  # Sockeye module order
 
-# Pre-built UniRef50 DIAMOND DB already on sockeye. Supplying it as a
-# ref::uniref50_diamond_db resource lets the planner SKIP downloadUniRef50DB
-# (which is hard-labeled `local` → pinned to the login node, where its 64GB ask
-# + 60GB wget + `diamond makedb` cannot run). Pattern mirrors launch_dl_embeddings.
-REMOTE_UNIREF50_DMND = Path("/arc/project/st-shallam-1/pwy_group/lib/diamond/uniref50.dmnd")
+# Pre-built UniRef50 DIAMOND DB already on the cluster → skip downloadUniRef50DB.
+REF = Path(os.environ.get("MSM_REF_DB_DIR", "<ref-db-dir-on-cluster>"))
+REMOTE_UNIREF50_DMND = REF / "diamond" / "uniref50.dmnd"
 
-LOCAL_ASSEMBLY = Path("/home/tony/agentic_workspace/data/scadc/references/pcc1.genbank.fna")  # <assembly>
+LOCAL_ASSEMBLY = Path(os.environ.get("MSM_ASSEMBLY", "<assembly.fna>"))  # nucleotide assembly FASTA
 OUT_DIR = Path("results/diamond_uniref50_sockeye")
 
 MLIB = Path(__file__).resolve().parent.parent
+
+
+def require_configured():
+    unset = [k for k, v in {
+        "MSM_SLURM_ACCOUNT": SLURM_ACCOUNT,
+        "MSM_REF_DB_DIR":    str(REF),
+        "MSM_ASSEMBLY":      str(LOCAL_ASSEMBLY),
+    }.items() if "<" in str(v)]
+    if unset:
+        print("configure these first (env var, or edit the default in this file):",
+              file=sys.stderr)
+        for k in unset:
+            print(f"  {k}", file=sys.stderr)
+        raise SystemExit(2)
 
 
 def ssh_capture(cmd: str) -> str:
@@ -56,8 +79,8 @@ def ssh_capture(cmd: str) -> str:
     ).stdout.strip()
 
 
-def stage_input_to_sockeye(base_dir: str) -> str:
-    """Upload the assembly under base_dir on sockeye, return its remote path (idempotent)."""
+def stage_input_to_cluster(base_dir: str) -> str:
+    """Upload the assembly under base_dir on the cluster, return its remote path (idempotent)."""
     remote_dir = f"{base_dir}/diamond_uniref50/inputs"
     remote_path = f"{remote_dir}/{LOCAL_ASSEMBLY.name}"
     ssh_capture(f"mkdir -p {remote_dir}")
@@ -66,7 +89,7 @@ def stage_input_to_sockeye(base_dir: str) -> str:
         capture_output=True, text=True,
     ).stdout.strip()
     if remote_size == str(LOCAL_ASSEMBLY.stat().st_size):
-        print(f"==> input already on sockeye: {remote_path}", flush=True)
+        print(f"==> input already on the cluster: {remote_path}", flush=True)
     else:
         print(f"==> uploading {LOCAL_ASSEMBLY.name} -> {HPC_HOST}:{remote_path}", flush=True)
         subprocess.run(["scp", str(LOCAL_ASSEMBLY), f"{HPC_HOST}:{remote_path}"], check=True)
@@ -76,11 +99,11 @@ def stage_input_to_sockeye(base_dir: str) -> str:
 def prefetch_tool_containers(agent_home: str, task_key: str):
     """Pre-pull the plan's tool containers into the agent cache on the LOGIN node.
 
-    sockeye compute nodes have NO outbound network, so a step's lazy
+    Compute nodes typically have NO outbound network, so a step's lazy
     `apptainer exec docker://...` dies with 'no route to host'. metasmith's
     Deploy pulls only its own image, not per-transform tools. We warm the cache
     here: parse the staged workflow.nf for the `containers::<x>.oci` it actually
-    uses, read each .oci's docker URL, and pull it as a .sif (sockeye = use-sif).
+    uses, read each .oci's docker URL, and pull it as a .sif (use-sif).
     """
     run = f"{agent_home}/runs/{task_key}"
     setup = " && ".join(SETUP_COMMANDS)
@@ -114,18 +137,18 @@ def prefetch_tool_containers(agent_home: str, task_key: str):
 
 
 def main():
-    account = os.environ.get("MSM_SLURM_ACCOUNT", DEFAULT_SLURM_ACCOUNT)
+    require_configured()
     user = ssh_capture("echo $USER")
-    # sockeye FORBIDS running SLURM jobs from /arc/home — the agent home (and thus
-    # Nextflow's work dir) must live on allocation-coded scratch: /scratch/<alloc>/<user>.
-    scratch = f"/scratch/{account}/{user}"
+    # Many clusters forbid running SLURM jobs from $HOME — the agent home (and thus
+    # Nextflow's work dir) must live on allocation-coded scratch. Sockeye convention:
+    scratch = f"/scratch/{SLURM_ACCOUNT}/{user}"
     agent_home = f"{scratch}/metasmith"
-    remote_assembly = stage_input_to_sockeye(scratch)
+    remote_assembly = stage_input_to_cluster(scratch)
 
     out = OUT_DIR.resolve()
     out.mkdir(parents=True, exist_ok=True)
 
-    # inputs.xgdb references REMOTE (sockeye) paths; not validated locally
+    # inputs.xgdb references REMOTE (cluster) paths; not validated locally
     inputs = DataInstanceLibrary(out / "inputs.xgdb")
     inputs.AddTypeLibrary(MLIB / "data_types" / "sequences.yml")
     inputs.AddTypeLibrary(MLIB / "data_types" / "ref.yml")
@@ -166,14 +189,14 @@ def main():
     print("==> StageWorkflow(on_exist=clear)", flush=True)
     smith.StageWorkflow(task, on_exist="clear")
 
-    # sockeye compute nodes have no internet → warm the tool-container cache now
+    # compute nodes have no internet → warm the tool-container cache now
     prefetch_tool_containers(agent_home, task.GetKey())
 
-    print(f"==> RunWorkflow (SLURM, account={account})", flush=True)
+    print(f"==> RunWorkflow (SLURM, account={SLURM_ACCOUNT})", flush=True)
     smith.RunWorkflow(
         task,
         config_file=smith.GetNxfConfigPresets()["slurm"],
-        params=dict(slurmAccount=account),
+        params=dict(slurmAccount=SLURM_ACCOUNT),
     )
 
     print("==> WaitForWorkflow", flush=True)

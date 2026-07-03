@@ -2,18 +2,26 @@
 """Plan a DIAMOND UniRef50 annotation workflow for a nucleotide assembly FASTA.
 
 Stops at DAG generation — prints the resolved transform chain and exits.
+
+Configuration — set via environment (or edit the defaults):
+  MSM_ASSEMBLY   nucleotide assembly FASTA to annotate   (REQUIRED)
+  MSM_SRC        metasmith source checkout to import      (optional; else use
+                                                           an installed metasmith)
 """
+import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/home/tony/agentic_workspace/projects/metasmith/dev/src")
+# metasmith must be importable; set MSM_SRC to a source checkout if not installed.
+if os.environ.get("MSM_SRC"):
+    sys.path.insert(0, os.environ["MSM_SRC"])
 from metasmith.python_api import (
     Agent, Source, ContainerRuntime,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder,
 )
 
-ASSEMBLY = Path("/home/tony/agentic_workspace/data/scadc/references/pcc1.genbank.fna")  # <assembly>
+ASSEMBLY = Path(os.environ.get("MSM_ASSEMBLY", "<assembly.fna>"))  # nucleotide assembly FASTA
 OUT_DIR = Path("results/diamond_uniref50")
 
 MLIB = Path(__file__).resolve().parent.parent
