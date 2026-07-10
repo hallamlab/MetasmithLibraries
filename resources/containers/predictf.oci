@@ -1,1 +1,1 @@
-docker://predictf:latest
+docker://quay.io/hallamlab/external_predictf:1.0
