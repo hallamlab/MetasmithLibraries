@@ -1,1 +1,1 @@
-docker://deeptfactor:latest
+docker://quay.io/hallamlab/external_deeptfactor:1.0
