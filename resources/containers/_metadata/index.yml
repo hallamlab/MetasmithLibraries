@@ -1,4 +1,6 @@
 manifest:
+  amrfinderplus.oci:
+    type: containers::amrfinderplus.oci
   ankh.oci:
     type: containers::ankh.oci
   antismash.oci:
@@ -45,6 +47,8 @@ manifest:
     type: containers::fastp.oci
   fastqc.oci:
     type: containers::fastqc.oci
+  feast.oci:
+    type: containers::feast.oci
   filtlong.oci:
     type: containers::filtlong.oci
   flye.oci:
@@ -65,6 +69,10 @@ manifest:
     type: containers::hifiasm-meta.oci
   hifiasm.oci:
     type: containers::hifiasm.oci
+  instrain.oci:
+    type: containers::instrain.oci
+  integronfinder.oci:
+    type: containers::integronfinder.oci
   interproscan.oci:
     type: containers::interproscan.oci
   kofamscan.oci:
@@ -85,12 +93,16 @@ manifest:
     type: containers::miniasm.oci
   minimap2.oci:
     type: containers::minimap2.oci
+  mobileelementfinder.oci:
+    type: containers::mobileelementfinder.oci
   nanoplot.oci:
     type: containers::nanoplot.oci
   ncbi-datasets.oci:
     type: containers::ncbi-datasets.oci
   orad.oci:
     type: containers::orad.oci
+  pathofact.oci:
+    type: containers::pathofact.oci
   pathologic.oci:
     type: containers::pathologic.oci
   phyloflash.oci:
@@ -115,6 +127,8 @@ manifest:
     type: containers::python_for_data_science.oci
   qiime2.oci:
     type: containers::qiime2.oci
+  rgi.oci:
+    type: containers::rgi.oci
   salmon.oci:
     type: containers::salmon.oci
   samtools.oci:

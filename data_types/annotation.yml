@@ -406,3 +406,169 @@ types:
       Format: BLAST6
       granularity: chunk
       ext: tsv
+
+  # ===========================================================================
+  # Resistome / virulence / mobilome (originals_from_antonio_2_resistome).
+  # Every product here is keyed on the original k141_XXXXXX contig ID:
+  #   - DIAMOND/protein tools keep qseqid = Prodigal ORF header (k141_XXXXXX_N)
+  #   - contig tools (PathoFact/IntegronFinder/MEF) keep the contig name column
+  # so Antonio's master integration table merges by contig_id. Do NOT rename.
+  # ===========================================================================
+
+  # --- ARG: MEGARes 2.0 (DIAMOND; clone of the tcdb_diamond pattern) ---
+  megares_diamond_db:
+    properties:
+      _: DIAMOND-formatted MEGARes database
+      ext: dmnd
+  megares_diamond_results:
+    properties:
+      _: DIAMOND alignment of ORFs to MEGARes (antibiotic/biocide/metal ARGs)
+      Format: BLAST6
+      ext: tsv
+  megares_diamond_results_chunk:
+    properties:
+      _: Per-chunk DIAMOND MEGARes BLAST6 (sibling of megares_diamond_results)
+      Format: BLAST6
+      granularity: chunk
+      ext: tsv
+
+  # --- ARG / co-selection: BacMet2 (DIAMOND) ---
+  bacmet_diamond_db:
+    properties:
+      _: DIAMOND-formatted BacMet2 database (metal + biocide resistance)
+      ext: dmnd
+  bacmet_diamond_results:
+    properties:
+      _: DIAMOND alignment of ORFs to BacMet2 (metal/biocide resistance genes)
+      Format: BLAST6
+      ext: tsv
+  bacmet_diamond_results_chunk:
+    properties:
+      _: Per-chunk DIAMOND BacMet2 BLAST6 (sibling of bacmet_diamond_results)
+      Format: BLAST6
+      granularity: chunk
+      ext: tsv
+
+  # --- Virulence: VFDB (DIAMOND) ---
+  vfdb_diamond_db:
+    properties:
+      _: DIAMOND-formatted VFDB database (virulence factor proteins)
+      ext: dmnd
+  vfdb_diamond_results:
+    properties:
+      _: DIAMOND alignment of ORFs to VFDB (virulence factors)
+      Format: BLAST6
+      ext: tsv
+  vfdb_diamond_results_chunk:
+    properties:
+      _: Per-chunk DIAMOND VFDB BLAST6 (sibling of vfdb_diamond_results)
+      Format: BLAST6
+      granularity: chunk
+      ext: tsv
+
+  # --- ARG: RGI / CARD ---
+  card_db:
+    properties:
+      _: CARD database loaded into the RGI image (card.json + wildcard, post rgi load)
+  rgi_results:
+    properties:
+      _: RGI main ARG hits on Prodigal proteins (TSV; ORF_ID column = k141_XXXXXX_N)
+      Format: TSV
+      ext: txt
+  rgi_mag_results:
+    properties:
+      _: RGI main ARG hits on COMEBin MAG contigs (TSV; contig IDs preserved)
+      Format: TSV
+      ext: txt
+
+  # --- ARG: AMRFinderPlus ---
+  amrfinderplus_db:
+    properties:
+      _: AMRFinderPlus database directory (version must match the bundled binary)
+  amrfinderplus_results:
+    properties:
+      _: AMRFinderPlus protein hits (TSV; Protein_id column = k141_XXXXXX_N)
+      Format: TSV
+      ext: tsv
+
+  # --- Mobilome: IntegronFinder ---
+  integronfinder_summary:
+    properties:
+      _: IntegronFinder per-contig integron summary (CALIN/complete/in0 counts)
+      Format: TSV
+      ext: tsv
+  integronfinder_integrons:
+    properties:
+      _: IntegronFinder detailed integron elements table (contig IDs preserved)
+      Format: TSV
+      ext: tsv
+
+  # --- Mobilome: MobileElementFinder (BUILD-blocked container) ---
+  mobileelementfinder_results:
+    properties:
+      _: MobileElementFinder MGE/IS-element hits (CSV; contig IDs preserved)
+      Format: CSV
+      ext: csv
+
+  # --- Virulence/integrative: PathoFact 2.0 (BUILD-blocked container) ---
+  pathofact_db:
+    properties:
+      _: PathoFact 2.0 bundled databases (HMMs + models)
+  pathofact_amr:
+    properties:
+      _: PathoFact ARG predictions (contig IDs preserved)
+      Format: TSV
+      ext: tsv
+  pathofact_vf:
+    properties:
+      _: PathoFact virulence-factor predictions (contig IDs preserved)
+      Format: TSV
+      ext: tsv
+  pathofact_tox:
+    properties:
+      _: PathoFact toxin predictions (contig IDs preserved)
+      Format: TSV
+      ext: tsv
+  pathofact_mge:
+    properties:
+      _: PathoFact mobile-genetic-element predictions (contig IDs preserved)
+      Format: TSV
+      ext: tsv
+
+  # --- Source tracking: crAssphage mapping (no contig_id dependency) ---
+  crassphage_ref:
+    properties:
+      _: crAssphage reference genome NC_024711 FASTA (for BBMap mapping)
+      Format: FASTA
+      ext: fa
+  crassphage_coverage:
+    properties:
+      _: BBMap per-sample crAssphage coverage stats (human faecal marker)
+      Format: TSV
+      ext: tsv
+
+  # --- Source tracking: FEAST (BUILD-blocked container; external refs) ---
+  feast_sources:
+    properties:
+      _: FEAST external source community profiles (gut/livestock/wildlife/soil/freshwater)
+  feast_proportions:
+    properties:
+      _: FEAST estimated source-environment contribution proportions
+      Format: TSV
+      ext: tsv
+
+  # --- Strain profiling: StrainPhlAn (conditional) ---
+  strainphlan_consensus_markers:
+    properties:
+      _: StrainPhlAn per-sample consensus markers from the MetaPhlAn SAM
+      ext: pkl
+
+  # --- Strain/abundance: inStrain (conditional; BAM-limited to 12 samples) ---
+  instrain_profile:
+    properties:
+      _: inStrain profile output directory (per-MAG SNV/microdiversity)
+  instrain_genome_info:
+    properties:
+      _: inStrain per-genome summary (coverage, nucleotide diversity, breadth)
+      Format: TSV
+      ext: tsv
