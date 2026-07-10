@@ -67,6 +67,8 @@ def protocol(context: ExecutionContext):
         reads=seqkit_stats["num_seqs"],
         bases=seqkit_stats["sum_len"],
         mean_quality=seqkit_stats["AvgQual"],
+        q20=seqkit_stats.get("Q20(%)"),
+        q30=seqkit_stats.get("Q30(%)"),
         phred_encoding=encoding,
         N50=seqkit_stats["N50"],
         GC=seqkit_stats["GC(%)"],
