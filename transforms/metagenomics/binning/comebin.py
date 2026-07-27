@@ -43,8 +43,8 @@ def protocol(context: ExecutionContext):
     contig_count = int(Path("contig_count.txt").read_text().strip())
     batch_size = max(32, min(contig_count, 1024))
 
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         args=[
             "--nv",
             "--env", f"CUDA_VISIBLE_DEVICES={os.environ.get('CUDA_VISIBLE_DEVICES','')}",

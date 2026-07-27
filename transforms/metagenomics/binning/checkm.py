@@ -76,8 +76,8 @@ def protocol(context: ExecutionContext):
     for fa in sorted(input_dir.iterdir()):
         target = faa_dir / f"{fa.stem}.faa"
         Log.Info(f"gene-calling [{fa.stem}]")
-        context.ExecWithContainer(
-            image = image,
+        context.ExecWithEnv().ifContainerDo(
+            env = image,
             cmd = f"""
                 export PATH=/opt/conda/envs/external_checkm2_env/bin:/opt/conda/bin:$PATH
                 prodigal -i {fa} -a {target} -o /dev/null -p meta -q || true
@@ -95,8 +95,8 @@ def protocol(context: ExecutionContext):
     report = Path(out_dir) / "quality_report.tsv"
     surviving = [p for p in faa_dir.iterdir() if p.stat().st_size > 0]
     if surviving:
-        context.ExecWithContainer(
-            image = image,
+        context.ExecWithEnv().ifContainerDo(
+            env = image,
             cmd = f"""
                 export PATH=/opt/conda/envs/external_checkm2_env/bin:/opt/conda/bin:$PATH
                 checkm2 predict {threads_arg} --genes -x faa --input ./faa --output-directory ./{out_dir} || true

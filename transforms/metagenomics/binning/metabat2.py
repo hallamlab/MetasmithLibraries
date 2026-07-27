@@ -19,8 +19,8 @@ def protocol(context: ExecutionContext):
     bin_dir = "metabat_bins"
     bin_prefix = f"{bin_dir}/bin"
 
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             mkdir -p {bin_dir}
             jgi_summarize_bam_contig_depths --outputDepth {depth_file} {ibam.container}

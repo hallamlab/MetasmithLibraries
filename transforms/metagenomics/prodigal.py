@@ -17,8 +17,8 @@ def protocol(context: ExecutionContext):
     if cpus is not None:
         cpus_string = f"-T {cpus}"
 
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""\
             pprodigal \
                 {cpus_string} \

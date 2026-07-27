@@ -23,8 +23,8 @@ def protocol(context: ExecutionContext):
     threads  = context.params.get('cpus')
     threads_arg = "" if threads is None else f"-CPUs {threads}"
 
-    context.ExecWithContainer(
-        image=img_bb,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_bb,
         cmd=f"""
             reformat.sh in={ireads.container} \
                 out1=split_r1.fq.gz out2=split_r2.fq.gz
@@ -34,8 +34,8 @@ def protocol(context: ExecutionContext):
     # phyloFlash writes <lib>.* into CWD; use a stable -lib prefix then
     # move the four products. SPAdes is default-on, EMIRGE default-off in
     # v3.4 — no flag needed to skip it. -html requests the HTML report.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             phyloFlash.pl -lib pf_out \
                 -read1 split_r1.fq.gz -read2 split_r2.fq.gz \

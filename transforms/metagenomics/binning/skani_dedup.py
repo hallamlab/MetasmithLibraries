@@ -61,8 +61,8 @@ def protocol(context: ExecutionContext):
 
     threads = context.params.get("cpus", 8)
     ani_tsv = "skani_ani.tsv"
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"skani triangle -l {bins_list} --sparse -o {ani_tsv} -t {threads}",
     )
 

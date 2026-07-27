@@ -21,8 +21,8 @@ def protocol(context: ExecutionContext):
     mem = context.params.get('memory')
     mem = "" if mem is None else f"--max-ram {int(float(mem))-6}"
     job_name = "metabuli_out"
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""\
             metabuli classify \
                 {iasm.container} \

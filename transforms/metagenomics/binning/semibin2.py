@@ -20,8 +20,8 @@ def protocol(context: ExecutionContext):
     # Use global environment model (works for most samples)
     environment = "global"
 
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             export PATH=/opt/conda/bin:$PATH
             SemiBin2 single_easy_bin \

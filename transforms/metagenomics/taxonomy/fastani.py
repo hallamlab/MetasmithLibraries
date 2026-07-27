@@ -19,8 +19,8 @@ def protocol(context: ExecutionContext):
 
     threads = context.params.get('cpus')
     threads = "" if threads is None else f"--threads {threads}"
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             fastANI {threads} --queryList {genomes} --refList {genomes} --output {iout.container} 
         """,
