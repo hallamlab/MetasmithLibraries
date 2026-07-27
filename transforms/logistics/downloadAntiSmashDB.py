@@ -11,8 +11,8 @@ def protocol(context: ExecutionContext):
 
     # antiSMASH bundles a download command that fetches Pfam, ClusterBlast,
     # MIBiG, Resfams, NRPS/PKS substrate prediction models, etc.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p {iout.container}
             download-antismash-databases --database-dir {iout.container}

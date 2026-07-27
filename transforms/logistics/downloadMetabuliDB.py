@@ -11,8 +11,8 @@ ref   = model.AddProduct(lib.GetType("ref::metabuli_ref"))
 def protocol(context: ExecutionContext):
     idb = context.Output(ref)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd="metabuli databases GTDB . tmp",
     )
     Path("gtdb").rename(idb.local)

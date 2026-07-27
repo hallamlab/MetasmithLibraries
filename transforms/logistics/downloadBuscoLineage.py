@@ -13,8 +13,8 @@ def protocol(context: ExecutionContext):
 
     # busco --download ignores --download_path and always writes to
     # ./busco_downloads/ relative to cwd. Download there then move.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             busco \
                 --download {LINEAGE} \

@@ -22,8 +22,8 @@ def protocol(context: ExecutionContext):
     # which is set using the "ext" property of the type
     # so both of these are needed, dispite having identical protocols.
     # The input types differ!
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f'''
         reformat.sh \
             in1="{ir1.container}" \

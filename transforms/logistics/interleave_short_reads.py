@@ -17,8 +17,8 @@ def protocol(context: ExecutionContext):
     # out=stdout.fq
     # ^ this actually tells reformat.sh to output to stdout
     # the suffix indicates format and compression
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f'''
         reformat.sh \
             in1="{ir1.container}" \

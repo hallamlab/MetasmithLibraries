@@ -11,8 +11,8 @@ ref = model.AddProduct(lib.GetType("ref::genomad"))
 def protocol(context: ExecutionContext):
     idb = context.Output(ref)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd="/usr/local/bin/_entrypoint.sh genomad download-database .",
     )
     Path("genomad_db").rename(idb.local)
