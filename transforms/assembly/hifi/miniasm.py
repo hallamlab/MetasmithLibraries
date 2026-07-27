@@ -59,8 +59,8 @@ def protocol(context: ExecutionContext):
     cpus = context.params.get("cpus")
     cpus_string = "" if cpus is None else f"-t {cpus}"
     temp_mapping_path = Path("./temp.paf.gz")
-    context.ExecWithContainer(
-        image = img_mm2,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_mm2,
         cmd = f"""
             minimap2 {preset} {cpus_string} \
                 {ireads.container} {ireads.container} | gzip -1 >{temp_mapping_path}
@@ -68,8 +68,8 @@ def protocol(context: ExecutionContext):
     )
 
     Log.Info("miniasm")
-    context.ExecWithContainer(
-        image = img_mam,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_mam,
         cmd = f"""
             miniasm \
                 -f {ireads.container} {temp_mapping_path} \

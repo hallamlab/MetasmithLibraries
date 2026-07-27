@@ -16,15 +16,15 @@ def protocol(context: ExecutionContext):
     temp_unzipped = "temp_unzipped.fq"
     # --min_length 1000 --keep_percent 90 are default
     # todo: somehow cap at 100x coverage
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             filtlong --min_length 1000 --keep_percent 90 {ireads.container} >{temp_unzipped}
         """,
     )
 
-    context.ExecWithContainer(
-        image=im_bb,
+    context.ExecWithEnv().ifContainerDo(
+        env=im_bb,
         cmd=f"""\
             filterbyname.sh in={ireads.container} out={idisc.container} names={temp_unzipped}
         """,

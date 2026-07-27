@@ -17,8 +17,8 @@ def protocol(context: ExecutionContext):
     # todo: custom container with pigz
     threads = context.params.get('cpus')
     threads = "" if threads is None else f"--thread {threads}"
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             fastp --interleaved_in {threads} \
             -h {ihtml.container} -j {ijson.container} \

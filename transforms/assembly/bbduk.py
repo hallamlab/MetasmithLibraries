@@ -49,8 +49,8 @@ def protocol(context: ExecutionContext):
     # we were actually given (85% of it — matches bbtools' own headroom budget).
     mem_gb = context.params.get('memory')
     xmx = f"-Xmx{int(mem_gb*0.85)}g" if mem_gb else ""
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             bbduk.sh {xmx} {threads} \
             {parg} ref=/bbmap/resources/adapters.fa \

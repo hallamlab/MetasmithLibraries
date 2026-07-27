@@ -45,16 +45,16 @@ def protocol(context: ExecutionContext):
 
     temp_sam = "temp.sam"
     bam_file = "aligned.bam"
-    context.ExecWithContainer(
-        image=img_mm2,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_mm2,
         cmd=f"""
             minimap2 {preset} -a -2 {cpus_mm2} \
                 {iasm.container} {ireads.container} > {temp_sam}
         """
     )
 
-    context.ExecWithContainer(
-        image=img_sam,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_sam,
         cmd=f"""
             samtools view {cpus_sam} -b {temp_sam} \
                 | samtools sort {cpus_sam} -o {bam_file} -O bam

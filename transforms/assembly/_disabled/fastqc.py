@@ -21,8 +21,8 @@ def protocol(context: ExecutionContext):
                 
     rname = ireads.container.name.replace(".fq.gz", "")
                 # --noextract \
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             mkdir fastqc_out
             fastqc \

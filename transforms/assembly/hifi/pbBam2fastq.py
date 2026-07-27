@@ -12,8 +12,8 @@ def protocol(context: ExecutionContext):
     iout = context.Output(out)
 
     temp_prefix = "converted"
-    context.ExecWithContainer(
-        image=img,
+    context.ExecWithEnv().ifContainerDo(
+        env=img,
         cmd=f"""
         ln -sf {ibam.container} /ws/input.bam
         pbindex /ws/input.bam

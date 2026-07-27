@@ -23,8 +23,8 @@ def protocol(context: ExecutionContext):
     # [INFO] guessed quality encoding: Sanger
     # [INFO] converting Sanger -> Sanger
     # [WARN] source and target quality encoding match.
-    context.ExecWithContainer(
-        image = img_sqk,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_sqk,
         cmd = f"""
             seqkit convert --dry-run {ireads.container} 2>&1 | tee {seqkit_guess_enc_file}
             seqkit stat {threads} --all --tabular {ireads.container} | tee {seqkit_stats_file}

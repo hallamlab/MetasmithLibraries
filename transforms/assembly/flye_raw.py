@@ -36,8 +36,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get('cpus')
     threads = "" if threads is None else f"--threads {threads}"
     # memory defaults to 0.9 of available [--memory 0.9]
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             flye --meta {err} {threads} \
                 {preset} {ireads.container} \
