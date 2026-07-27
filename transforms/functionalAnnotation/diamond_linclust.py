@@ -27,8 +27,8 @@ def protocol(context: ExecutionContext):
     memory = "" if memory is None else f"--memory-limit {int(float(memory))-8}G"
 
     # Build diamond database and run linclust inside container
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             diamond makedb --in {iorfs.container} -d orfs_db \
             && diamond linclust \

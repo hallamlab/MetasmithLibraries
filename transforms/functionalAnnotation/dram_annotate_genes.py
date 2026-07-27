@@ -34,8 +34,8 @@ annotate_called_genes(
 )
 DRAMPY""")
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(idb.external, "/db")],
         cmd=f"""
             sed '/^[^>]/s/\\*//g' {iorfs.container} > input.clean.faa

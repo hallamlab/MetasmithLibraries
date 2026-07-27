@@ -26,8 +26,8 @@ def protocol(context: ExecutionContext):
     threads = "" if threads is None else f"-p {threads}"
 
     # Build diamond database from existing centroids and search new ORFs
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             diamond makedb --in {icentroids.container} -d centroid_db \
             && diamond blastp \
