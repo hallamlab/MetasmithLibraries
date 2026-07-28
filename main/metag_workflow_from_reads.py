@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Plan the full metagenomics workflow starting from short reads.
+"""Author the `metag_workflow_from_reads` template.
 
-Stops at DAG generation. The planner resolves:
+The full metagenomics workflow from paired short reads:
 
   reads --> seqkit_reads --> read_qc_stats
   reads + read_qc_stats --> bbduk --> clean_short_reads
@@ -15,79 +15,77 @@ Stops at DAG generation. The planner resolves:
        (one binner's bin_fasta) --> gtdbtk                   (per-bin taxonomy)
   reads --> phyloFlash                                       (SSU rRNA taxonomy)
 
-External DBs (UniRef50, KOFAM, metabuli, GTDB, phyloFlash) are auto-resolved
-by including the transforms/logistics library in the plan.
+Every intermediate is targeted so it all appears in the graph. The external DBs
+(UniRef50, KOFAM, metabuli, GTDB, phyloFlash) resolve through transforms/logistics.
 
-Configuration — set via environment (or edit the defaults):
-  MSM_READS_R1/R2   paired short reads to plan from   (REQUIRED)
-  MSM_SRC           metasmith source checkout         (optional; else installed)
+    python main/metag_workflow_from_reads.py [--rebuild] [--dag]
 """
-import os
 import sys
-from pathlib import Path
 
-# metasmith must be importable; set MSM_SRC to a source checkout if not installed.
-if os.environ.get("MSM_SRC"):
-    sys.path.insert(0, os.environ["MSM_SRC"])
-from metasmith.python_api import (
-    Agent, Source, ContainerRuntime,
-    DataInstanceLibrary, TransformInstanceLibrary,
-    TargetBuilder,
-)
+import _authoring as A
+from metasmith.python_api import DEFERRED, Spec
 
-R1      = Path(os.environ.get("MSM_READS_R1", "<reads-R1.fq.gz>"))  # paired reads R1
-R2      = Path(os.environ.get("MSM_READS_R2", "<reads-R2.fq.gz>"))  # paired reads R2
-OUT_DIR = Path("results/metag_workflow")
+NAME = "metag_workflow_from_reads"
+DESCRIPTION = """
+Full metagenomics workflow from paired short reads: QC, assembly, ORF calling,
+functional annotation, three binners with quality filtering and dereplication,
+and contig-, bin- and SSU-level taxonomy.
+"""
 
-MLIB = Path(__file__).resolve().parent.parent
+# The three binners fan out per-binner checkm and gtdbtk instances. Each entry
+# below is either a type name or `{type, parents:[i]}` naming an earlier entry;
+# without the parent constraint the planner is free to satisfy checkm and gtdbtk
+# from whichever single binner it likes.
+_MB, _SB, _CB = 10, 11, 12
+TARGETS = [
+    "sequences::read_qc_stats",                     # 0
+    "sequences::orfs",                              # 1
+    "sequences::assembly_stats",                    # 2
+    "sequences::assembly_per_contig_coverage",      # 3
+    "sequences::assembly_per_bp_coverage",          # 4
+    "annotation::diamond_uniref50_results",         # 5
+    "annotation::kofamscan_results",                # 6
+    "taxonomy::metabuli",                           # 7
+    "taxonomy::phyloflash_summary",                 # 8
+    "binning_local::cluster_table",                 # 9
+    "sequences::metabat2_bin_fasta",                # 10
+    "sequences::semibin2_bin_fasta",                # 11
+    "sequences::comebin_bin_fasta",                 # 12
+] + [
+    {"type": t, "parents": [b]}
+    for b in (_MB, _SB, _CB)
+    for t in ("taxonomy::checkm_stats", "taxonomy::gtdbtk")
+] + [
+    "binning::metabat2_contig_to_bin_table",
+    "binning::semibin2_contig_to_bin_table",
+    "binning::comebin_contig_to_bin_table",
+]
 
-inputs = DataInstanceLibrary(OUT_DIR.resolve() / "inputs.xgdb")
-for tl in ["sequences.yml", "alignment.yml", "ref.yml", "annotation.yml", "taxonomy.yml", "binning.yml", "binning_local.yml"]:
-    inputs.AddTypeLibrary(MLIB / "data_types" / tl)
 
-meta = inputs.AddValue("reads_metadata.json", {"parity": "paired", "length_class": "short"}, "sequences::read_metadata")
-pair = inputs.AddValue("read_pair.txt", "sample_1", "sequences::read_pair", parents={meta})
-inputs.AddItem(R1.resolve(), "sequences::zipped_forward_short_reads", parents={pair})
-inputs.AddItem(R2.resolve(), "sequences::zipped_reverse_short_reads", parents={pair})
-inputs.Save()
+def build_spec(rebuild: bool = False) -> Spec:
+    def inputs(lib):
+        for tl in ("sequences.yml", "alignment.yml", "ref.yml", "annotation.yml",
+                   "taxonomy.yml", "binning.yml", "binning_local.yml"):
+            lib.AddTypeLibrary(A.TYPES / tl)
+        # The metadata and the pair label are values, not files: they are what
+        # the workflow is told about the reads, and they are known now.
+        meta = lib.AddValue("reads_metadata.json",
+                            {"parity": "paired", "length_class": "short"},
+                            "sequences::read_metadata")
+        pair = lib.AddValue("read_pair.txt", "sample_1", "sequences::read_pair",
+                            parents={meta})
+        lib.AddItem(DEFERRED, "sequences::zipped_forward_short_reads", parents={pair})
+        lib.AddItem(DEFERRED, "sequences::zipped_reverse_short_reads", parents={pair})
 
-smith = Agent(home=Source.FromLocal(OUT_DIR.resolve() / "msm_home"), runtime=ContainerRuntime.DOCKER)
+    return Spec(
+        input_library=A.deferred_inputs(NAME, inputs, rebuild=rebuild),
+        sample_type="sequences::read_metadata",
+        target_types=TARGETS,
+        transform_libraries=A.transforms(
+            "logistics", "assembly", "metagenomics", "functionalAnnotation"),
+        resource_libraries=[A.containers()],
+    )
 
-targets = TargetBuilder()
-targets.Add("sequences::read_qc_stats")
-targets.Add("sequences::orfs")
-targets.Add("sequences::assembly_stats")
-targets.Add("sequences::assembly_per_contig_coverage")
-targets.Add("sequences::assembly_per_bp_coverage")
-targets.Add("annotation::diamond_uniref50_results")
-targets.Add("annotation::kofamscan_results")
-targets.Add("taxonomy::metabuli")
-targets.Add("taxonomy::phyloflash_summary")
-targets.Add("binning_local::cluster_table")
 
-# Per-binner fan-out: distinct TargetSpec parents force a separate
-# checkm + gtdbtk instance for each binner's bins (without parent
-# constraints the planner would pick one binner to satisfy each).
-mb_bin = targets.Add("sequences::metabat2_bin_fasta")
-sb_bin = targets.Add("sequences::semibin2_bin_fasta")
-cb_bin = targets.Add("sequences::comebin_bin_fasta")
-for parent in (mb_bin, sb_bin, cb_bin):
-    targets.Add("taxonomy::checkm_stats", parents={parent})
-    targets.Add("taxonomy::gtdbtk",       parents={parent})
-targets.Add("binning::metabat2_contig_to_bin_table")
-targets.Add("binning::semibin2_contig_to_bin_table")
-targets.Add("binning::comebin_contig_to_bin_table")
-
-task = smith.GenerateWorkflow(
-    samples=list(inputs.AsSamples("sequences::read_metadata")),
-    resources=[DataInstanceLibrary.Load(MLIB / "resources" / "containers"), inputs],
-    transforms=[
-        TransformInstanceLibrary.Load(MLIB / "transforms" / "logistics"),
-        TransformInstanceLibrary.Load(MLIB / "transforms" / "assembly"),
-        TransformInstanceLibrary.Load(MLIB / "transforms" / "metagenomics"),
-        TransformInstanceLibrary.Load(MLIB / "transforms" / "functionalAnnotation"),
-    ],
-    targets=targets,
-)
-
-task.plan.RenderDAG(str(OUT_DIR.resolve() / "dag"), format="svg")
+if __name__ == "__main__":
+    A.cli(sys.modules[__name__])

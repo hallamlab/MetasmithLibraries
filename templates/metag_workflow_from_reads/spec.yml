@@ -1,0 +1,52 @@
+name: metag_workflow_from_reads
+description: 'Full metagenomics workflow from paired short reads: QC, assembly, ORF
+  calling,
+
+  functional annotation, three binners with quality filtering and dereplication,
+
+  and contig-, bin- and SSU-level taxonomy.'
+sample_type: sequences::read_metadata
+target_types:
+- sequences::read_qc_stats
+- sequences::orfs
+- sequences::assembly_stats
+- sequences::assembly_per_contig_coverage
+- sequences::assembly_per_bp_coverage
+- annotation::diamond_uniref50_results
+- annotation::kofamscan_results
+- taxonomy::metabuli
+- taxonomy::phyloflash_summary
+- binning_local::cluster_table
+- sequences::metabat2_bin_fasta
+- sequences::semibin2_bin_fasta
+- sequences::comebin_bin_fasta
+- type: taxonomy::checkm_stats
+  parents:
+  - 10
+- type: taxonomy::gtdbtk
+  parents:
+  - 10
+- type: taxonomy::checkm_stats
+  parents:
+  - 11
+- type: taxonomy::gtdbtk
+  parents:
+  - 11
+- type: taxonomy::checkm_stats
+  parents:
+  - 12
+- type: taxonomy::gtdbtk
+  parents:
+  - 12
+- binning::metabat2_contig_to_bin_table
+- binning::semibin2_contig_to_bin_table
+- binning::comebin_contig_to_bin_table
+transform_libraries:
+- transforms/logistics
+- transforms/assembly
+- transforms/metagenomics
+- transforms/functionalAnnotation
+resource_libraries:
+- resources/containers
+shared_input_paths: []
+input_library: templates/metag_workflow_from_reads/inputs.xgdb

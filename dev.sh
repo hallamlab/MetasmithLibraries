@@ -61,7 +61,11 @@ case $1 in
         args=(build all --types "$HERE/data_types")
         for d in "$HERE"/resources/*/; do args+=(--uniques "${d%/}"); done
         for d in "$HERE"/transforms/*/; do args+=(--transforms "${d%/}"); done
-        $msm "${args[@]}"
+        $msm "${args[@]}" || exit 1
+        # Templates are solved against the metadata just rebuilt: a transform
+        # whose products changed shape takes its templates down here, by name,
+        # instead of in someone's GUI a week later.
+        ${PYTHON:-python} "$HERE/main/build_templates.py" || exit 1
     ;;
     ###################################################
     # test

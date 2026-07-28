@@ -1,0 +1,24 @@
+manifest:
+  /msm_deferred/528d05a89e2d499aa553a54e69f9098b:
+    instance_id: 1e209f59d1cd01bfc829f30d0e83abaa38ef0f8b43ea814b654498547a83c6d800bf
+    origin: leaf
+    parents:
+      XsbLGY4eOIQl@read_pair.txt: sequences::read_pair
+    type: sequences::zipped_forward_short_reads
+  /msm_deferred/7174610327904bed89c8e70869630bc8:
+    instance_id: 1e2076fe9295a673f20e3ac6976db58c82ae7eb369a442cc141734b0b41b5021248d
+    origin: leaf
+    parents:
+      XsbLGY4eOIQl@read_pair.txt: sequences::read_pair
+    type: sequences::zipped_reverse_short_reads
+  read_pair.txt:
+    instance_id: 1e203ae1d3e3bd79e1c55cd2c43446aca73ded36f6941570ee74895c5602d41e4113
+    origin: leaf
+    parents:
+      XsbLGY4eOIQl@reads_metadata.json: sequences::read_metadata
+    type: sequences::read_pair
+  reads_metadata.json:
+    instance_id: 1e20bfe1017800f729d010097c95dc9d369e7e0e29bc1b0b6df9bcdc45ae3ed9c816
+    origin: leaf
+    type: sequences::read_metadata
+schema: v1

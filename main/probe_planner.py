@@ -1,189 +1,89 @@
 #!/usr/bin/env python3
-"""Plan-only probe: run GenerateWorkflow with various target sets and report
-which transforms got selected. No staging, no remote work.
+"""Plan-only probe over the deep-learning embedding workflow.
 
-Designed to isolate why `--only all` adds `downloadESMFoldWeights` but
-`--only esmc` doesn't, despite both having pre-staged weight tarballs.
+Runs the solver against a chosen target set and reports which transforms it
+picked. No agent, no staging, no remote work — the point is to see the plan.
+
+It exists because `--only all` used to add a `downloadESMFoldWeights` step that
+`--only esmc` did not, despite both having the weight tarball pre-staged; the
+seed sweep below is how that was pinned to an MCTS local optimum rather than a
+missing input.
+
+    python main/probe_planner.py [case]        # see CASES
+    python main/probe_planner.py all_seeds     # the sweep
+
+Input paths are irrelevant to a plan, so they are deferred: what is being probed
+is which transforms the solver reaches for, and nothing here opens a file.
 """
-import os
+
+from __future__ import annotations
+
+import shutil
 import sys
 from pathlib import Path
 
-# metasmith must be importable; set MSM_SRC to a source checkout if not installed.
-if os.environ.get("MSM_SRC"):
-    sys.path.insert(0, os.environ["MSM_SRC"])
+import _authoring as A
+import _dl_embeddings as DL
+from metasmith.python_api import DEFERRED, DataInstanceLibrary, TransformInstanceLibrary
 
-from metasmith.python_api import (
-    Agent, SshSource, DataInstanceLibrary, TransformInstanceLibrary,
-    TargetBuilder, ContainerRuntime,
-)
+CACHE_DIR = Path(__file__).resolve().parent / "cache"
 
-ROOT = Path(__file__).resolve().parent
-DL_LIB = ROOT.parent
-CACHE_DIR = ROOT / "cache"
-
-HPC_HOST = os.environ.get("MSM_HPC_HOST", "fir")
-HPC_BASE = Path(os.environ.get("MSM_HPC_BASE", "<cluster-scratch-dir>"))
-HPC_MSM_HOME = HPC_BASE / "metasmith"
-HPC_WORK = HPC_BASE / "dl_work"
-
-# Targets identical to launch_dl_embeddings.py TARGETS table.
-TARGETS = {
-    "esmc":         "annotation::esm_c_embeddings",
-    "ankh":         "annotation::ankh_embeddings",
-    "prott5":       "annotation::prott5_embeddings",
-    "esmfold":      "sequences::predicted_structures",
-    "foldseek_3di": "sequences::structure_3di_tokens",
-    "saprot":       "annotation::saprot_embeddings",
+ALL = list(DL.TARGETS)
+CASES: dict[str, list[str]] = {
+    "esmc_baseline":        ["esmc"],
+    "esmfold_only":         ["esmfold"],
+    "saprot_only":          ["saprot"],
+    "esmc_plus_esmfold":    ["esmc", "esmfold"],
+    "esmfold_plus_foldseek": ["esmfold", "foldseek_3di"],
+    "esmfold_plus_saprot":  ["esmfold", "saprot"],
+    "all_minus_saprot":     ["esmc", "ankh", "prott5", "esmfold"],
+    "all_no_saprot_target": ["esmc", "ankh", "prott5", "esmfold", "foldseek_3di"],
+    "all_no_foldseek_target": ["esmc", "ankh", "prott5", "esmfold", "saprot"],
+    "all":                  ALL,
 }
 
-WEIGHTS = {
-    "esmc":   (HPC_WORK / "weights" / "esmc_300m.tgz",   "ref::esm_c_300m_weights"),
-    "ankh":   (HPC_WORK / "weights" / "ankh_base.tgz",   "ref::ankh_base_weights"),
-    "prott5": (HPC_WORK / "weights" / "prott5_xl.tgz",   "ref::prott5_xl_uniref50_weights"),
-    "saprot": (HPC_WORK / "weights" / "saprot_650m.tgz", "ref::saprot_650m_weights"),
-    "esmfold":(HPC_WORK / "weights" / "esmfold_v1.tgz",  "ref::esmfold_weights"),
-}
 
-ORFS_PATH = HPC_WORK / "inputs" / "orfs.faa"
-
-
-def get_agent():
-    return Agent(
-        home=SshSource(host=HPC_HOST, path=HPC_MSM_HOME).AsSource(),
-        runtime=ContainerRuntime.APPTAINER,
-        setup_commands=["module load apptainer"],
-    )
-
-
-def build_library(weights_keys: list[str], lib_name: str) -> DataInstanceLibrary:
-    """Build a fresh local .xgdb with ORFs + listed weights."""
-    in_dir = CACHE_DIR / f"probe_{lib_name}.xgdb"
-    if in_dir.exists():
-        import shutil
-        shutil.rmtree(in_dir)
-    lib = DataInstanceLibrary(in_dir)
-    lib.Purge()
-    lib.AddTypeLibrary(DL_LIB / "data_types" / "sequences.yml")
-    lib.AddTypeLibrary(DL_LIB / "data_types" / "annotation.yml")
-    lib.AddTypeLibrary(DL_LIB / "data_types" / "ref.yml")
-    lib.AddItem(ORFS_PATH, "sequences::orfs")
-    for w in weights_keys:
-        path, type_str = WEIGHTS[w]
-        lib.AddItem(Path(path), type_str)
-    lib.Save()
-    return lib
-
-
-def probe(label: str, target_keys: list[str], weight_keys: list[str],
+def probe(label: str, target_keys: list[str],
           max_iter: int = 1024, max_refine: int = 256, seed: int = 42):
-    """Plan one configuration; report which transform names appear in the DAG."""
-    print(f"\n{'='*70}\n[{label}] targets={target_keys}  weights={weight_keys}  "
+    print(f"\n{'='*70}\n[{label}] targets={target_keys} "
           f"iter={max_iter} refine={max_refine} seed={seed}\n{'='*70}")
 
-    inputs = build_library(weight_keys, label)
-    containers = DataInstanceLibrary.Load(DL_LIB / "resources" / "containers")
-    transforms = [
-        TransformInstanceLibrary.Load(DL_LIB / "transforms" / "functionalAnnotation"),
-        TransformInstanceLibrary.Load(DL_LIB / "transforms" / "logistics"),
-    ]
+    location = CACHE_DIR / f"probe_{label}.xgdb"
+    if location.exists(): shutil.rmtree(location)
+    inputs = DataInstanceLibrary(location)
+    inputs.Purge()
+    DL.add_inputs(inputs, DEFERRED,
+                  {w: DEFERRED for w in DL.needed_weights(target_keys)})
+    inputs.Save()
 
-    tb = TargetBuilder()
-    for t in target_keys:
-        tb.Add(TARGETS[t])
-
-    smith = get_agent()
-    task = smith.GenerateWorkflow(
-        samples=list(inputs.AsSamples("sequences::orfs")),
-        resources=[containers, inputs],
-        transforms=transforms,
-        targets=tb,
-        max_iter=max_iter, max_refine=max_refine, seed=seed,
-    )
-    if not task.ok or len(task.plan.steps) == 0:
-        print(f"  PLAN FAILED ok={task.ok} steps={len(task.plan.steps)}")
+    spec = DL.spec(inputs, target_keys)
+    task = spec.Solve(max_iter=max_iter, max_refine=max_refine, seed=seed)
+    if not task.ok:
+        print(f"  PLAN FAILED steps={len(task.plan.steps)} "
+              f"dropped={sorted(task.plan.dropped_targets)}")
         return
 
-    # Build Transform.key → TransformInstance.name map
-    tr_name_by_key: dict[str, str] = {}
-    for trlib in transforms:
-        for path, ti in trlib.IterateTransforms():
-            tr_name_by_key[ti.model.key] = ti.name or str(path)
-
+    names = {
+        ti.model.key: (ti.name or str(path))
+        for location in A.transforms("functionalAnnotation", "logistics")
+        for path, ti in TransformInstanceLibrary.Load(location).IterateTransforms()
+    }
     print(f"  OK steps={len(task.plan.steps)} key={task.GetKey()}")
     for i, step in enumerate(task.plan.steps, 1):
-        ti = step.transform   # TransformInstance, not Transform
+        ti = step.transform
         key = ti.model.key if hasattr(ti, "model") else getattr(ti, "_key", "?")
-        name = tr_name_by_key.get(key, getattr(ti, "name", None) or f"<unmapped key={key}>")
-        print(f"    {i:2d}. {name}")
+        print(f"    {i:2d}. {names.get(key, getattr(ti, 'name', None) or f'<unmapped {key}>')}")
 
 
 if __name__ == "__main__":
-    case = sys.argv[1] if len(sys.argv) > 1 else "esmfold_only"
-
-    if case == "esmfold_only":
-        probe("esmfold_only", ["esmfold"], ["esmfold"])
-    elif case == "saprot_only":
-        # saprot transitively needs esmfold→foldseek_3di chain + its own weights + esmfold weights
-        probe("saprot_only", ["saprot"], ["saprot", "esmfold"])
-    elif case == "esmc_baseline":
-        probe("esmc_baseline", ["esmc"], ["esmc"])
-    elif case == "all":
-        probe("all", list(TARGETS.keys()), ["esmc", "ankh", "prott5", "saprot", "esmfold"])
-    elif case == "esmc_plus_esmfold":
-        # does adding esmfold to esmc cause download to appear for esmfold but not esmc?
-        probe("esmc_plus_esmfold", ["esmc", "esmfold"], ["esmc", "esmfold"])
-    elif case == "all_minus_saprot":
-        # everything except saprot/foldseek_3di — strips the structural chain
-        probe("all_minus_saprot", ["esmc", "ankh", "prott5", "esmfold"],
-              ["esmc", "ankh", "prott5", "esmfold"])
-    elif case == "all_no_foldseek_target":
-        # saprot transitively pulls foldseek_3di; drop it as explicit target
-        probe("all_no_foldseek_target",
-              ["esmc", "ankh", "prott5", "esmfold", "saprot"],
-              ["esmc", "ankh", "prott5", "saprot", "esmfold"])
-    elif case == "esmfold_plus_foldseek":
-        # minimal: do explicit foldseek_3di target trigger download?
-        probe("esmfold_plus_foldseek", ["esmfold", "foldseek_3di"], ["esmfold"])
-    elif case == "all_seed_variants":
-        # same as 'all' but vary nothing — sanity that seed=42 is stable
-        probe("all_seed_stable",
-              ["esmc", "ankh", "prott5", "esmfold", "foldseek_3di", "saprot"],
-              ["esmc", "ankh", "prott5", "saprot", "esmfold"])
-    elif case == "all_no_esmfold_target":
-        # saprot transitively needs esmfold; drop esmfold as explicit target
-        probe("all_no_esmfold_target",
-              ["esmc", "ankh", "prott5", "foldseek_3di", "saprot"],
-              ["esmc", "ankh", "prott5", "saprot", "esmfold"])
-    elif case == "esmfold_plus_saprot":
-        # minimal hypothesized trigger: just esmfold + saprot
-        probe("esmfold_plus_saprot", ["esmfold", "saprot"], ["esmfold", "saprot"])
-    elif case == "esmfold_plus_saprot_noweights":
-        probe("esmfold_plus_saprot_noweights", ["esmfold", "saprot"], ["esmfold"])
-    elif case == "1enc_struct":
-        probe("1enc_struct", ["esmc", "esmfold", "saprot"], ["esmc", "esmfold", "saprot"])
-    elif case == "2enc_struct":
-        probe("2enc_struct", ["esmc", "ankh", "esmfold", "saprot"],
-              ["esmc", "ankh", "esmfold", "saprot"])
-    elif case == "3enc_struct":
-        probe("3enc_struct", ["esmc", "ankh", "prott5", "esmfold", "saprot"],
-              ["esmc", "ankh", "prott5", "esmfold", "saprot"])
-    elif case == "3enc_no_saprot":
-        probe("3enc_no_saprot", ["esmc", "ankh", "prott5", "esmfold"],
-              ["esmc", "ankh", "prott5", "esmfold"])
+    case = sys.argv[1] if len(sys.argv) > 1 else "esmc_baseline"
+    if case == "all_seeds":
+        for s in (1, 7, 13, 42, 99, 2024):
+            probe(f"all_seed{s}", ALL, seed=s)
     elif case == "all_big_iter":
-        # same as 'all' but 8x MCTS budget
-        probe("all_big_iter",
-              ["esmc", "ankh", "prott5", "esmfold", "foldseek_3di", "saprot"],
-              ["esmc", "ankh", "prott5", "saprot", "esmfold"],
-              max_iter=8192, max_refine=2048)
-    elif case == "all_seeds":
-        # vary seed to see if different rolls find the no-download plan
-        for s in [1, 7, 13, 42, 99, 2024]:
-            probe(f"all_seed{s}",
-                  ["esmc", "ankh", "prott5", "esmfold", "foldseek_3di", "saprot"],
-                  ["esmc", "ankh", "prott5", "saprot", "esmfold"],
-                  seed=s)
+        probe("all_big_iter", ALL, max_iter=8192, max_refine=2048)
+    elif case in CASES:
+        probe(case, CASES[case])
     else:
-        print(f"unknown case: {case}")
+        print(f"unknown case: {case}\nchoices: {', '.join([*CASES, 'all_seeds', 'all_big_iter'])}")
         sys.exit(1)

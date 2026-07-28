@@ -1,0 +1,6 @@
+manifest:
+  /msm_deferred/15d10d5eef144ffebe57cdd9343ffd21:
+    instance_id: 1e20933a4d2ad937547887db13114ae74941e70d6bd0e82f06cf6332d5531763ee2f
+    origin: leaf
+    type: sequences::assembly
+schema: v1

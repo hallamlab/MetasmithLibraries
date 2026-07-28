@@ -1,53 +1,36 @@
 #!/usr/bin/env python3
-"""Plan a PathoLogic (Pathway Tools) workflow for a nucleotide assembly FASTA.
+"""Author the `pathologic_from_assembly` template.
 
-Targets both ptools outputs (cyc folder + parsed CSV tables); the planner
-fans out orfs -> {deepec, kofamscan, diamond_uniref50} -> ptools_annotation_gather
--> pathologic. Stops at DAG generation.
+Targets both PathoLogic outputs, which is what makes the planner fan orfs out to
+deepec + kofamscan + diamond_uniref50 and gather them again.
 
-Configuration — set via environment (or edit the defaults):
-  MSM_ASSEMBLY   nucleotide assembly FASTA to annotate   (REQUIRED)
-  MSM_SRC        metasmith source checkout to import      (optional; else use
-                                                           an installed metasmith)
+    python main/pathologic_from_assembly.py [--rebuild] [--dag]
 """
-import os
 import sys
-from pathlib import Path
 
-# metasmith must be importable; set MSM_SRC to a source checkout if not installed.
-if os.environ.get("MSM_SRC"):
-    sys.path.insert(0, os.environ["MSM_SRC"])
-from metasmith.python_api import (
-    Agent, Source, ContainerRuntime,
-    DataInstanceLibrary, TransformInstanceLibrary,
-    TargetBuilder,
-)
+import _authoring as A
+from metasmith.python_api import DEFERRED, Spec
 
-ASSEMBLY = Path(os.environ.get("MSM_ASSEMBLY", "<assembly.fna>"))  # nucleotide assembly FASTA
-OUT_DIR = Path("results/pathologic")
+NAME = "pathologic_from_assembly"
+DESCRIPTION = """
+Build a Pathway Tools PGDB from a nucleotide assembly: ORF calling, three
+annotation legs gathered together, then PathoLogic.
+"""
 
-MLIB = Path(__file__).resolve().parent.parent
 
-inputs = DataInstanceLibrary(OUT_DIR.resolve() / "inputs.xgdb")
-inputs.AddTypeLibrary(MLIB / "data_types" / "sequences.yml")
-inputs.AddItem(ASSEMBLY.resolve(), "sequences::assembly")
-inputs.Save()
+def build_spec(rebuild: bool = False) -> Spec:
+    def inputs(lib):
+        lib.AddTypeLibrary(A.TYPES / "sequences.yml")
+        lib.AddItem(DEFERRED, "sequences::assembly")
 
-smith = Agent(home=Source.FromLocal(OUT_DIR.resolve() / "msm_home"), runtime=ContainerRuntime.DOCKER)
+    return Spec(
+        input_library=A.deferred_inputs(NAME, inputs, rebuild=rebuild),
+        sample_type="sequences::assembly",
+        target_types=["annotation::pgdb_archive", "annotation::pgdb_csv_tables"],
+        transform_libraries=A.transforms("logistics", "metagenomics", "functionalAnnotation"),
+        resource_libraries=[A.containers()],
+    )
 
-targets = TargetBuilder()
-targets.Add("annotation::pgdb_archive")
-targets.Add("annotation::pgdb_csv_tables")
 
-task = smith.GenerateWorkflow(
-    samples=list(inputs.AsSamples("sequences::assembly")),
-    resources=[DataInstanceLibrary.Load(MLIB / "resources" / "containers"), inputs],
-    transforms=[
-        TransformInstanceLibrary.Load(MLIB / "transforms" / "logistics"),
-        TransformInstanceLibrary.Load(MLIB / "transforms" / "metagenomics"),
-        TransformInstanceLibrary.Load(MLIB / "transforms" / "functionalAnnotation"),
-    ],
-    targets=targets,
-)
-
-task.plan.RenderDAG(str(OUT_DIR.resolve() / "dag"), format="svg")
+if __name__ == "__main__":
+    A.cli(sys.modules[__name__])
