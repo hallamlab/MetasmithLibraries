@@ -37,8 +37,8 @@ def protocol(context: ExecutionContext):
     ipg = context.Output(pg)
     threads = context.params.get('cpus')
     threads = "" if threads is None else f"--cpu {threads}"
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"ppanggolin all --anno {gb_list} {threads} --output {ipg.container}",
     )
     imatrix = context.Output(matrix)
