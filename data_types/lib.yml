@@ -23,4 +23,8 @@ types:
     properties:
       src: merge_promotech_results
       usage: command line
+  bsr_histogram.py:
+    properties:
+      src: bsr_histogram
+      usage: command line
  

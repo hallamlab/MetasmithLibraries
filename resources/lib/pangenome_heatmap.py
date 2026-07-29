@@ -50,7 +50,9 @@ print(len(gclust.labels), gclust.mat.shape)
 # ----------------------------------------------------------------------------
 
 pdist = pairwise_distances(bmat.T, metric="jaccard")
-clust = HierarchicalCluster(pdist, labels=xlabels, method="complete", metric="precomputed", distance_sort=False)
+# display names: `genus species PCC NNNN` (manifest kept them hyphen-joined)
+dlabels = [x.replace('-', ' ') for x in xlabels]
+clust = HierarchicalCluster(pdist, labels=dlabels, method="complete", metric="precomputed", distance_sort=False)
 print("clust.labels")
 print(clust.labels)
 # ----------------------------------------------------------------------------

@@ -1,6 +1,5 @@
 from pathlib import Path
 from metasmith.python_api import *
-import re
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
@@ -16,20 +15,19 @@ def protocol(context: ExecutionContext):
     gb_list = Path("genbank_manifest.list")
     with open(gb_list, "w") as f:
         for p in dep_paths:
+            # name from the GenBank `  ORGANISM` line -> `genus species PCCNNNN`
+            # (kept hyphenated here so the manifest stays whitespace-safe; the
+            # heatmap reintroduces spaces for display). first record wins.
             name = None
             with open(p.local) as g:
                 for i, l in enumerate(g):
-                    if i > 15: continue
-                    if "DEFINITION" not in l: continue
-                    for g in re.finditer(r"substr\.?\s?([^\s]+)|strain\s?([^\s]+)", l):
-                        a, b = g.group(1), g.group(2)
-                        name = a if a else b
-                        if name: break
-                    if not name: name = l.replace("DEFINITION", "")
-                    name = name.strip()
-                    name = name.replace(" ", "-") # the regex should take care of this already...
+                    if i > 15: break
+                    if "ORGANISM" not in l: continue
+                    name = l.replace("ORGANISM", "").strip()
+                    name = name.replace("[", "").replace("]", "")
                     for x in ",.'\"":
                         name = name.replace(x, "")
+                    name = "-".join(name.split())
                     break
             if not name: name = p.local.name
             f.write(name+"\t"+str(p.container)+"\n")
@@ -39,7 +37,7 @@ def protocol(context: ExecutionContext):
     threads = "" if threads is None else f"--cpu {threads}"
     context.ExecWithEnv().ifContainerDo(
         env=image,
-        cmd=f"ppanggolin all --anno {gb_list} {threads} --output {ipg.container}",
+        cmd=f"ppanggolin all --anno {gb_list} --identity 0.3 --coverage 0.8 {threads} --output {ipg.container}",
     )
     imatrix = context.Output(matrix)
     context.LocalShell(f"cp {ipg.local}/matrix.csv {imatrix.local}")
