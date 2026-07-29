@@ -12,7 +12,7 @@ manifest:
     origin: leaf
     type: lib::hierarchical_clustering.py
   local:
-    instance_id: 1e20f357b34b4c00aa628560f4efd08cb26bbd637f8f189dfb6b39bc40903ac36308
+    instance_id: 1e207f839d1784917e299b046a78e0eebcde217b53972f8a1dae2cacb0491cd16c11
     origin: leaf
     type: lib::local
   merge_promotech_results.py:

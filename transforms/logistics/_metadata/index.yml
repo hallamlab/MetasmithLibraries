@@ -140,7 +140,7 @@ manifest:
     origin: leaf
     type: transforms::transform
   getNcbiAssembly.py:
-    instance_id: 1e20b713aefb3c4f102cabc300ffe6cece9b309a9c9240f8d977813e59f9aa6d0a2b
+    instance_id: 1e202a623fadab5ac47710f9ebc3a5bafb249b6b2e7f544b6a6de1fc7144c0081190
     origin: leaf
     type: transforms::transform
   getNcbiSra.py:

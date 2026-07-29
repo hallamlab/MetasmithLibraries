@@ -64,11 +64,19 @@ def assembly_accession_input(tmp_inputs):
     """Create input library with NCBI assembly accession."""
     inputs = tmp_inputs(["ncbi.yml", "sequences.yml"])
 
-    # Use a small bacterial assembly for testing
+    # Use a small bacterial assembly for testing. The accession descends from
+    # the name it is fetched under -- getNcbiAssembly declares that, so
+    # everything it produces carries the name in its lineage.
+    name = inputs.AddValue(
+        "GCF_000005845.name",
+        "K12",
+        "ncbi::genome_name",
+    )
     inputs.AddValue(
         "GCF_000005845.acc",
         "GCF_000005845.2",  # E. coli K-12 reference
         "ncbi::assembly_accession",
+        parents={name},
     )
 
     inputs.Save()

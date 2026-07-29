@@ -36,9 +36,12 @@ except:
 
     # register inputs
     group = inputs.AddValue("pangenome", "e coli", "pangenome::pangenome")
-    inputs.AddValue("DH10b", "GCF_000019425.1", "ncbi::assembly_accession", parents={group})
-    inputs.AddValue("K12", "GCF_000005845.2", "ncbi::assembly_accession", parents={group})
-    inputs.AddValue("EPI300", "GCF_049667475.1", "ncbi::assembly_accession", parents={group})
+    _DH10b_name = inputs.AddValue("DH10b.name", "DH10b", "ncbi::genome_name", parents={group})
+    inputs.AddValue("DH10b", "GCF_000019425.1", "ncbi::assembly_accession", parents={_DH10b_name})
+    _K12_name = inputs.AddValue("K12.name", "K12", "ncbi::genome_name", parents={group})
+    inputs.AddValue("K12", "GCF_000005845.2", "ncbi::assembly_accession", parents={_K12_name})
+    _EPI300_name = inputs.AddValue("EPI300.name", "EPI300", "ncbi::genome_name", parents={group})
+    inputs.AddValue("EPI300", "GCF_049667475.1", "ncbi::assembly_accession", parents={_EPI300_name})
     inputs.AddValue("fastani.oci", "docker://staphb/fastani:1.34", "ani::fastani.oci")
     inputs.Save()
 

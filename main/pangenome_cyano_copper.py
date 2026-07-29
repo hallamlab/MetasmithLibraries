@@ -55,7 +55,12 @@ except Exception:
 
     group = inputs.AddValue("pangenome", "cyano_copper_panel", "pangenome::pangenome")
     for name, acc in PANEL.items():
-        inputs.AddValue(name, acc, "ncbi::assembly_accession", parents={group})
+        # The name is a declared input now, not just the library path it used to
+        # be thrown away into. It sits between the pangenome and the accession,
+        # so everything downloaded inherits it and ppanggolin labels each genome
+        # with it rather than guessing from the GenBank header.
+        nm = inputs.AddValue(f"{name}.name", name, "ncbi::genome_name", parents={group})
+        inputs.AddValue(name, acc, "ncbi::assembly_accession", parents={nm})
     inputs.Save()
 
 resources = [

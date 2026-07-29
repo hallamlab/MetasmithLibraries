@@ -6,7 +6,13 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-dep     = model.AddRequirement(lib.GetType("ncbi::assembly_accession"))
+# The name is declared but never read here, and that is the whole point: stating
+# that an accession descends from a name is what puts the name in the lineage of
+# everything this downloads, so a later step can ask which name a given file
+# came from. Without it the only way to label a genome is to scrape its header,
+# which is not reliably unique -- two assemblies of one species collide.
+name    = model.AddRequirement(lib.GetType("ncbi::genome_name"))
+dep     = model.AddRequirement(lib.GetType("ncbi::assembly_accession"), parents={name})
 image   = model.AddRequirement(lib.GetType("env::ncbi-datasets.env"))
 fna     = model.AddProduct(lib.GetType("sequences::isolate_assembly"))
 faa     = model.AddProduct(lib.GetType("sequences::orfs"))

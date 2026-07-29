@@ -14,15 +14,21 @@ shared_input_paths:
 input_library:
   schema: v1
   manifest:
-    /msm_deferred/600b049487574fbfa5039aac0cd6a981:
+    /msm_deferred/c20b33400bd74d76b1fab7f573c45dba:
       type: ncbi::assembly_accession
       parents:
-        knBSVrHF59js@pangenome.json: pangenome::pangenome
-      instance_id: 1e20ab9c3225345e575fbd8fd7354ddff6778612f1b7c87828f8c1d95262a8f64337
+        XVdEOUF6teNN@/msm_deferred/c8bbfb6b0d1b4769af257d1ead7b303c: ncbi::genome_name
+      instance_id: 1e20e980ef5e330d362d5fd87ab63980f19af1ad31132e44da8882b1f5f541cb6587
+      origin: leaf
+    /msm_deferred/c8bbfb6b0d1b4769af257d1ead7b303c:
+      type: ncbi::genome_name
+      parents:
+        XVdEOUF6teNN@pangenome.json: pangenome::pangenome
+      instance_id: 1e2060695315e035ec0bacbca824653ff11235886681289810b4ceb46928593879cb
       origin: leaf
     pangenome.json:
       type: pangenome::pangenome
-      instance_id: 1e20cdc7a8bbf036c6b583c04178b6d72da128c310ddcb7b9b329d07c1bf19bd5036
+      instance_id: 1e20c9959e1885818b6ee3d8e7024809fec0523b5c333908baeeb94de20987690bca
       origin: leaf
   types:
     ncbi: data_types/ncbi.yml

@@ -4,7 +4,12 @@ from metasmith.python_api import *
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
 pan     = model.AddRequirement(lib.GetType("pangenome::pangenome"))
-gbk     = model.AddRequirement(lib.GetType("sequences::gbk"), parents={pan})
+# Every name in this pangenome, and every genome descending from one of them.
+# Stating the genome as a descendant of the name (rather than of the pangenome)
+# is what makes the pairing below answerable: the two slots arrive as two
+# independently-ordered groups, so the only thing relating them is lineage.
+name    = model.AddRequirement(lib.GetType("ncbi::genome_name"), parents={pan})
+gbk     = model.AddRequirement(lib.GetType("sequences::gbk"), parents={name})
 image   = model.AddRequirement(lib.GetType("env::ppanggolin.env"))
 matrix  = model.AddProduct(lib.GetType("pangenome::ppanggolin_matrix"))
 pg      = model.AddProduct(lib.GetType("pangenome::ppanggolin_raw"))
@@ -12,25 +17,34 @@ pg      = model.AddProduct(lib.GetType("pangenome::ppanggolin_raw"))
 def protocol(context: ExecutionContext):
     dep_paths=context.InputGroup(gbk)
 
+    # PPanGGOLiN keys its whole run on these names and refuses a duplicate, and
+    # they become the matrix columns the heatmap labels its axes with. They come
+    # from the user, via the name each genome descends from -- reading them out
+    # of the GenBank header instead is what made two Caulobacter vibrioides
+    # strains collide on `Caulobacter-vibrioides` and abort the job. No header
+    # field is both unique and readable.
+    #
+    # The manifest is whitespace-delimited and the heatmap turns hyphens back
+    # into spaces for display, so a name is hyphen-joined on the way in.
     gb_list = Path("genbank_manifest.list")
+    seen = {}
     with open(gb_list, "w") as f:
         for p in dep_paths:
-            # name from the GenBank `  ORGANISM` line -> `genus species PCCNNNN`
-            # (kept hyphenated here so the manifest stays whitespace-safe; the
-            # heatmap reintroduces spaces for display). first record wins.
-            name = None
-            with open(p.local) as g:
-                for i, l in enumerate(g):
-                    if i > 15: break
-                    if "ORGANISM" not in l: continue
-                    name = l.replace("ORGANISM", "").strip()
-                    name = name.replace("[", "").replace("]", "")
-                    for x in ",.'\"":
-                        name = name.replace(x, "")
-                    name = "-".join(name.split())
-                    break
-            if not name: name = p.local.name
-            f.write(name+"\t"+str(p.container)+"\n")
+            src = context.SourceOf(p, name)
+            assert src is not None, (
+                f"no genome_name in the lineage of [{p.local.name}] -- every "
+                "assembly_accession must descend from one, and every row of "
+                "that input must have a parent or the lineage is dropped for "
+                "all of them"
+            )
+            label = "-".join(src.local.read_text().split())
+            assert label, f"the genome_name for [{p.local.name}] is empty"
+            assert label not in seen, (
+                f"two genomes are both named [{label}] -- ppanggolin refuses "
+                "duplicates, so give them distinct names"
+            )
+            seen[label] = p
+            f.write(label+"\t"+str(p.container)+"\n")
 
     ipg = context.Output(pg)
     threads = context.params.get('cpus')

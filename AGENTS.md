@@ -54,6 +54,21 @@ serves both a containerized run and a mamba run.
   is retired — the engine rejects it statically. See `docs/ENV_PORT.md`
 - Container paths: `context.Input(x).container` (path inside container), `.local` (path on host), `.external` (path from outside container)
 
+**A collecting transform must not pair two grouped slots by position.** `InputGroup(a)[i]` and
+`InputGroup(b)[i]` arrive in independent task-arrival order and are deduped separately, so the
+only thing relating them is declared lineage: `context.SourceOf(item, other_slot)` answers which
+item of `other_slot` a given item descends from. `ppanggolin` is the reference — it names each
+genome from the `ncbi::genome_name` its gbk descends from. `aggregator.py` shows the older
+in-band alternative (join on a key present in both files) for cases where no lineage relates them.
+
+**Anything downloaded from an accession is named by whoever asked for it, not by its header.**
+`ncbi::genome_name` sits above `ncbi::assembly_accession` in lineage, so every product of
+`getNcbiAssembly` inherits it. That transform *requires* a name and never reads one — the
+declaration exists to put it in the lineage — which means **every caller registering an
+accession must register a name above it**. No GenBank field works instead: `ORGANISM` is bare
+species for most isolates, `DEFINITION` carries the strain only sometimes, and two assemblies of
+one species collide under either (PPanGGOLiN then refuses the whole run over duplicate names).
+
 ## Writing tests
 
 - Tests use `conftest.py` fixtures: `agent`, `base_resources`, `mlib`, `tmp_inputs`

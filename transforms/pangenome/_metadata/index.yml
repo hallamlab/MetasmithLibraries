@@ -12,7 +12,7 @@ manifest:
     origin: leaf
     type: transforms::transform
   ppanggolin.py:
-    instance_id: 1e20bd5490dccb289ee0baa2beb88ac3601bb932b4c822f2baf3e50facfe8fb3ee3c
+    instance_id: 1e20d1fe6f88987a98fc52b954c4fd8b1dc99c713d159eb216a3f3094b1a626a699e
     origin: leaf
     type: transforms::transform
 schema: v1

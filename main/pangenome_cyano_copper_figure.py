@@ -41,13 +41,19 @@ try:
 except Exception:
     inputs = DataInstanceLibrary(in_dir)
     inputs.Purge()
+    inputs.AddTypeLibrary(MLIB / "data_types/ncbi.yml")
     inputs.AddTypeLibrary(MLIB / "data_types/sequences.yml")
     inputs.AddTypeLibrary(MLIB / "data_types/pangenome.yml")
 
     group = inputs.AddValue("pangenome", "cyano_copper_panel", "pangenome::pangenome")
     for gbk in sorted(GBK_DIR.glob("*.gbk")):
-        inputs.AddItem(gbk.resolve(), "sequences::gbk", parents={group})
-        print(f"  staged {gbk.name}")
+        # Resuming from files on disk rather than from accessions, so the name
+        # comes from the filename -- but it is still declared, because that is
+        # what ppanggolin reads. Its stem is the strain here (PCC_7002.gbk).
+        label = gbk.stem
+        nm = inputs.AddValue(f"{label}.name", label, "ncbi::genome_name", parents={group})
+        inputs.AddItem(gbk.resolve(), "sequences::gbk", parents={nm})
+        print(f"  staged {gbk.name} as [{label}]")
     inputs.Save()
 
 resources = [
