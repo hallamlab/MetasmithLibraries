@@ -4,8 +4,8 @@ lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 image       = model.AddRequirement(lib.GetType("containers::deeptfactor.oci"))
-orfs        = model.AddRequirement(lib.GetType("sequences::orfs"))
-out_results = model.AddProduct(lib.GetType("annotation::deeptfactor_results"))
+orfs        = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
+out_results = model.AddProduct(lib.GetType("annotation::deeptfactor_results_chunk"))
 
 
 def protocol(context: ExecutionContext):

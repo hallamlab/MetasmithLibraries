@@ -11,11 +11,17 @@ manifest:
     type: transforms::transform
   binning/skani_dedup.py:
     type: transforms::transform
+  crassphage.py:
+    type: transforms::transform
+  instrain.py:
+    type: transforms::transform
   prodigal.py:
     type: transforms::transform
   taxonomy/centrifuger.py:
     type: transforms::transform
   taxonomy/fastani.py:
+    type: transforms::transform
+  taxonomy/feast.py:
     type: transforms::transform
   taxonomy/ganon2.py:
     type: transforms::transform
@@ -30,6 +36,8 @@ manifest:
   taxonomy/metaphlan.py:
     type: transforms::transform
   taxonomy/phyloflash.py:
+    type: transforms::transform
+  taxonomy/strainphlan.py:
     type: transforms::transform
   taxonomy/sylph.py:
     type: transforms::transform

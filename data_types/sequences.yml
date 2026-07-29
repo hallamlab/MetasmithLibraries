@@ -5,6 +5,13 @@ types:
       Data: nucleic acid sequence
       ext: fna
       origin: assembler
+  contig_batch:
+    properties:
+      _: Fixed-size (~5 Mbp) batch of a per-sample contig FASTA; fans out contig-level annotators (genomad, virsorter2, integron_finder). Distinct sibling of assembly (NOT a subtype, like orf_chunk to orfs) so the solver routes batches only to batch-consuming contig tools, never to whole-assembly consumers. Headers are reversibly sample-prefixed (SG<id>~k141_N) by w4_rebatch.py; w4_recompile.py strips the prefix + regroups results per sample.
+      Format: FASTA
+      Data: nucleic acid sequence
+      granularity: batch
+      ext: fna
   putative_genome:
     properties:
       Format: FASTA
@@ -297,12 +304,24 @@ types:
       Format: FASTA
       Data: protein sequence
       content: open reading frames
+      granularity: whole   # whole per-sample ORF set; orf_chunk (granularity:chunk) is a
+                           # true sibling, NOT a subtype — without this discriminator orf_chunk
+                           # is a property-superset of orfs and satisfies orfs requirements, so
+                           # whole-sample tools (rgi, amrfinderplus) fan out over every chunk.
       ext: faa
   orfs_shard:
     extends:
     - orfs
     properties:
       _: Length-balanced shard of an ORF FASTA; fans out embedding transforms
+      ext: faa
+  orf_chunk:
+    properties:
+      _: Fixed-size (~5000 ORF) chunk of a per-sample ORF FASTA; fans out CPU/IO-bound annotators (distinct sibling of orfs, like forward_short_reads is to short_reads)
+      Format: FASTA
+      Data: protein sequence
+      content: open reading frames
+      granularity: chunk
       ext: faa
 # -----------------------------------------
 # protein structures
