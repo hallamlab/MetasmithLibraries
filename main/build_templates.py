@@ -28,9 +28,10 @@ sys.path.insert(0, str(HERE))
 import _authoring as A
 
 AUTHORS = (
-    "diamond_uniref50_from_assembly",
-    "pathologic_from_assembly",
-    "metag_workflow_from_reads",
+    "pangenome_heatmap_from_assembly",
+    "metagenomics_from_paired_reads",
+    "isolate_assembly_from_long_reads",
+    "annotation_palette_from_assembly",
 )
 
 # Authors that exist but cannot ship, and why. Kept visible rather than deleted:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Author the `metag_workflow_from_reads` template.
+"""Author the `metagenomics_from_paired_reads` template.
 
 The full metagenomics workflow from paired short reads:
 
@@ -18,14 +18,14 @@ The full metagenomics workflow from paired short reads:
 Every intermediate is targeted so it all appears in the graph. The external DBs
 (UniRef50, KOFAM, metabuli, GTDB, phyloFlash) resolve through transforms/logistics.
 
-    python main/metag_workflow_from_reads.py [--rebuild] [--dag]
+    python main/metagenomics_from_paired_reads.py [--rebuild] [--dag]
 """
 import sys
 
 import _authoring as A
 from metasmith.python_api import DEFERRED, Spec
 
-NAME = "metag_workflow_from_reads"
+NAME = "metagenomics_from_paired_reads"
 DESCRIPTION = """
 Full metagenomics workflow from paired short reads: QC, assembly, ORF calling,
 functional annotation, three binners with quality filtering and dereplication,

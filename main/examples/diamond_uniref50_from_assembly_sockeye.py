@@ -2,7 +2,9 @@
 """Run a DIAMOND UniRef50 annotation workflow for a nucleotide assembly FASTA on
 an HPC cluster.
 
-Cluster port of diamond_uniref50_from_assembly.py. Written against a Sockeye-style
+Cluster port of the DIAMOND UniRef50 annotation spec (see
+annotation_palette_from_assembly.py for the current local template covering
+the same annotator). Written against a Sockeye-style
 cluster (module system + apptainer + allocation-coded /scratch). Minimal
 differences vs. the local driver:
   - Agent retargeted to the cluster over SSH with the APPTAINER runtime. Note the
@@ -56,7 +58,7 @@ REMOTE_UNIREF50_DMND = REF / "diamond" / "uniref50.dmnd"
 LOCAL_ASSEMBLY = Path(os.environ.get("MSM_ASSEMBLY", "<assembly.fna>"))  # nucleotide assembly FASTA
 OUT_DIR = Path("results/diamond_uniref50_sockeye")
 
-MLIB = Path(__file__).resolve().parent.parent
+MLIB = Path(__file__).resolve().parent.parent.parent
 
 
 def require_configured():

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Run the full metagenomics workflow from short reads on an HPC cluster (W1).
 
-Cluster port of metag_workflow_from_reads.py. Same DAG (seqkit_reads -> bbduk ->
+Cluster port of the metagenomics-from-reads spec (see
+metagenomics_from_paired_reads.py for the current local template). Same DAG
+(seqkit_reads -> bbduk ->
 megahit -> prodigal -> {diamond_uniref50, kofamscan}; metabuli; assembly_stats ->
 3 binners -> checkm2 -> aggregator -> skani_dedup; gtdbtk; phyloFlash), retargeted
 to run end-to-end over SSH on a SLURM cluster. Written against a Sockeye-style
@@ -96,7 +98,7 @@ R1 = Path(os.environ.get("MSM_READS_R1", "<reads-R1.fq.gz>"))
 R2 = Path(os.environ.get("MSM_READS_R2", "<reads-R2.fq.gz>"))
 OUT_DIR = Path("results/metag_workflow_sockeye")
 
-MLIB = Path(__file__).resolve().parent.parent
+MLIB = Path(__file__).resolve().parent.parent.parent
 
 SUBMIT = "--run" in sys.argv
 

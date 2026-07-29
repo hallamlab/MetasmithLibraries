@@ -50,7 +50,7 @@ HPC_HOST      = os.environ.get("MSM_HPC_HOST", "sockeye")            # ssh host 
 SLURM_ACCOUNT = os.environ.get("MSM_SLURM_ACCOUNT", "<slurm-allocation>")
 SETUP_COMMANDS = ["module load gcc/9.4.0", "module load apptainer"]  # Sockeye module order
 
-MLIB = Path(__file__).resolve().parent.parent
+MLIB = Path(__file__).resolve().parent.parent.parent
 
 # ── read inputs (uploaded to the cluster) ────────────────────────────────────
 R1 = Path(os.environ.get("MSM_READS_R1", "<reads-R1.fq.gz>"))
@@ -194,7 +194,7 @@ def main():
     if not task.ok or len(task.plan.steps) == 0:
         print(f"!! pull plan failed: hints={list(task.plan.hints)}", file=sys.stderr)
         return 3
-    out = Path(__file__).resolve().parent.parent / "results" / "metag_workflow_sockeye"
+    out = Path(__file__).resolve().parent.parent.parent / "results" / "metag_workflow_sockeye"
     out.mkdir(parents=True, exist_ok=True)
     try:
         task.plan.RenderDAG(str(out / "w0_pull_dag"), format="svg", blacklist_namespaces=set())
