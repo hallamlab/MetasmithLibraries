@@ -12,7 +12,7 @@ implementations that planner draws from.
 ```
 data_types/      # YAML type definitions (15 namespaces)
 resources/
-  env/           # 70 generic env declarations (.env → container: URI and/or conda: env)
+  env/           # 77 generic env declarations (.env → container: URI and/or conda: env)
   lib/           # Reusable analysis scripts (clustering, plotting, etc.)
 transforms/      # Transform implementations grouped by domain
   amplicon/              #  2 transforms
