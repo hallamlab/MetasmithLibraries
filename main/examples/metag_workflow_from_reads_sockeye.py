@@ -72,7 +72,7 @@ from pathlib import Path
 if os.environ.get("MSM_SRC"):
     sys.path.insert(0, os.environ["MSM_SRC"])
 from metasmith.python_api import (
-    Agent, SshSource, ContainerRuntime,
+    Agent, SshSource, Runtime,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder,
 )
@@ -162,7 +162,7 @@ def main():
 
     smith = Agent(
         home=SshSource(host=HPC_HOST, path=agent_home).AsSource(),
-        runtime=ContainerRuntime.APPTAINER,
+        runtime=Runtime.APPTAINER,
         setup_commands=SETUP_COMMANDS,
     )
 

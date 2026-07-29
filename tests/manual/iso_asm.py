@@ -2,7 +2,7 @@ import os, sys
 from pathlib import Path
 from metasmith.python_api import Agent, Source, SshSource, DataInstanceLibrary, TransformInstanceLibrary, DataTypeLibrary
 from metasmith.python_api import Resources, Size, Duration
-from metasmith.python_api import ContainerRuntime
+from metasmith.python_api import Runtime
 from metasmith.python_api import TargetBuilder
 from metasmith.hashing import KeyGenerator
 
@@ -11,14 +11,14 @@ base_dir = Path("./cache")
 # agent_home = Source.FromLocal((base_dir/"local_home").resolve())
 # smith = Agent(
 #     home = agent_home,
-#     # runtime=ContainerRuntime.APPTAINER,
-#     runtime=ContainerRuntime.DOCKER,
+#     # runtime=Runtime.APPTAINER,
+#     runtime=Runtime.DOCKER,
 # )
 
 agent_home = SshSource(host="sockeye", path=Path("/scratch/st-shallam-1/pwy_group/metasmith")).AsSource()
 smith = Agent(
     home = agent_home,
-    runtime=ContainerRuntime.APPTAINER,
+    runtime=Runtime.APPTAINER,
     setup_commands=[
         'module load gcc/9.4.0',
         'module load apptainer/1.3.1',

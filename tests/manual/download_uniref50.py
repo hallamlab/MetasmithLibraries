@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from metasmith.python_api import (
     Agent,
-    ContainerRuntime,
+    Runtime,
     DataInstanceLibrary,
     Resources,
     Size,
@@ -33,7 +33,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Set up agent
 agent_home = Source.FromLocal(TEST_MSM_HOME)
-smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
 if not (TEST_MSM_HOME / "msm").exists():
     smith.Deploy()
 

@@ -17,7 +17,7 @@ import shutil
 from pathlib import Path
 
 from metasmith.python_api import (
-    Agent, Source, ContainerRuntime,
+    Agent, Source, Runtime,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder, Resources, Size,
 )
@@ -58,7 +58,7 @@ def organism_name(gbk_path: Path) -> str:
 
 
 agent_home = Source.FromLocal((BASE / "msm_home").absolute())
-smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
 smith.Deploy()
 
 # genome name per lineage token, from the gbk ORGANISM lines

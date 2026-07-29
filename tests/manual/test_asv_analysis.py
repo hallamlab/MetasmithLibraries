@@ -2,7 +2,7 @@
 
 import time
 from pathlib import Path
-from metasmith.python_api import Agent, ContainerRuntime
+from metasmith.python_api import Agent, Runtime
 from metasmith.python_api import DataTypeLibrary, DataInstanceLibrary, TransformInstanceLibrary
 from metasmith.python_api import Source
 from metasmith.python_api import TargetBuilder, Resources, Size, Duration
@@ -22,7 +22,7 @@ print("\n=== Step 1: Deploy Agent ===")
 agent_home = Source.FromLocal(WORKSPACE / "msm_home")
 smith = Agent(
     home=agent_home,
-    runtime=ContainerRuntime.DOCKER,
+    runtime=Runtime.DOCKER,
 )
 
 if not (WORKSPACE / "msm_home" / "msm").exists():

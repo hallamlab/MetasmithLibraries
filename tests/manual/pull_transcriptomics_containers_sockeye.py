@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from metasmith.python_api import (
-    Agent, ContainerRuntime, Source, SshSource,
+    Agent, Runtime, Source, SshSource,
     DataInstanceLibrary, TransformInstanceLibrary, TargetBuilder,
 )
 
@@ -12,7 +12,7 @@ MLIB = Path(__file__).resolve().parent.parent.parent
 agent_home = SshSource(host="sockeye", path=Path("/scratch/st-shallam-1/pwy_group/metasmith")).AsSource()
 smith = Agent(
     home=agent_home,
-    runtime=ContainerRuntime.APPTAINER,
+    runtime=Runtime.APPTAINER,
     setup_commands=[
         'module load gcc/9.4.0',
         'module load apptainer/1.3.1',

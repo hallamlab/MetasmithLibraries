@@ -14,7 +14,7 @@ MLIB = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, "/home/tony/workspace/msm/Metasmith/src")
 
 from metasmith.python_api import (
-    Agent, ContainerRuntime, Source,
+    Agent, Runtime, Source,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder,
 )
@@ -22,7 +22,7 @@ from metasmith.python_api import (
 # ── Local agent (GenerateWorkflow does not require SSH) ───────────────────────
 tmp = Path(tempfile.mkdtemp())
 agent_home = Source.FromLocal(tmp)
-smith = Agent(home=agent_home, runtime=ContainerRuntime.APPTAINER)
+smith = Agent(home=agent_home, runtime=Runtime.APPTAINER)
 
 # ── Transform libraries ───────────────────────────────────────────────────────
 transforms = [

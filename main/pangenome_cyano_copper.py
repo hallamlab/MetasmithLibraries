@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 from metasmith.python_api import (
-    Agent, Source, ContainerRuntime,
+    Agent, Source, Runtime,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder, Resources, Size,
 )
@@ -40,7 +40,7 @@ PANEL = {
 }
 
 agent_home = Source.FromLocal((BASE / "msm_home").absolute())
-smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
 smith.Deploy()
 
 in_dir = BASE / "inputs.xgdb"

@@ -16,7 +16,7 @@ import time
 from pathlib import Path
 
 from metasmith.python_api import (
-    Agent, Source, ContainerRuntime,
+    Agent, Source, Runtime,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder, Resources, Size,
 )
@@ -29,7 +29,7 @@ RUN = len(sys.argv) > 1 and sys.argv[1] == "run"
 TIMEOUT = 2400
 
 agent_home = Source.FromLocal((BASE / "msm_home").absolute())
-smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
 if RUN:
     smith.Deploy()  # deploys the relay binary via a container; needs Docker
 else:

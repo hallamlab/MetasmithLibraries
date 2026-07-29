@@ -33,7 +33,7 @@ import tempfile
 from pathlib import Path
 
 from metasmith.python_api import (
-    Agent, ContainerRuntime, Source,
+    Agent, Runtime, Source,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder,
 )
@@ -43,7 +43,7 @@ OUT_DIR = MLIB / "results"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 tmp = Path(tempfile.mkdtemp(prefix="resistome_dag_"))
-smith = Agent(home=Source.FromLocal(tmp), runtime=ContainerRuntime.APPTAINER)
+smith = Agent(home=Source.FromLocal(tmp), runtime=Runtime.APPTAINER)
 
 # Resources: full container library + all relevant transform domains.
 containers = DataInstanceLibrary.Load(MLIB / "resources/env")

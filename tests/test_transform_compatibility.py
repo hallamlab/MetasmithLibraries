@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from metasmith.python_api import (
-    Agent, Source, ContainerRuntime,
+    Agent, Source, Runtime,
     DataTypeLibrary, DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder, Resources, Size, Duration,
 )
@@ -141,7 +141,7 @@ test_cases = [
     ),
 ]
 
-smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
 
 for name, setup_fn, target_type, sample_type in test_cases:
     def _gen(sf=setup_fn, tt=target_type, st=sample_type):

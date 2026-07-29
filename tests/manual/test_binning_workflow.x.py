@@ -8,7 +8,7 @@ finds the expected transforms.
 import sys
 from pathlib import Path
 from metasmith.python_api import (
-    Agent, ContainerRuntime,
+    Agent, Runtime,
     Source,
     DataInstanceLibrary,
     TransformInstanceLibrary,
@@ -76,7 +76,7 @@ print(f"Transforms: {len(transforms)} libraries")
 # --- Step 3: Deploy agent ---
 print("\n=== Step 3: Deploy agent ===")
 agent_home = Source.FromLocal(WORKSPACE / "msm_home")
-smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
 if not (WORKSPACE / "msm_home" / "msm").exists():
     smith.Deploy()
     print("Agent deployed.")

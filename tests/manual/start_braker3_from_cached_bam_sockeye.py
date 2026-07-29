@@ -8,7 +8,7 @@ sys.stderr.reconfigure(line_buffering=True)
 
 from metasmith.python_api import (
     Agent,
-    ContainerRuntime,
+    Runtime,
     DataInstanceLibrary,
     SshSource,
     TargetBuilder,
@@ -34,7 +34,7 @@ def main() -> None:
     ).AsSource()
     smith = Agent(
         home=agent_home,
-        runtime=ContainerRuntime.APPTAINER,
+        runtime=Runtime.APPTAINER,
         setup_commands=[
             "module load gcc/9.4.0",
             "module load apptainer/1.3.1",

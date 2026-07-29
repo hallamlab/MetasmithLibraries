@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 from metasmith.python_api import (
     Agent,
-    ContainerRuntime,
+    Runtime,
     Source,
     DataInstanceLibrary,
     TransformInstanceLibrary,
@@ -30,7 +30,7 @@ SLURM_ACCOUNT = "st-shallam-1"
 
 agent = Agent(
     home=Source.FromSsh("sockeye", SOCKEYE_AGENT_PATH),
-    runtime=ContainerRuntime.APPTAINER,
+    runtime=Runtime.APPTAINER,
     setup_commands=[
         "module load gcc/9.4.0",
         "module load apptainer/1.3.1",

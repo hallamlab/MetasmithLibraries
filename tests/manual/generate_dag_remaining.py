@@ -17,14 +17,14 @@ MLIB = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, "/home/tony/workspace/msm/Metasmith/src")
 
 from metasmith.python_api import (
-    Agent, ContainerRuntime, Source,
+    Agent, Runtime, Source,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder,
 )
 
 tmp = Path(tempfile.mkdtemp())
 agent_home = Source.FromLocal(tmp)
-smith = Agent(home=agent_home, runtime=ContainerRuntime.APPTAINER)
+smith = Agent(home=agent_home, runtime=Runtime.APPTAINER)
 
 transforms = [
     TransformInstanceLibrary.Load(MLIB / "transforms/transcriptomics"),
