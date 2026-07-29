@@ -85,4 +85,8 @@ manifest:
     type: transforms::transform
   scatterNcbiAccession.py:
     type: transforms::transform
+  splitContigsForAmr.py:
+    type: transforms::transform
+  splitOrfsForAmr.py:
+    type: transforms::transform
 schema: v1

@@ -15,6 +15,8 @@ manifest:
     type: transforms::transform
   instrain.py:
     type: transforms::transform
+  instrain_compare.py:
+    type: transforms::transform
   prodigal.py:
     type: transforms::transform
   taxonomy/centrifuger.py:

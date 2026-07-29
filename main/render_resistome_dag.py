@@ -132,7 +132,6 @@ main.Save()
 # virsorter2, genomad, integronfinder, instrain — still render all their products).
 MAIN_TARGETS = [
     "annotation::rgi_results",
-    "annotation::rgi_mag_results",
     "annotation::amrfinderplus_results",
     "annotation::megares_diamond_results",
     "annotation::bacmet_diamond_results",

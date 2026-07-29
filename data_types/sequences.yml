@@ -323,6 +323,14 @@ types:
       content: open reading frames
       granularity: chunk
       ext: faa
+  orf_batch:
+    properties:
+      _: Large (~3hr/job-calibrated) batch of a per-sample ORF FASTA; fans out the AMR ORF tools (rgi, amrfinderplus, megares, bacmet, vfdb). Distinct sibling of orfs (granularity:batch, NOT a subtype — like contig_batch to assembly and orf_chunk to orfs) so the solver routes AMR-sized batches to the AMR ORF tools without entangling them with the W2 annotation orf_chunk path (granularity:chunk). Produced in-DAG by splitOrfsForAmr.py (replacing the external w4_rebatch.py); headers reversibly sample-prefixed (SG<id>~k141_N_k) so w4_recompile.py splits on the first '~' to de-prefix + regroup per sample.
+      Format: FASTA
+      Data: protein sequence
+      content: open reading frames
+      granularity: batch
+      ext: faa
 # -----------------------------------------
 # protein structures
   predicted_structures:

@@ -9,7 +9,7 @@ lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 image = model.AddRequirement(lib.GetType("containers::diamond.oci"))
-orfs = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
+orfs = model.AddRequirement(lib.GetType("sequences::orf_batch"))
 db = model.AddRequirement(lib.GetType("annotation::bacmet_diamond_db"))
 out_results = model.AddProduct(lib.GetType("annotation::bacmet_diamond_results_chunk"))
 

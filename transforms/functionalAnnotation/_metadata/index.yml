@@ -47,6 +47,8 @@ manifest:
     type: transforms::transform
   megares.py:
     type: transforms::transform
+  merge_amrfinderplus.py:
+    type: transforms::transform
   merge_bacmet.py:
     type: transforms::transform
   merge_busco_full_table.py:
@@ -73,6 +75,8 @@ manifest:
     type: transforms::transform
   merge_proteinbert.py:
     type: transforms::transform
+  merge_rgi.py:
+    type: transforms::transform
   merge_vfdb.py:
     type: transforms::transform
   mobileelementfinder.py:
@@ -92,8 +96,6 @@ manifest:
   ptools_annotation_gather.py:
     type: transforms::transform
   rgi.py:
-    type: transforms::transform
-  rgi_mag.py:
     type: transforms::transform
   saprot.py:
     type: transforms::transform

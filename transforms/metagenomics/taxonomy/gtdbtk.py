@@ -31,7 +31,15 @@ def protocol(context: ExecutionContext):
     mem = context.params.get('memory')
     if mem:
         _mem_gb = int(float(mem))
-        pplacer_cpus = f"--pplacer_cpus {max(1, (_mem_gb-8)//40)}"
+        # pplacer keeps a FULL copy of the reference tree (~128 GB for r232's
+        # scaled bac120 tree) IN MEMORY PER THREAD, so peak RAM ~= pplacer_cpus
+        # * ~130 GB. The old (mem-8)//40 heuristic assumed ~40 GB/thread and
+        # yielded 5 threads at 240 GB -> ~640 GB peak -> SIGKILL right at
+        # "Step 8: Placing genomes" (silently swallowed by errorStrategy=ignore,
+        # producing empty taxonomy). Budget ~140 GB/thread over a ~40 GB base so
+        # 240 GB -> 1 thread (peak ~128 GB, fits). --skip_ani_screen is set, so
+        # the sketch DB is not loaded and pplacer is the sole memory driver.
+        pplacer_cpus = f"--pplacer_cpus {max(1, (_mem_gb-40)//140)}"
     else:
         pplacer_cpus = ""
 

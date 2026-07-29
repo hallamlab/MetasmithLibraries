@@ -1,4 +1,3 @@
-from pathlib import Path
 from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
@@ -6,37 +5,37 @@ model = Transform()
 image = model.AddRequirement(lib.GetType("containers::diamond.oci"))  # shell only
 ref   = model.AddProduct(lib.GetType("annotation::feast_sources"))
 
-# ===========================================================================
-# STUB — NOT runnable as-is. FEAST source tracking needs curated external
-# community profiles (human gut, livestock, wildlife, soil, freshwater) from
-# MGnify / EMP, formatted to a FEAST source OTU/species table. That curation is
-# deferred (see plan "Still unsure about" + container_builds/main/feast). This
-# downloader only scaffolds the directory + a manifest so the transform graph
-# resolves; finalise the sources before running FEAST for real.
-# ===========================================================================
-SOURCES = [
-    "human_gut", "livestock", "wildlife", "soil", "freshwater",
-]
+# FEAST source data is NOT internet-downloadable — Antonio provided the complete
+# frozen FEAST input directly (via Slack): a MetaPhlAn SGB species matrix whose
+# rows are the 101 lake sinks + 81 external source profiles (human_gut / oral /
+# skin), plus the matching metadata (SourceSink / Env / id). Provenance +
+# invocation: raw/originals_from_antonio_2_resistome/feast_sources/PROVENANCE.md.
+#
+# Those CSVs are staged to the fir lib as the durable source of truth (see
+# w4_resistome.py / W0 staging). In the normal run the driver provides
+# feast_sources as a PRE-STAGED input (DB_INPUTS), so this downloader is not on
+# the run path; it exists as the standard-mechanism fallback that assembles the
+# product dir from the lib backup.
+LIB_FEAST_SOURCES = "/home/phyberos/project-rpp/lib/feast_sources"
+REQUIRED = ["FEAST_otus.csv", "FEAST_metadata_final.csv"]
 
 
 def protocol(context: ExecutionContext):
     iref = context.Output(ref)
 
-    iref.local.mkdir(parents=True, exist_ok=True)
-    readme = iref.local / "TODO_SOURCES.md"
-    readme.write_text(
-        "FEAST external source profiles — TODO.\n\n"
-        "Populate this directory with a curated source OTU/species abundance "
-        "table covering:\n"
-        + "".join(f"  - {s}\n" for s in SOURCES)
-        + "\nSource candidates: MGnify (mgnify.org), EMP (earthmicrobiome.org).\n"
-        "Format to a FEAST source matrix (samples x taxa) aligned to the "
-        "MetaPhlAn species table used as the sink.\n"
+    context.ExecWithContainer(
+        image=image,
+        cmd=f"""
+            mkdir -p {iref.container}
+            cp {LIB_FEAST_SOURCES}/FEAST_otus.csv {iref.container}/
+            cp {LIB_FEAST_SOURCES}/FEAST_metadata_final.csv {iref.container}/
+        """,
     )
 
+    ok = all((iref.local / f).exists() for f in REQUIRED)
     return ExecutionResult(
         manifest=[{ref: iref.local}],
-        success=iref.local.exists(),
+        success=ok,
     )
 
 
