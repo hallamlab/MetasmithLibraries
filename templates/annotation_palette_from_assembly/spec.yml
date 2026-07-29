@@ -17,7 +17,7 @@ transform_libraries:
 - transforms/metagenomics
 - transforms/functionalAnnotation
 resource_libraries:
-- resources/containers
+- resources/env
 shared_input_paths:
 - eggnog_source.marker
 input_library:

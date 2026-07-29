@@ -7,7 +7,7 @@ transform_libraries:
 - transforms/logistics
 - transforms/pangenome
 resource_libraries:
-- resources/containers
+- resources/env
 - resources/lib
 shared_input_paths:
 - pangenome.json
