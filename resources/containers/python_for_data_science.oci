@@ -1,1 +1,1 @@
-docker://quay.io/hallamlab/python_for_data_science:1.2.5
+docker://quay.io/hallamlab/python_for_data_science@sha256:6a1e7d708bbe68da91527d787101f1b1f2ca703b35cbf103723ecd9ae471c4af
