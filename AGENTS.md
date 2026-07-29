@@ -54,8 +54,8 @@ tests/               # Pytest-based workflow & E2E tests
 ## Templates (`templates/`, authored from `main/`)
 
 A template is a starting point a user picks in the GUI: a `metasmith.Spec` whose
-input paths are `DEFERRED`, saved as `templates/<name>/spec.yml` beside the deferred
-input library it points at. There is no template format — it is the same object a
+input paths are `DEFERRED`, saved as `templates/<name>/spec.yml` with the deferred
+input library packed inline. There is no template format — it is the same object a
 stored workflow is, so a template validates the way a workflow does, by solving.
 
 Shipping them here is what makes versioning free: a template arrives in the same
@@ -63,7 +63,7 @@ commit as the transforms it names and cannot be older than the library it was fo
 
 Authoring one is a module in `main/` defining `NAME`, `DESCRIPTION` and
 `build_spec(rebuild=False)`, listed in `build_templates.py`. `main/_authoring.py`
-owns the rest. Read `main/diamond_uniref50_from_assembly.py` first — it is the
+owns the rest. Read `main/pangenome_heatmap_from_assembly.py` first — it is the
 smallest complete example.
 
 Four rules, each with a failure mode that is quiet if you break it:
@@ -75,10 +75,11 @@ Four rules, each with a failure mode that is quiet if you break it:
 - **Nothing rendered ships.** `--dag` writes an SVG under `results/` (git-ignored) so you
   can see whether the spec you wrote is the one you meant. The repository ships the spec;
   the GUI draws it in its own theme.
-- **The input library is built once and committed.** Deferred paths are minted on `AddItem`
-  and identity follows the path, so re-minting on every build would change the template's
-  task key each time and pile up duplicate rows. `--rebuild` is the deliberate way to start
-  over after changing what the inputs *are*.
+- **The input library is built once, then loaded back.** It ships inline in the spec, so an
+  author reads it out of `templates/<name>/spec.yml` rather than rebuilding it. Deferred
+  paths are minted on `AddItem` and identity follows the path, so re-minting on every build
+  would change the template's task key each time and pile up duplicate rows. `--rebuild` is
+  the deliberate way to start over after changing what the inputs *are*.
 
 `./dev.sh -b` rebuilds `_metadata/` and then solves every template, failing by name — a
 transform whose products change shape takes its templates down at build time. A template
@@ -88,11 +89,11 @@ that cannot ship stays listed in `BLOCKED` with the reason rather than being del
 
 Everything in `main/` that is not a template author runs against a real cluster.
 
-- `main/{diamond_uniref50_from_assembly,metag_workflow_from_reads}_sockeye.py` — HPC ports
+- `main/examples/{diamond_uniref50_from_assembly,metag_workflow_from_reads}_sockeye.py` — HPC ports
   (SSH + APPTAINER + allocation-coded `/scratch`) that reference inputs/DBs by REMOTE path,
   supply pre-staged DBs as resources to prune the `local`-labeled `download*` steps, and run
   Deploy → Generate → Stage → Run → Wait. The metag one is a **W0/W1 pair**: run
-  `main/metag_setup_sockeye.py --run` first (prefetch the 17 tool containers via
+  `main/examples/metag_setup_sockeye.py --run` first (prefetch the 17 tool containers via
   `containers::pulled_container`, upload reads, verify DBs), then the workflow driver.
 - `main/launch_dl_embeddings.py` — the deep-learning embedding workflow on a GPU cluster,
   with per-transform SLURM GPU `clusterOptions` rendered on top of the stock `slurm.nf`.
