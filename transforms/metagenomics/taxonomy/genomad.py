@@ -4,7 +4,7 @@ from metasmith.python_api import *
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image    = model.AddRequirement(lib.GetType("containers::genomad.oci"))
+image    = model.AddRequirement(lib.GetType("env::genomad.env"))
 # ~5 Mbp contig batch (w4_rebatch.py), sample-prefixed headers; per-sample
 # regroup happens in w4_recompile.py. Sibling of assembly, not a subtype.
 assembly = model.AddRequirement(lib.GetType("sequences::contig_batch"))
