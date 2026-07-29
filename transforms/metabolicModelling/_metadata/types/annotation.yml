@@ -14,6 +14,14 @@ types:
       _:
       - AMRFinderPlus protein hits (TSV; Protein_id column = k141_XXXXXX_N)
       ext: tsv
+  amrfinderplus_results_chunk:
+    properties:
+      Format: TSV
+      _:
+      - Per-chunk AMRFinderPlus hits (distinct sibling of amrfinderplus_results; merge_amrfinderplus
+        produces the per-sample dtype)
+      ext: tsv
+      granularity: chunk
   ankh_embeddings:
     properties:
       Format: Parquet
@@ -249,6 +257,10 @@ types:
   feast_sources:
     properties:
     - FEAST external source community profiles (gut/livestock/wildlife/soil/freshwater)
+  instrain_compare:
+    properties:
+    - inStrain compare output (cross-sample popANI / strain sharing over the shared
+      derep-MAG ref)
   instrain_genome_info:
     properties:
       Format: TSV
@@ -257,7 +269,7 @@ types:
       ext: tsv
   instrain_profile:
     properties:
-    - inStrain profile output directory (per-MAG SNV/microdiversity)
+    - inStrain profile output directory (per-MAG SNV/microdiversity vs derep-MAG ref)
   integronfinder_integrons:
     properties:
       Format: TSV
@@ -332,6 +344,9 @@ types:
       - Per-chunk DIAMOND MEGARes BLAST6 (sibling of megares_diamond_results)
       ext: tsv
       granularity: chunk
+  metaphlan_db:
+    properties:
+    - MetaPhlAn vJan25 CHOCOPhlAnSGB marker database (dir holding the .pkl)
   mobileelementfinder_results:
     properties:
       Format: CSV
@@ -476,18 +491,20 @@ types:
       - Long-format per-ORF functional annotations (EC / GO / KEGG / UniProt / FUNCTION)
         for ingestion by Pathway Tools
       ext: parquet
-  rgi_mag_results:
-    properties:
-      Format: TSV
-      _:
-      - RGI main ARG hits on COMEBin MAG contigs (TSV; contig IDs preserved)
-      ext: txt
   rgi_results:
     properties:
       Format: TSV
       _:
       - RGI main ARG hits on Prodigal proteins (TSV; ORF_ID column = k141_XXXXXX_N)
       ext: txt
+  rgi_results_chunk:
+    properties:
+      Format: TSV
+      _:
+      - Per-chunk RGI hits (distinct sibling of rgi_results; merge_rgi produces the
+        per-sample dtype)
+      ext: txt
+      granularity: chunk
   saprot_embeddings:
     properties:
       Format: Parquet
