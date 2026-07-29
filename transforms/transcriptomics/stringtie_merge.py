@@ -22,8 +22,8 @@ def protocol(context: ExecutionContext):
         for p in gtf_paths:
             f.write(f"{p.container}\n")
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             stringtie --merge \
                 -G {igff.container} \

@@ -11,7 +11,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::amrfinderplus.oci"))
+image = model.AddRequirement(lib.GetType("env::amrfinderplus.env"))
 chunk = model.AddRequirement(lib.GetType("sequences::orf_batch"))
 db = model.AddRequirement(lib.GetType("annotation::amrfinderplus_db"))
 out_results = model.AddProduct(lib.GetType("annotation::amrfinderplus_results_chunk"))
@@ -24,8 +24,8 @@ def protocol(context: ExecutionContext):
 
     threads = context.params.get("cpus", 8)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(idb.external, "/amrdb")],
         cmd=f"""
             amrfinder \

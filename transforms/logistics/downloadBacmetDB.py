@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))
+image = model.AddRequirement(lib.GetType("env::diamond.env"))
 db    = model.AddProduct(lib.GetType("annotation::bacmet_diamond_db"))
 
 # BacMet2 "predicted" protein DB (~40k genes; metal + biocide resistance).
@@ -13,8 +13,8 @@ BACMET_URL = "http://bacmet.biomedicine.gu.se/download/BacMet2_predicted_databas
 def protocol(context: ExecutionContext):
     idb = context.Output(db)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             wget -q --no-check-certificate {BACMET_URL} -O bacmet.fasta.gz
             gunzip -f bacmet.fasta.gz

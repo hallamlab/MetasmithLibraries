@@ -12,7 +12,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::rgi.oci"))
+image = model.AddRequirement(lib.GetType("env::rgi.env"))
 chunk = model.AddRequirement(lib.GetType("sequences::orf_batch"))
 card = model.AddRequirement(lib.GetType("annotation::card_db"))
 out_results = model.AddProduct(lib.GetType("annotation::rgi_results_chunk"))
@@ -28,8 +28,8 @@ def protocol(context: ExecutionContext):
     # rgi main --local consumes ./localDB in the work dir; stage the prepared
     # CARD localDB there. RGI appends .txt to --output_file.
     context.LocalShell(f"cp -r {icard.external} ./localDB")
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             rgi main \
                 --input_sequence {iorfs.container} \

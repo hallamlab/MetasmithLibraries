@@ -20,8 +20,8 @@ def protocol(context: ExecutionContext):
         for p in bam_paths:
             f.write(f"{p.container}\n")
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             samtools merge -@ {threads} -b {bam_list} merged.bam
             samtools sort -@ {threads} -o sorted.bam merged.bam

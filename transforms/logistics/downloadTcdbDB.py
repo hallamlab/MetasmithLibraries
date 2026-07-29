@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))
+image = model.AddRequirement(lib.GetType("env::diamond.env"))
 db    = model.AddProduct(lib.GetType("annotation::tcdb_diamond_db"))
 
 # TCDB publishes every transporter protein as one FASTA at this endpoint.
@@ -15,8 +15,8 @@ def protocol(context: ExecutionContext):
     # diamond_tcdb.py mounts the .dmnd's *parent* at /db and references the
     # file by name, so the product is a single `.dmnd` file (ext: dmnd).
     # tcdb.org's TLS chain trips wget's verification, hence --no-check-certificate.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             wget -q --no-check-certificate {TCDB_URL} -O tcdb.fasta
             diamond makedb --in tcdb.fasta -d tcdb

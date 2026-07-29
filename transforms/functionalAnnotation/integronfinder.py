@@ -12,7 +12,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::integronfinder.oci"))
+image = model.AddRequirement(lib.GetType("env::integronfinder.env"))
 # ~5 Mbp contig batch (w4_rebatch.py), sample-prefixed headers; per-sample
 # regroup happens in w4_recompile.py. Sibling of assembly, not a subtype.
 asm = model.AddRequirement(lib.GetType("sequences::contig_batch"))
@@ -28,8 +28,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get("cpus", 8)
 
     # integron_finder writes Results_Integron_Finder_<stem>/ in the work dir.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             integron_finder \
                 --local-max \

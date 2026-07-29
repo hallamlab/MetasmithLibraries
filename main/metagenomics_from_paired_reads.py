@@ -83,7 +83,7 @@ def build_spec(rebuild: bool = False) -> Spec:
         target_types=TARGETS,
         transform_libraries=A.transforms(
             "logistics", "assembly", "metagenomics", "functionalAnnotation"),
-        resource_libraries=[A.containers()],
+        resource_libraries=[A.envs()],
     )
 
 

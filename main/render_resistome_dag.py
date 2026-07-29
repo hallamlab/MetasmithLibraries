@@ -46,7 +46,7 @@ tmp = Path(tempfile.mkdtemp(prefix="resistome_dag_"))
 smith = Agent(home=Source.FromLocal(tmp), runtime=ContainerRuntime.APPTAINER)
 
 # Resources: full container library + all relevant transform domains.
-containers = DataInstanceLibrary.Load(MLIB / "resources/containers")
+containers = DataInstanceLibrary.Load(MLIB / "resources/env")
 transforms = [
     TransformInstanceLibrary.Load(MLIB / "transforms/functionalAnnotation"),
     TransformInstanceLibrary.Load(MLIB / "transforms/metagenomics"),  # incl. binning/ + taxonomy/
@@ -104,7 +104,7 @@ def render(task, stem):
         print(f"  Step {step.order}: {name} -> {prods}")
     for ext in ("svg", "png"):
         out = OUT_DIR / f"{stem}.{ext}"
-        task.plan.RenderDAG(out, blacklist_namespaces={"lib", "containers"})
+        task.plan.RenderDAG(out, blacklist_namespaces={"lib", "env"})
         print(f"DAG written to: {out.resolve()}")
 
 

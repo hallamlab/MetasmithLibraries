@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))  # shell only
+image = model.AddRequirement(lib.GetType("env::diamond.env"))  # shell only
 ref   = model.AddProduct(lib.GetType("annotation::feast_sources"))
 
 # FEAST source data is NOT internet-downloadable — Antonio provided the complete
@@ -23,8 +23,8 @@ REQUIRED = ["FEAST_otus.csv", "FEAST_metadata_final.csv"]
 def protocol(context: ExecutionContext):
     iref = context.Output(ref)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p {iref.container}
             cp {LIB_FEAST_SOURCES}/FEAST_otus.csv {iref.container}/

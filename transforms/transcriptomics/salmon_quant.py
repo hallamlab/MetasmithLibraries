@@ -16,8 +16,8 @@ def protocol(context: ExecutionContext):
     iout=context.Output(out)
     threads = context.params.get('cpus')
     threads = 8 if threads is None else threads
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             salmon quant \
                 -i {iidx.container} \

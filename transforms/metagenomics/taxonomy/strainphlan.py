@@ -20,7 +20,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::metaphlan.oci"))
+image = model.AddRequirement(lib.GetType("env::metaphlan.env"))
 reads = model.AddRequirement(lib.GetType("sequences::clean_short_reads"))
 db = model.AddRequirement(lib.GetType("annotation::metaphlan_db"))
 out_markers = model.AddProduct(lib.GetType("annotation::strainphlan_consensus_markers"))
@@ -45,8 +45,8 @@ def protocol(context: ExecutionContext):
     # $HOME. The SAM (and thus the emitted <stem>.pkl) is named for the sample so
     # the downstream cross-sample strainphlan step keys on it. --offline: never
     # touch the network; the SGB index is already staged under /mpa_db.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(idb.external, "/mpa_db")],
         cmd=f"""
             export HOME="$(pwd)/home"; mkdir -p "$HOME" markers work

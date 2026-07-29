@@ -4,7 +4,7 @@ from metasmith.python_api import *
 
 lib    = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model  = Transform()
-image  = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image  = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 script = model.AddRequirement(lib.GetType("lib::bsr_histogram.py"))
 blast  = model.AddRequirement(lib.GetType("pangenome::all_vs_all_blast"))
 out    = model.AddProduct(lib.GetType("pangenome::bsr_histogram"))
@@ -20,8 +20,8 @@ def protocol(context: ExecutionContext):
         mkdir -p ./fake_home/.config
         mkdir -p ./fake_home/.pki
     """)
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[
             ("$(pwd -P)/fake_home/.cache",  "$HOME/.cache"),
             ("$(pwd -P)/fake_home/.local",  "$HOME/.local"),

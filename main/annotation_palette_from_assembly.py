@@ -55,7 +55,7 @@ def build_spec(rebuild: bool = False) -> Spec:
         ],
         transform_libraries=A.transforms(
             "logistics", "metagenomics", "functionalAnnotation"),
-        resource_libraries=[A.containers()],
+        resource_libraries=[A.envs()],
     )
 
 

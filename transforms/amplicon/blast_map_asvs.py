@@ -19,8 +19,8 @@ def protocol(context: ExecutionContext):
     # Read threshold value from the input file
     pct_identity = ithreshold.local.read_text().strip()
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             makeblastdb \
                 -in {icontigs.container} \

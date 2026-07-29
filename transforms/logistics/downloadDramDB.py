@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::dram.oci"))
+image = model.AddRequirement(lib.GetType("env::dram.env"))
 db    = model.AddProduct(lib.GetType("annotation::dram_db"))
 
 
@@ -23,8 +23,8 @@ def protocol(context: ExecutionContext):
     # bind-mounts this dir at /db, so we rewrite the build prefix -> /db after
     # setup. DRAM_CONFIG_LOCATION (resolved bug #7) directs the config write
     # into the output dir so it travels with the database.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             export HOME=/tmp
             export PYTHONHTTPSVERIFY=0

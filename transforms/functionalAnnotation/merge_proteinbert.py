@@ -13,7 +13,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image_polars = model.AddRequirement(lib.GetType("containers::polars.oci"))
+image_polars = model.AddRequirement(lib.GetType("env::polars.env"))
 parent_orfs  = model.AddRequirement(lib.GetType("sequences::orfs"))
 chunk_emb    = model.AddRequirement(lib.GetType("annotation::proteinbert_embeddings_chunk"), parents={parent_orfs})
 chunk_idx    = model.AddRequirement(lib.GetType("annotation::proteinbert_index_chunk"), parents={parent_orfs})
@@ -83,8 +83,8 @@ def protocol(context: ExecutionContext):
         [[str(e.container), str(i.container)] for e, i in pairs]
     ))
 
-    context.ExecWithContainer(
-        image=image_polars,
+    context.ExecWithEnv().ifContainerDo(
+        env=image_polars,
         cmd=f"python {script} {manifest_path} {oemb.container} {oidx.container}",
     )
 

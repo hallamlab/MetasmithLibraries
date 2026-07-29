@@ -3,7 +3,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::rgi.oci"))
+image = model.AddRequirement(lib.GetType("env::rgi.env"))
 db    = model.AddProduct(lib.GetType("annotation::card_db"))
 
 # CARD canonical "latest" bundle (card.json + annotations).
@@ -16,8 +16,8 @@ def protocol(context: ExecutionContext):
     # `rgi load --local` materialises a ./localDB directory in the CWD (bound to
     # the host work dir), which `rgi main --local` consumes. That directory IS
     # the product.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             wget -q --no-check-certificate {CARD_URL} -O card-data.tar.bz2
             mkdir -p card_raw

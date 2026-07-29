@@ -9,8 +9,8 @@ out     = model.AddProduct(lib.GetType("transcriptomics::salmon_index"))
 def protocol(context: ExecutionContext):
     iasm=context.Input(asm)
     iout=context.Output(out)
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"salmon index -t {iasm.container} -i salmon_idx -k 31",
     )
     context.LocalShell(f"mv salmon_idx {iout.local}")

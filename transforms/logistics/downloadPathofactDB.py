@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))  # has wget + tar
+image = model.AddRequirement(lib.GetType("env::diamond.env"))  # has wget + tar
 ref   = model.AddProduct(lib.GetType("annotation::pathofact_db"))
 
 # PathoFact 2.0 core database (HMM profiles, DIAMOND DBs, MGE / toxin signatures),
@@ -20,8 +20,8 @@ def protocol(context: ExecutionContext):
     # fetch + extract into the product dir, preserving the archive's layout
     # (top-level DATABASES/ tree). The pathofact wrapper resolves the DB root
     # (this dir or its nested DATABASES/).
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p {iref.container}
             wget -q --no-check-certificate "{ZENODO_URL}" -O pathofact_db.tar.gz

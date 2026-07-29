@@ -13,8 +13,8 @@ def protocol(context: ExecutionContext):
     iasm = context.Input(asm)
     iout = context.Output(out)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"gffread {igtf.container} -g {iasm.container} -y {iout.container}",
     )
     return ExecutionResult(

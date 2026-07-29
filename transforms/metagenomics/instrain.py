@@ -18,9 +18,9 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-img_mm2 = model.AddRequirement(lib.GetType("containers::minimap2.oci"))
-img_sam = model.AddRequirement(lib.GetType("containers::samtools.oci"))
-img_is  = model.AddRequirement(lib.GetType("containers::instrain.oci"))
+img_mm2 = model.AddRequirement(lib.GetType("env::minimap2.env"))
+img_sam = model.AddRequirement(lib.GetType("env::samtools.env"))
+img_is  = model.AddRequirement(lib.GetType("env::instrain.env"))
 reads   = model.AddRequirement(lib.GetType("sequences::clean_short_reads"))
 magref  = model.AddRequirement(lib.GetType("binning::derep_mag_ref"))
 out_profile = model.AddProduct(lib.GetType("annotation::instrain_profile"))
@@ -49,8 +49,8 @@ def protocol(context: ExecutionContext):
     #    INTERLEAVED paired-end (R1,R2,R1,R2,...) and minimap2 has no interleaved
     #    mode, so deinterleave into R1/R2 first (one awk pass, streamed to gzip —
     #    no big temp file) and map paired so inStrain's read-pair filter applies.
-    context.ExecWithContainer(
-        image=img_mm2,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_mm2,
         binds=[(imagref.external, "/magref")],
         cmd=f"""
             zcat {ireads.container} | awk '{{ if (NR%8>=1 && NR%8<=4) print | "gzip > r1.fq.gz"; else print | "gzip > r2.fq.gz" }}'
@@ -61,8 +61,8 @@ def protocol(context: ExecutionContext):
     )
 
     # 2) SAM -> sorted+indexed BAM.
-    context.ExecWithContainer(
-        image=img_sam,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_sam,
         cmd=f"""
             samtools view -@ {threads} -b temp.sam \
                 | samtools sort -@ {threads} -o {bam} -O bam
@@ -72,8 +72,8 @@ def protocol(context: ExecutionContext):
     )
 
     # 3) inStrain profile vs the reference, partitioned into MAGs by the stb.
-    context.ExecWithContainer(
-        image=img_is,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_is,
         binds=[(imagref.external, "/magref")],
         cmd=f"""
             inStrain profile \

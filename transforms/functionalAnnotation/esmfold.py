@@ -41,7 +41,7 @@ a = p.parse_args()
 
 # Note: PYTORCH_CUDA_ALLOC_CONF must be set before torch initializes CUDA,
 # which happens at the first CUDA call below. We set it via the apptainer
-# `--env` flag on ExecWithContainer (see protocol() below), not here, because
+# `--env` flag on the container arm (see protocol() below), not here, because
 # `os.environ.setdefault` after `import torch` is too late to influence the
 # allocator's startup configuration.
 device = torch.device(a.device if (a.device == "cpu" or torch.cuda.is_available()) else "cpu")

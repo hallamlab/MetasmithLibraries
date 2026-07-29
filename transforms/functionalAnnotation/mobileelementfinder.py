@@ -18,7 +18,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::mobileelementfinder.oci"))
+image = model.AddRequirement(lib.GetType("env::mobileelementfinder.env"))
 # ~5 Mbp contig batch (w4_rebatch.py), sample-prefixed headers; per-sample regroup
 # happens in w4_recompile.py. Sibling of assembly, not a subtype.
 asm = model.AddRequirement(lib.GetType("sequences::contig_batch"))
@@ -38,7 +38,7 @@ def protocol(context: ExecutionContext):
     # FAIL the task loudly, not be swallowed into a silent empty (false-negative)
     # result. That JSON bug lives in me_finder/tools/blast.py's bare json.load().
     #
-    # The deployed containers::mobileelementfinder.oci resolves to the STOCK
+    # The deployed env::mobileelementfinder.env resolves to the STOCK
     # quay.io/hallamlab/external_mobileelementfinder:1.1.2 image (the intended
     # >= 1.1.2-jsonfix1 build was never published), so we inject the fix at run
     # time: bind our raw_decode-fixed blast.py (parses every concatenated blast
@@ -54,8 +54,8 @@ def protocol(context: ExecutionContext):
         "/opt/conda/envs/external_mobileelementfinder_env"
         "/lib/python3.9/site-packages/me_finder/tools/blast.py"
     )
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(MEF_BLAST_PATCH, MEF_BLAST_INCONTAINER)],
         cmd=f"""
             mefinder find --contig {iasm.container} --threads {threads} mef_out

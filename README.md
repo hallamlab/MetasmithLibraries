@@ -90,8 +90,8 @@ out   = model.AddProduct(lib.GetType("annotation::eggnog_table"))
 def protocol(context: ExecutionContext):
     in_path  = context.Input(inp)
     out_path = context.Output(out)
-    context.ExecWithContainer(
-        image=lib.GetResource("env::eggnog-mapper.env"),
+    context.ExecWithEnv().ifContainerDo(
+        env=lib.GetResource("env::eggnog-mapper.env"),
         cmd=f"emapper.py -i {in_path.container} -o {out_path.container}",
     )
     return ExecutionResult(manifest=[{out: out_path.local}], success=out_path.local.exists())

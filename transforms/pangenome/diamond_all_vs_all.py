@@ -12,7 +12,7 @@ lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 pan   = model.AddRequirement(lib.GetType("pangenome::pangenome"))
 orfs  = model.AddRequirement(lib.GetType("sequences::orfs"), parents={pan})
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))
+image = model.AddRequirement(lib.GetType("env::diamond.env"))
 out   = model.AddProduct(lib.GetType("pangenome::all_vs_all_blast"))
 
 def protocol(context: ExecutionContext):
@@ -38,8 +38,8 @@ def protocol(context: ExecutionContext):
 
     iout = context.Output(out)
     threads = context.params.get("cpus", 8)
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             diamond makedb --in pooled.faa -d pooled_db --threads {threads}
             diamond blastp \

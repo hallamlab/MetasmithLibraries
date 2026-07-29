@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::bakta.oci"))
+image = model.AddRequirement(lib.GetType("env::bakta.env"))
 db    = model.AddProduct(lib.GetType("annotation::bakta_db"))
 
 
@@ -14,8 +14,8 @@ def protocol(context: ExecutionContext):
     # subdirectory bakta_noncoding.py mounts at /db and references as
     # `--db /db/db-light`. The non-coding-only consumer (--skip-cds) does not
     # touch the AMRFinderPlus DB, so no `amrfinder_update` step is needed here.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p {idb.container}
             bakta_db download --output {idb.container} --type light

@@ -18,7 +18,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image   = model.AddRequirement(lib.GetType("containers::instrain.oci"))
+image   = model.AddRequirement(lib.GetType("env::instrain.env"))
 magref  = model.AddRequirement(lib.GetType("binning::derep_mag_ref"))
 profiles = model.AddRequirement(lib.GetType("annotation::instrain_profile"),
                                 parents={magref})
@@ -33,8 +33,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get("cpus", 16)
     dirs = " ".join(str(p.container) for p in iprofiles)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(imagref.external, "/magref")],
         cmd=f"""
             inStrain compare \

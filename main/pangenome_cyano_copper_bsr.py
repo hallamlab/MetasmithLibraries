@@ -87,7 +87,7 @@ except Exception:
 
 resources = [
     DataInstanceLibrary.Load(MLIB / f"resources/{n}")
-    for n in ["containers", "lib"]
+    for n in ["env", "lib"]
 ]
 transforms = [
     TransformInstanceLibrary.Load(MLIB / f"transforms/{n}")

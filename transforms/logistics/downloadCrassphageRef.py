@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))  # has wget
+image = model.AddRequirement(lib.GetType("env::diamond.env"))  # has wget
 ref   = model.AddProduct(lib.GetType("annotation::crassphage_ref"))
 
 # crAssphage reference genome (NCBI nuccore NC_024711.1) as a single FASTA.
@@ -15,8 +15,8 @@ EFETCH_URL = (
 def protocol(context: ExecutionContext):
     iref = context.Output(ref)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             wget -q --no-check-certificate "{EFETCH_URL}" -O {iref.container}
         """,

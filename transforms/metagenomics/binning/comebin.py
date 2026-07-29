@@ -1,7 +1,7 @@
 """COMEBin binning — GPU-only.
 
 CPU comebin is wasteful (7-19h per Spanish-Lakes sample). The container
-referenced by `containers::comebin.oci` is now the CUDA-built variant
+referenced by `env::comebin.env` is now the CUDA-built variant
 (`quay.io/hallamlab/external_comebin:gpu-1.0.4`); apptainer `--nv` exposes
 the host driver/libcuda so COMEBin's Phase-2 contrastive training step
 auto-detects `torch.cuda.is_available()` and runs on GPU.

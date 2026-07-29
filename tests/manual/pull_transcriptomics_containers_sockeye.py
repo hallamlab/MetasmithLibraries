@@ -25,7 +25,7 @@ logistics = TransformInstanceLibrary.Load(MLIB / "transforms/logistics")
 targets = TargetBuilder()
 targets.Add("env::pulled_container")
 
-WHITELIST = {Path(f"{n}.oci") for n in [
+WHITELIST = {Path(f"{n}.env") for n in [
     "star",
     "stringtie",
     "seqkit",

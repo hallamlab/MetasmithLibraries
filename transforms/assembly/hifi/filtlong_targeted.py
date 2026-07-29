@@ -36,7 +36,7 @@ def protocol(context: ExecutionContext):
         """,
     )
 
-    # context.ExecWithContainer(
+    # context.ExecWithEnv().ifContainerDo(
     #     image=im_bb,
     #     cmd=f"""\
     #         filterbyname.sh in={ireads.container} out={idisc.container} names={temp_unzipped}

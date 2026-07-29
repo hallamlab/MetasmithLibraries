@@ -103,8 +103,8 @@ normed.index.name = "gene_id"
 normed.to_csv(output, sep="\\t")
 """)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"python pydeseq2_normalize.py {manifest} {iout.container}",
     )
     return ExecutionResult(

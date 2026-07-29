@@ -42,7 +42,7 @@ def build_spec(rebuild: bool = False) -> Spec:
         shared_input_paths=["pangenome.json"],
         target_types=["pangenome::heatmap"],
         transform_libraries=A.transforms("logistics", "pangenome"),
-        resource_libraries=[A.containers(), A.MLIB / "resources" / "lib"],
+        resource_libraries=[A.envs(), A.MLIB / "resources" / "lib"],
     )
 
 

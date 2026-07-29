@@ -14,8 +14,8 @@ def protocol(context: ExecutionContext):
     iorgref   = context.Input(orgref)
     iout      = context.Output(out)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             makeblastdb \
                 -in {iassembly.container} \

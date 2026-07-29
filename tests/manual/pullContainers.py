@@ -47,7 +47,7 @@ logistics = TransformInstanceLibrary.Load(MLIB/f"transforms/logistics")
 targets = TargetBuilder()
 targets.Add("env::pulled_container")
 
-# WL = {Path(f"{n}.oci") for n in [
+# WL = {Path(f"{n}.env") for n in [
 #     # "gtdbtk",
 #     "fastani",
 # ]}

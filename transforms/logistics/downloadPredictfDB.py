@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::predictf.oci"))
+image = model.AddRequirement(lib.GetType("env::predictf.env"))
 db    = model.AddProduct(lib.GetType("annotation::predictf_db"))
 
 PREDICTF_REPO = "https://github.com/mdsufz/PredicTF.git"
@@ -28,8 +28,8 @@ PREDICTF_MODEL_PASS   = "6oHaiWQQY9"
 def protocol(context: ExecutionContext):
     idb = context.Output(db)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             set -e
             git clone --depth 1 {PREDICTF_REPO} PredicTF

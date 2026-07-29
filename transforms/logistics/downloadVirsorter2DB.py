@@ -3,7 +3,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::virsorter2.oci"))
+image = model.AddRequirement(lib.GetType("env::virsorter2.env"))
 db    = model.AddProduct(lib.GetType("annotation::virsorter2_db"))
 
 
@@ -14,8 +14,8 @@ def protocol(context: ExecutionContext):
 
     # `virsorter setup` downloads the DB (~10 GB) into the target dir; that dir
     # is what virsorter2.py binds at /db.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             export HOME=/tmp
             virsorter setup -d vs2_db -j {cpus}

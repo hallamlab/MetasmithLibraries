@@ -9,7 +9,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::bbtools.oci"))
+image = model.AddRequirement(lib.GetType("env::bbtools.env"))
 reads = model.AddRequirement(lib.GetType("sequences::clean_short_reads"))
 ref = model.AddRequirement(lib.GetType("annotation::crassphage_ref"))
 out_cov = model.AddProduct(lib.GetType("annotation::crassphage_coverage"))
@@ -26,8 +26,8 @@ def protocol(context: ExecutionContext):
     # auto-detected. covstats gives per-contig mapped depth/breadth.
     # -Xmx6g caps the JVM heap: bbmap.sh otherwise auto-sizes -Xmx to NODE RAM
     # (~237G), which the SLURM cgroup (--mem=8G) OOM-kills instantly.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             bbmap.sh -Xmx6g \
                 ref={iref.container} \

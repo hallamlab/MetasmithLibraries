@@ -18,7 +18,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::pathofact.oci"))
+image = model.AddRequirement(lib.GetType("env::pathofact.env"))
 # ~5 Mbp contig batch (w4_rebatch.py), sample-prefixed headers; per-sample regroup
 # happens in w4_recompile.py. Sibling of assembly, not a subtype.
 asm = model.AddRequirement(lib.GetType("sequences::contig_batch"))
@@ -41,8 +41,8 @@ def protocol(context: ExecutionContext):
 
     # Entrypoint wrapper `pathofact` (defined by the container build) runs the
     # Snakemake pipeline end-to-end and writes results under pf_out/.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(idb.external, "/pathofact_db")],
         cmd=f"""
             pathofact \

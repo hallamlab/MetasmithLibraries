@@ -8,7 +8,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))
+image = model.AddRequirement(lib.GetType("env::diamond.env"))
 orfs = model.AddRequirement(lib.GetType("sequences::orf_batch"))
 db = model.AddRequirement(lib.GetType("annotation::vfdb_diamond_db"))
 out_results = model.AddProduct(lib.GetType("annotation::vfdb_diamond_results_chunk"))
@@ -26,9 +26,9 @@ def protocol(context: ExecutionContext):
         mem_gb = int(float(mem))
         block_size = max(1.0, min(12.0, (mem_gb - 4) / 6))
 
-    context.ExecWithContainer(
+    context.ExecWithEnv().ifContainerDo(
         binds=[(idb.external.parent, "/db")],
-        image=image,
+        env=image,
         cmd=f"""
             diamond blastp \
                 --query {iorfs.container} \

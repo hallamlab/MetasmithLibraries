@@ -50,8 +50,8 @@ def transforms(*names: str) -> list[Path]:
     return [MLIB / "transforms" / n for n in names]
 
 
-def containers() -> Path:
-    return MLIB / "resources" / "containers"
+def envs() -> Path:
+    return MLIB / "resources" / "env"
 
 
 def deferred_inputs(

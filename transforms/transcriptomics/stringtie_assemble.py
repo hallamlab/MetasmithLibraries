@@ -11,8 +11,8 @@ def protocol(context: ExecutionContext):
     iout=context.Output(out)
     threads = context.params.get('cpus')
     threads = 4 if threads is None else threads
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             stringtie {ibam.container} \
                 -o output.gtf \

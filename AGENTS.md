@@ -49,7 +49,9 @@ serves both a containerized run and a mamba run.
 - Use `model.AddRequirement()` for inputs, `model.AddProduct()` for outputs
 - For paired-end reads, use a grouping parent (e.g. `read_pair`) and set `parents={pair}` on both R1/R2 requirements
 - `group_by=` in `TransformInstance()` controls how inputs are matched/grouped
-- `context.ExecWithContainer(image=, cmd=)` runs commands in the resolved env (container or `mamba run`)
+- `context.ExecWithEnv().ifContainerDo(env=, cmd=)` declares how the tool runs; add
+  `.ifVirtualEnvDo(env=, cmd=)` only for a conda arm you have actually run. `ExecWithContainer`
+  is retired — the engine rejects it statically. See `docs/ENV_PORT.md`
 - Container paths: `context.Input(x).container` (path inside container), `.local` (path on host), `.external` (path from outside container)
 
 ## Writing tests
@@ -105,7 +107,7 @@ Everything in `main/` that is not a template author runs against a real cluster.
   supply pre-staged DBs as resources to prune the `local`-labeled `download*` steps, and run
   Deploy → Generate → Stage → Run → Wait. The metag one is a **W0/W1 pair**: run
   `main/examples/metag_setup_sockeye.py --run` first (prefetch the 17 tool containers via
-  `containers::pulled_container`, upload reads, verify DBs), then the workflow driver.
+  `env::pulled_container`, upload reads, verify DBs), then the workflow driver.
 - `main/launch_dl_embeddings.py` — the deep-learning embedding workflow on a GPU cluster,
   with per-transform SLURM GPU `clusterOptions` rendered on top of the stock `slurm.nf`.
 - `main/probe_planner.py` — plan-only: solve a target set and print which transforms were

@@ -110,5 +110,5 @@ def spec(input_library, target_keys: list[str]) -> Spec:
         input_library=input_library,
         target_types=[TARGETS[t][0] for t in target_keys],
         transform_libraries=A.transforms("functionalAnnotation", "logistics"),
-        resource_libraries=[A.containers()],
+        resource_libraries=[A.envs()],
     )

@@ -20,7 +20,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::feast.oci"))
+image = model.AddRequirement(lib.GetType("env::feast.env"))
 sources = model.AddRequirement(lib.GetType("annotation::feast_sources"))
 out_props = model.AddProduct(lib.GetType("annotation::feast_proportions"))
 
@@ -32,8 +32,8 @@ def protocol(context: ExecutionContext):
     # Wrapper `FEAST` (container build) reads the OTU + metadata CSVs, applies
     # Antonio's ceiling(otus*1000) integerisation, and runs FEAST once, writing
     # FEAST_results_source_contributions_matrix.txt into --outdir.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(isources.external, "/feast_sources")],
         cmd=f"""
             FEAST \

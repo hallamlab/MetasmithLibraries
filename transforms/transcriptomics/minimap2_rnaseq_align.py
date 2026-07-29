@@ -27,8 +27,8 @@ def protocol(context: ExecutionContext):
 
     # minimap2: short-read mode (-x sr), no splice awareness = prokaryotic
     # Add read group with sample name so downstream tools can identify the sample
-    context.ExecWithContainer(
-        image=mm2_img,
+    context.ExecWithEnv().ifContainerDo(
+        env=mm2_img,
         cmd=f"""\
             minimap2 -a -x sr -t {threads} \
                 -R '@RG\\tID:{sample_name}\\tSM:{sample_name}' \
@@ -38,8 +38,8 @@ def protocol(context: ExecutionContext):
     )
 
     # samtools: sort and index
-    context.ExecWithContainer(
-        image=sam_img,
+    context.ExecWithEnv().ifContainerDo(
+        env=sam_img,
         cmd=f"""\
             samtools sort -@ {threads} -o {iout.container} aligned.sam && \
             samtools index {iout.container}
