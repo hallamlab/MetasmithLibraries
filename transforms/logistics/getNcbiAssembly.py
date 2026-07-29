@@ -19,8 +19,8 @@ def protocol(context: ExecutionContext):
     with open(dep_path.local) as f:
         acc = f.readline().strip()
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             datasets download genome accession {acc} \
                 --include gff3,protein,genome,gbff
