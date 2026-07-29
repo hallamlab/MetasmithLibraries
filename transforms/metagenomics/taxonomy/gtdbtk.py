@@ -127,10 +127,10 @@ TransformInstance(
     protocol=protocol,
     model=model,
     group_by=asm,
-    batch_size=25,
+    batch_size=200,
     resources=Resources(
-        cpus=2,
+        cpus=8,
         memory=Size.GB(240), # r232 sketches.db needs >120GB; r226 used 107 GB
-        duration=Duration(hours=12),
+        duration=Duration(hours=24),
     )
 )

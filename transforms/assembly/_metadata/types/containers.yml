@@ -5,6 +5,10 @@ ontology:
   version: '1.25'
 schema: v1
 types:
+  amrfinderplus.oci:
+    properties:
+      Format: OCI
+      provides: amrfinder
   ankh.oci:
     properties:
       Format: OCI
@@ -73,6 +77,7 @@ types:
   comebin.oci:
     properties:
       Format: OCI
+      hardware: gpu
       provides: run_comebin.sh
   container:
     properties:
@@ -121,6 +126,10 @@ types:
     properties:
       Format: OCI
       provides: fastqc
+  feast.oci:
+    properties:
+      Format: OCI
+      provides: FEAST
   filtlong.oci:
     properties:
       Format: OCI
@@ -161,6 +170,14 @@ types:
     properties:
       Format: OCI
       provides: hifiasm
+  instrain.oci:
+    properties:
+      Format: OCI
+      provides: inStrain
+  integronfinder.oci:
+    properties:
+      Format: OCI
+      provides: integron_finder
   interproscan.oci:
     properties:
       Format: OCI
@@ -207,6 +224,10 @@ types:
     properties:
       Format: OCI
       provides: minimap2
+  mobileelementfinder.oci:
+    properties:
+      Format: OCI
+      provides: mefinder
   nanoplot.oci:
     properties:
       Format: OCI
@@ -219,6 +240,10 @@ types:
     properties:
       Format: OCI
       provides: orad
+  pathofact.oci:
+    properties:
+      Format: OCI
+      provides: pathofact
   pathologic.oci:
     properties:
       Format: OCI
@@ -288,6 +313,10 @@ types:
     properties:
       Format: OCI
       provides: qiime
+  rgi.oci:
+    properties:
+      Format: OCI
+      provides: rgi
   salmon.oci:
     properties:
       Format: OCI
@@ -310,6 +339,7 @@ types:
       provides:
       - seqkit
       - seqkit/stat
+      - seqkit/translate
   skani.oci:
     properties:
       Format: OCI

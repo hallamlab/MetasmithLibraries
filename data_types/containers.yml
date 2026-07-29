@@ -47,9 +47,10 @@ types:
   seqkit.oci:
     extends: container
     properties:
-      provides: 
+      provides:
       - seqkit
       - seqkit/stat
+      - seqkit/translate
 
   # -------------------------------------------------
   # read mapping
@@ -141,6 +142,7 @@ types:
     properties:
       provides:
       - run_comebin.sh
+      hardware: gpu
   metabuli.oci:
     extends: container
     properties:
@@ -428,3 +430,46 @@ types:
     properties:
       provides:
       - boltz
+  # -------------------------------------------------
+  # resistome / virulence / mobilome (originals_from_antonio_2_resistome)
+  rgi.oci:
+    extends: container
+    properties:
+      provides:
+      - rgi
+  amrfinderplus.oci:
+    extends: container
+    properties:
+      provides:
+      - amrfinder
+  integronfinder.oci:
+    extends: container
+    properties:
+      provides:
+      - integron_finder
+  # BUILD-blocked: no biocontainer exists; image must be built in
+  # container_builds/main/mobileelementfinder before this can run.
+  mobileelementfinder.oci:
+    extends: container
+    properties:
+      provides:
+      - mefinder
+  instrain.oci:
+    extends: container
+    properties:
+      provides:
+      - inStrain
+  # BUILD-blocked: PathoFact 2.0 is a conda/Snakemake pipeline; image must be
+  # built in container_builds/main/pathofact before this can run.
+  pathofact.oci:
+    extends: container
+    properties:
+      provides:
+      - pathofact
+  # BUILD-blocked: FEAST is an R package; image must be built in
+  # container_builds/main/feast before this can run.
+  feast.oci:
+    extends: container
+    properties:
+      provides:
+      - FEAST

@@ -1,17 +1,33 @@
 manifest:
+  chunkOrfsForAnnotation.py:
+    type: transforms::transform
+  downloadAmrfinderDB.py:
+    type: transforms::transform
   downloadAnkhWeights.py:
     type: transforms::transform
   downloadAntiSmashDB.py:
     type: transforms::transform
+  downloadBacmetDB.py:
+    type: transforms::transform
+  downloadBaktaDB.py:
+    type: transforms::transform
   downloadBuscoLineage.py:
     type: transforms::transform
+  downloadCardDB.py:
+    type: transforms::transform
   downloadCentrifugerDB.py:
+    type: transforms::transform
+  downloadCrassphageRef.py:
+    type: transforms::transform
+  downloadDramDB.py:
     type: transforms::transform
   downloadESMCWeights.py:
     type: transforms::transform
   downloadESMFoldWeights.py:
     type: transforms::transform
   downloadEggnogDB.py:
+    type: transforms::transform
+  downloadFeastSources.py:
     type: transforms::transform
   downloadGanon2DB.py:
     type: transforms::transform
@@ -23,11 +39,17 @@ manifest:
     type: transforms::transform
   downloadKraken2DB.py:
     type: transforms::transform
+  downloadMegaresDB.py:
+    type: transforms::transform
   downloadMetabuliDB.py:
     type: transforms::transform
   downloadMetaphlanDB.py:
     type: transforms::transform
+  downloadPathofactDB.py:
+    type: transforms::transform
   downloadPhyloflashDB.py:
+    type: transforms::transform
+  downloadPredictfDB.py:
     type: transforms::transform
   downloadProtT5XLWeights.py:
     type: transforms::transform
@@ -37,7 +59,13 @@ manifest:
     type: transforms::transform
   downloadSylphDB.py:
     type: transforms::transform
+  downloadTcdbDB.py:
+    type: transforms::transform
   downloadUniRef50DB.py:
+    type: transforms::transform
+  downloadVfdbDB.py:
+    type: transforms::transform
+  downloadVirsorter2DB.py:
     type: transforms::transform
   dumpNcbiSra.py:
     type: transforms::transform

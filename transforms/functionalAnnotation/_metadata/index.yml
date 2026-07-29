@@ -1,9 +1,13 @@
 manifest:
   add_orfs_to_centroids.py:
     type: transforms::transform
+  amrfinderplus.py:
+    type: transforms::transform
   ankh.py:
     type: transforms::transform
   antismash.py:
+    type: transforms::transform
+  bacmet.py:
     type: transforms::transform
   bakta_noncoding.py:
     type: transforms::transform
@@ -35,9 +39,45 @@ manifest:
     type: transforms::transform
   foldseek_3di.py:
     type: transforms::transform
+  integronfinder.py:
+    type: transforms::transform
   interproscan.py:
     type: transforms::transform
   kofamscan.py:
+    type: transforms::transform
+  megares.py:
+    type: transforms::transform
+  merge_bacmet.py:
+    type: transforms::transform
+  merge_busco_full_table.py:
+    type: transforms::transform
+  merge_deepec.py:
+    type: transforms::transform
+  merge_deeptfactor.py:
+    type: transforms::transform
+  merge_diamond_tcdb.py:
+    type: transforms::transform
+  merge_diamond_uniref50.py:
+    type: transforms::transform
+  merge_dram_annotate_genes.py:
+    type: transforms::transform
+  merge_eggnog_mapper.py:
+    type: transforms::transform
+  merge_interproscan.py:
+    type: transforms::transform
+  merge_kofamscan.py:
+    type: transforms::transform
+  merge_megares.py:
+    type: transforms::transform
+  merge_predictf.py:
+    type: transforms::transform
+  merge_proteinbert.py:
+    type: transforms::transform
+  merge_vfdb.py:
+    type: transforms::transform
+  mobileelementfinder.py:
+    type: transforms::transform
+  pathofact.py:
     type: transforms::transform
   pathologic.py:
     type: transforms::transform
@@ -51,7 +91,13 @@ manifest:
     type: transforms::transform
   ptools_annotation_gather.py:
     type: transforms::transform
+  rgi.py:
+    type: transforms::transform
+  rgi_mag.py:
+    type: transforms::transform
   saprot.py:
+    type: transforms::transform
+  vfdb.py:
     type: transforms::transform
   virsorter2.py:
     type: transforms::transform
