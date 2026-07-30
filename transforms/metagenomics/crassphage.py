@@ -24,10 +24,12 @@ def protocol(context: ExecutionContext):
 
     # nodisk=t keeps the (tiny) crAssphage index in memory; interleaved input is
     # auto-detected. covstats gives per-contig mapped depth/breadth.
+    # -Xmx6g caps the JVM heap: bbmap.sh otherwise auto-sizes -Xmx to NODE RAM
+    # (~237G), which the SLURM cgroup (--mem=8G) OOM-kills instantly.
     context.ExecWithContainer(
         image=image,
         cmd=f"""
-            bbmap.sh \
+            bbmap.sh -Xmx6g \
                 ref={iref.container} \
                 in={ireads.container} \
                 nodisk=t \

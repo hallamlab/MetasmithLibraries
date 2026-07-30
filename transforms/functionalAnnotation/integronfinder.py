@@ -1,7 +1,8 @@
 """integronfinder — IntegronFinder on assembled contigs (class-1 integrons).
 
-Runs on sequences::assembly. The contig ID (k141_XXXXXX) is the ID_replicon
-column in both the summary and the integrons table, so it is preserved.
+Runs on sequences::contig_batch (~5 Mbp contig batches). The contig ID
+(SG<id>~k141_XXXXXX, sample-prefixed) is the ID_replicon column in both the
+summary and the integrons table, so it is preserved for the per-sample regroup.
 Tolerates samples with no integrons (empty tables still produced).
 """
 import glob
@@ -12,7 +13,9 @@ lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 image = model.AddRequirement(lib.GetType("containers::integronfinder.oci"))
-asm = model.AddRequirement(lib.GetType("sequences::assembly"))
+# ~5 Mbp contig batch (w4_rebatch.py), sample-prefixed headers; per-sample
+# regroup happens in w4_recompile.py. Sibling of assembly, not a subtype.
+asm = model.AddRequirement(lib.GetType("sequences::contig_batch"))
 out_summary = model.AddProduct(lib.GetType("annotation::integronfinder_summary"))
 out_integrons = model.AddProduct(lib.GetType("annotation::integronfinder_integrons"))
 

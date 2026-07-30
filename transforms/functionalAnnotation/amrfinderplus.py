@@ -1,7 +1,10 @@
 """amrfinderplus — NCBI AMRFinderPlus protein search (second-layer ARG validation).
 
-Runs on the per-sample Prodigal proteins (sequences::orfs). The Protein_id
-column echoes the input header (k141_XXXXXX_N), preserving the contig ID.
+Runs on a per-sample protein CHUNK (sequences::orf_chunk, sample-prefixed by
+w4_rebatch.py) so AMRFinderPlus, like every other AMR tool, consumes batched ORFs
+and never a whole-sample file. The "Protein id" column echoes the input header
+(SG<id>~k141_XXXXXX_N), preserving the sample + contig ID for the downstream
+merge_amrfinderplus + w4_recompile de-prefix.
 """
 from metasmith.python_api import *
 
@@ -9,13 +12,13 @@ lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 image = model.AddRequirement(lib.GetType("containers::amrfinderplus.oci"))
-orfs = model.AddRequirement(lib.GetType("sequences::orfs"))
+chunk = model.AddRequirement(lib.GetType("sequences::orf_batch"))
 db = model.AddRequirement(lib.GetType("annotation::amrfinderplus_db"))
-out_results = model.AddProduct(lib.GetType("annotation::amrfinderplus_results"))
+out_results = model.AddProduct(lib.GetType("annotation::amrfinderplus_results_chunk"))
 
 
 def protocol(context: ExecutionContext):
-    iorfs = context.Input(orfs)
+    iorfs = context.Input(chunk)
     idb = context.Input(db)
     iout = context.Output(out_results)
 
@@ -43,7 +46,7 @@ def protocol(context: ExecutionContext):
 TransformInstance(
     protocol=protocol,
     model=model,
-    group_by=orfs,
+    group_by=chunk,
     resources=Resources(
         cpus=8,
         memory=Size.GB(8),

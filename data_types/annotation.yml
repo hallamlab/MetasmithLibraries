@@ -475,10 +475,11 @@ types:
       _: RGI main ARG hits on Prodigal proteins (TSV; ORF_ID column = k141_XXXXXX_N)
       Format: TSV
       ext: txt
-  rgi_mag_results:
+  rgi_results_chunk:
     properties:
-      _: RGI main ARG hits on COMEBin MAG contigs (TSV; contig IDs preserved)
+      _: Per-chunk RGI hits (distinct sibling of rgi_results; merge_rgi produces the per-sample dtype)
       Format: TSV
+      granularity: chunk
       ext: txt
 
   # --- ARG: AMRFinderPlus ---
@@ -489,6 +490,12 @@ types:
     properties:
       _: AMRFinderPlus protein hits (TSV; Protein_id column = k141_XXXXXX_N)
       Format: TSV
+      ext: tsv
+  amrfinderplus_results_chunk:
+    properties:
+      _: Per-chunk AMRFinderPlus hits (distinct sibling of amrfinderplus_results; merge_amrfinderplus produces the per-sample dtype)
+      Format: TSV
+      granularity: chunk
       ext: tsv
 
   # --- Mobilome: IntegronFinder ---
@@ -558,17 +565,29 @@ types:
       ext: tsv
 
   # --- Strain profiling: StrainPhlAn (conditional) ---
+  # MetaPhlAn SGB marker DB (mpa_vJan25_CHOCOPhlAnSGB_202503) that produced the
+  # metaphlan_sam upstream; sample2markers.py -d needs the matching .pkl to
+  # reconstruct consensus markers. Bound read-only at /mpa_db by the transform.
+  metaphlan_db:
+    properties:
+      _: MetaPhlAn vJan25 CHOCOPhlAnSGB marker database (dir holding the .pkl)
   strainphlan_consensus_markers:
     properties:
       _: StrainPhlAn per-sample consensus markers from the MetaPhlAn SAM
       ext: pkl
 
-  # --- Strain/abundance: inStrain (conditional; BAM-limited to 12 samples) ---
+  # --- Strain/abundance: inStrain (option b: reads vs shared derep-MAG ref) ---
+  # Each sample's clean reads are mapped to ONE project-level dereplicated
+  # representative-MAG reference (binning::derep_mag_ref), then profiled; the
+  # cross-sample `inStrain compare` step (instrain_compare) yields strain sharing.
   instrain_profile:
     properties:
-      _: inStrain profile output directory (per-MAG SNV/microdiversity)
+      _: inStrain profile output directory (per-MAG SNV/microdiversity vs derep-MAG ref)
   instrain_genome_info:
     properties:
       _: inStrain per-genome summary (coverage, nucleotide diversity, breadth)
       Format: TSV
       ext: tsv
+  instrain_compare:
+    properties:
+      _: inStrain compare output (cross-sample popANI / strain sharing over the shared derep-MAG ref)
