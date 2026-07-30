@@ -57,6 +57,8 @@ manifest:
     type: transforms::transform
   downloadSilvaDB.py:
     type: transforms::transform
+  downloadStrainphlanMarkerDB.py:
+    type: transforms::transform
   downloadSylphDB.py:
     type: transforms::transform
   downloadTcdbDB.py:
