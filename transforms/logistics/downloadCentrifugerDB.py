@@ -8,7 +8,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 out   = model.AddProduct(lib.GetType("ref::centrifuger_db"))
 
 CENTRIFUGER_DB_URLS = [
@@ -27,8 +27,8 @@ def protocol(context: ExecutionContext):
         f'wget -q "{url}" -O {iout.container}{suffix}'
         for suffix, url in CENTRIFUGER_DB_URLS
     )
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p $(dirname {iout.container})
             {wget_lines}

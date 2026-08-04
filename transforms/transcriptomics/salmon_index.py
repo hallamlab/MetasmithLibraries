@@ -3,14 +3,14 @@ from metasmith.python_api import *
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
 asm     = model.AddRequirement(lib.GetType("sequences::assembly"))
-image   = model.AddRequirement(lib.GetType("containers::salmon.oci"))
+image   = model.AddRequirement(lib.GetType("env::salmon.env"))
 out     = model.AddProduct(lib.GetType("transcriptomics::salmon_index"))
 
 def protocol(context: ExecutionContext):
     iasm=context.Input(asm)
     iout=context.Output(out)
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"salmon index -t {iasm.container} -i salmon_idx -k 31",
     )
     context.LocalShell(f"mv salmon_idx {iout.local}")

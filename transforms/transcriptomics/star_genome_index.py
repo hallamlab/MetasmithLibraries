@@ -3,7 +3,7 @@ from metasmith.python_api import *
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
 asm     = model.AddRequirement(lib.GetType("sequences::assembly"))
-image   = model.AddRequirement(lib.GetType("containers::star.oci"))
+image   = model.AddRequirement(lib.GetType("env::star.env"))
 out     = model.AddProduct(lib.GetType("transcriptomics::star_index"))
 
 def protocol(context: ExecutionContext):
@@ -11,8 +11,8 @@ def protocol(context: ExecutionContext):
     iout=context.Output(out)
     threads = context.params.get('cpus')
     threads = 4 if threads is None else threads
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             STAR --runMode genomeGenerate \
                 --genomeDir star_idx \

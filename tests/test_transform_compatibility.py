@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from metasmith.python_api import (
-    Agent, Source, ContainerRuntime,
+    Agent, Source, Runtime,
     DataTypeLibrary, DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder, Resources, Size, Duration,
 )
@@ -54,7 +54,7 @@ for yml in sorted((ROOT / "data_types").glob("*.yml")):
 
 # ── 2. Resource libraries ──────────────────────────────────────────
 print("\n[2] Loading resources/")
-for res in ["containers", "lib"]:
+for res in ["env", "lib"]:
     def _load(r=res):
         DataInstanceLibrary.Load(ROOT / f"resources/{r}")
     check(f"resources/{res}", _load)
@@ -82,7 +82,7 @@ tmpdir = Path(tempfile.mkdtemp(prefix="msm_test_"))
 
 resources = [
     DataInstanceLibrary.Load(ROOT / f"resources/{n}")
-    for n in ["containers", "lib"]
+    for n in ["env", "lib"]
 ]
 all_transforms = [
     TransformInstanceLibrary.Load(ROOT / f"transforms/{d}")
@@ -141,7 +141,7 @@ test_cases = [
     ),
 ]
 
-smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
 
 for name, setup_fn, target_type, sample_type in test_cases:
     def _gen(sf=setup_fn, tt=target_type, st=sample_type):

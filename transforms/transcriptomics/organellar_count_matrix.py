@@ -8,7 +8,7 @@ model = Transform()
 exp   = model.AddRequirement(lib.GetType("transcriptomics::experiment"))
 bam   = model.AddRequirement(lib.GetType("transcriptomics::organellar_bam"), parents={exp})
 gff   = model.AddRequirement(lib.GetType("transcriptomics::organellar_gff"))
-image = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 out   = model.AddProduct(lib.GetType("transcriptomics::organellar_gene_count_table"))
 
 def protocol(context: ExecutionContext):
@@ -126,8 +126,8 @@ with open(output_file, "w", newline="") as out:
 print(f"Wrote {output_file} ({len(gene_counts)} genes x {len(sample_names_ordered)} samples)", flush=True)
 """)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"pip install -q pysam && python count_organellar.py {manifest} {gff_manifest} {iout.container}",
     )
     return ExecutionResult(

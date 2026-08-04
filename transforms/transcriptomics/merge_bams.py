@@ -5,7 +5,7 @@ lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
 exp     = model.AddRequirement(lib.GetType("transcriptomics::experiment"))
 bam     = model.AddRequirement(lib.GetType("transcriptomics::star_bam"), parents={exp})
-image   = model.AddRequirement(lib.GetType("containers::samtools.oci"))
+image   = model.AddRequirement(lib.GetType("env::samtools.env"))
 out     = model.AddProduct(lib.GetType("transcriptomics::merged_bam"))
 
 def protocol(context: ExecutionContext):
@@ -20,8 +20,8 @@ def protocol(context: ExecutionContext):
         for p in bam_paths:
             f.write(f"{p.container}\n")
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             samtools merge -@ {threads} -b {bam_list} merged.bam
             samtools sort -@ {threads} -o sorted.bam merged.bam

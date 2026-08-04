@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::fastp.oci"))
+image   = model.AddRequirement(lib.GetType("env::fastp.env"))
 reads   = model.AddRequirement(lib.GetType("sequences::short_reads"))
 out             = model.AddProduct(lib.GetType("sequences::clean_short_reads"))
 report_json     = model.AddProduct(lib.GetType("sequences::fastp_json_report"))
@@ -17,8 +17,8 @@ def protocol(context: ExecutionContext):
     # todo: custom container with pigz
     threads = context.params.get('cpus')
     threads = "" if threads is None else f"--thread {threads}"
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             fastp --interleaved_in {threads} \
             -h {ihtml.container} -j {ijson.container} \

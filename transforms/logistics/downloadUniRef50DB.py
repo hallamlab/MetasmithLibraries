@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::diamond.oci"))
+image   = model.AddRequirement(lib.GetType("env::diamond.env"))
 db      = model.AddProduct(lib.GetType("ref::uniref50_diamond_db"))
 
 UNIREF50_URL = "https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref50/uniref50.fasta.gz"
@@ -10,8 +10,8 @@ UNIREF50_URL = "https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref50/un
 def protocol(context: ExecutionContext):
     idb = context.Output(db)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             wget -q {UNIREF50_URL} -O uniref50.fasta.gz
             diamond makedb --in uniref50.fasta.gz -d uniref50

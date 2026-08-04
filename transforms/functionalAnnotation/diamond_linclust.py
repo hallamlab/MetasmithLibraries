@@ -3,7 +3,7 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::diamond.oci"))
+image   = model.AddRequirement(lib.GetType("env::diamond.env"))
 orfs    = model.AddRequirement(lib.GetType("sequences::orfs"))
 identity = model.AddRequirement(lib.GetType("clustering::min_identity"))
 centroids_out = model.AddProduct(lib.GetType("clustering::centroids"))
@@ -27,8 +27,8 @@ def protocol(context: ExecutionContext):
     memory = "" if memory is None else f"--memory-limit {int(float(memory))-8}G"
 
     # Build diamond database and run linclust inside container
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             diamond makedb --in {iorfs.container} -d orfs_db \
             && diamond linclust \

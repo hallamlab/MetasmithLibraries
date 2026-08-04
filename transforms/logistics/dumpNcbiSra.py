@@ -6,8 +6,8 @@ from pathlib import Path
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-img_sqk = model.AddRequirement(lib.GetType("containers::seqkit.oci"))
-image   = model.AddRequirement(lib.GetType("containers::sra-tools.oci"))
+img_sqk = model.AddRequirement(lib.GetType("env::seqkit.env"))
+image   = model.AddRequirement(lib.GetType("env::sra-tools.env"))
 meta    = model.AddRequirement(lib.GetType("sequences::read_metadata"))
 dep     = model.AddRequirement(lib.GetType("ncbi::sra_accession"), parents={meta})
 cache   = model.AddRequirement(lib.GetType("ncbi::sra_cache"), parents={meta})
@@ -88,8 +88,8 @@ def protocol(context: ExecutionContext):
     # echo "{acc_value}" >{ireads.container}
 
     # @$si/$ri spot_index/read_index to minimize headers
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
         du -shL {acc}
         echo "dumping"

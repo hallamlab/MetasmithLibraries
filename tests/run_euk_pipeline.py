@@ -7,7 +7,7 @@ sys.stderr.reconfigure(line_buffering=True)
 
 from pathlib import Path
 from metasmith.python_api import (
-    Agent, ContainerRuntime, Source,
+    Agent, Runtime, Source,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder, Resources, Size,
 )
@@ -35,13 +35,13 @@ SAMPLES = {
 def main():
     print("=== Setting up agent ===")
     agent_home = Source.FromLocal(TEST_MSM_HOME)
-    smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+    smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
     if not (TEST_MSM_HOME / "msm").exists():
         smith.Deploy(assertive=True)
     print("Agent ready")
 
     print("\n=== Loading resources & transforms ===")
-    base_res = [DataInstanceLibrary.Load(MLIB / "resources/containers")]
+    base_res = [DataInstanceLibrary.Load(MLIB / "resources/env")]
     t_transforms = [
         TransformInstanceLibrary.Load(MLIB / "transforms/transcriptomics"),
         TransformInstanceLibrary.Load(MLIB / "transforms/logistics"),

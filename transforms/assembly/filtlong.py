@@ -2,8 +2,8 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-im_bb   = model.AddRequirement(lib.GetType("containers::bbtools.oci"))
-image   = model.AddRequirement(lib.GetType("containers::filtlong.oci"))
+im_bb   = model.AddRequirement(lib.GetType("env::bbtools.env"))
+image   = model.AddRequirement(lib.GetType("env::filtlong.env"))
 reads   = model.AddRequirement(lib.GetType("sequences::long_reads"))
 out     = model.AddProduct(lib.GetType("sequences::clean_long_reads"))
 disc    = model.AddProduct(lib.GetType("sequences::discarded_long_reads"))
@@ -16,15 +16,15 @@ def protocol(context: ExecutionContext):
     temp_unzipped = "temp_unzipped.fq"
     # --min_length 1000 --keep_percent 90 are default
     # todo: somehow cap at 100x coverage
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             filtlong --min_length 1000 --keep_percent 90 {ireads.container} >{temp_unzipped}
         """,
     )
 
-    context.ExecWithContainer(
-        image=im_bb,
+    context.ExecWithEnv().ifContainerDo(
+        env=im_bb,
         cmd=f"""\
             filterbyname.sh in={ireads.container} out={idisc.container} names={temp_unzipped}
         """,

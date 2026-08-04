@@ -5,7 +5,7 @@ lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
 exp     = model.AddRequirement(lib.GetType("transcriptomics::experiment"))
 qgtf    = model.AddRequirement(lib.GetType("transcriptomics::stringtie_quant_gtf"), parents={exp})
-image   = model.AddRequirement(lib.GetType("containers::pydeseq2.oci"))
+image   = model.AddRequirement(lib.GetType("env::pydeseq2.env"))
 out     = model.AddProduct(lib.GetType("transcriptomics::diff_count_table"))
 
 def protocol(context: ExecutionContext):
@@ -103,8 +103,8 @@ normed.index.name = "gene_id"
 normed.to_csv(output, sep="\\t")
 """)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"python pydeseq2_normalize.py {manifest} {iout.container}",
     )
     return ExecutionResult(

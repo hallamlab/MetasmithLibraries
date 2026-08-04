@@ -4,10 +4,10 @@ from pathlib import Path
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))
-orfs = model.AddRequirement(lib.GetType("sequences::orfs"))
+image = model.AddRequirement(lib.GetType("env::diamond.env"))
+orfs = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
 db = model.AddRequirement(lib.GetType("ref::uniref50_diamond_db"))
-out_results = model.AddProduct(lib.GetType("annotation::diamond_uniref50_results"))
+out_results = model.AddProduct(lib.GetType("annotation::diamond_uniref50_results_chunk"))
 
 
 def protocol(context: ExecutionContext):
@@ -24,9 +24,9 @@ def protocol(context: ExecutionContext):
         block_size = max(1.0, min(12.0, (mem_gb - 4) / 6))
 
     # Run DIAMOND blastp against UniRef50
-    context.ExecWithContainer(
+    context.ExecWithEnv().ifContainerDo(
         binds=[(idb.external.parent, "/db")],
-        image=image,
+        env=image,
         cmd=f"""
             diamond blastp \
                 --query {iorfs.container} \

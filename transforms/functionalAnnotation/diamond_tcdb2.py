@@ -4,7 +4,7 @@ from pathlib import Path
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::diamond.oci"))
+image = model.AddRequirement(lib.GetType("env::diamond.env"))
 orfs = model.AddRequirement(lib.GetType("sequences::orfs"))
 db = model.AddRequirement(lib.GetType("annotation::tcdb_diamond_db"))
 out_results = model.AddProduct(lib.GetType("annotation::diamond_tcdb2_results"))
@@ -23,9 +23,9 @@ def protocol(context: ExecutionContext):
         block_size = max(1.0, min(12.0, (mem_gb - 4) / 6))
 
     # Run DIAMOND blastp against TCDB
-    context.ExecWithContainer(
+    context.ExecWithEnv().ifContainerDo(
         binds=[(idb.external.parent, "/db")],
-        image=image,
+        env=image,
         cmd=f"""
             diamond blastp \
                 --query {iorfs.container} \

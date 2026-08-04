@@ -4,7 +4,7 @@ from metasmith.python_api import *
 
 lib       = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model     = Transform()
-image     = model.AddRequirement(lib.GetType("containers::blast.oci"))
+image     = model.AddRequirement(lib.GetType("env::blast.env"))
 asvs      = model.AddRequirement(lib.GetType("amplicon::asv_seqs"))
 contigs   = model.AddRequirement(lib.GetType("sequences::assembly"))
 threshold = model.AddRequirement(lib.GetType("amplicon::blast_identity_threshold"))
@@ -19,8 +19,8 @@ def protocol(context: ExecutionContext):
     # Read threshold value from the input file
     pct_identity = ithreshold.local.read_text().strip()
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             makeblastdb \
                 -in {icontigs.container} \

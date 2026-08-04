@@ -3,7 +3,7 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image   = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image   = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 local   = model.AddRequirement(lib.GetType("lib::local"))
 script  = model.AddRequirement(lib.GetType("lib::response_surface.py"))
 data    = model.AddRequirement(lib.GetType("media_optimization::growth_data"))
@@ -38,8 +38,8 @@ def protocol(context: ExecutionContext):
         mkdir -p ./fake_home/.pki
     """)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[
             ("$(pwd -P)/fake_home/.cache",  "$HOME/.cache"),
             ("$(pwd -P)/fake_home/.local",  "$HOME/.local"),

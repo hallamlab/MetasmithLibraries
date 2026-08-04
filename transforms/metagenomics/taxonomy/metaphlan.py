@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::metaphlan.oci"))
+image   = model.AddRequirement(lib.GetType("env::metaphlan.env"))
 db      = model.AddRequirement(lib.GetType("ref::metaphlan_db"))
 reads   = model.AddRequirement(lib.GetType("sequences::short_reads"))
 
@@ -22,8 +22,8 @@ def protocol(context: ExecutionContext):
     # input is just a single fastq stream to metaphlan (bowtie2 underneath),
     # which doesn't enforce pair semantics on the input; --db_dir replaces the
     # v4.1 --bowtie2db flag.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             metaphlan {ireads.container} \
                 --input_type fastq --offline \

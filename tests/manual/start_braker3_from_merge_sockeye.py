@@ -13,7 +13,7 @@ from pathlib import Path
 
 from metasmith.python_api import (
     Agent,
-    ContainerRuntime,
+    Runtime,
     DataInstanceLibrary,
     SshSource,
     TargetBuilder,
@@ -64,7 +64,7 @@ def main() -> None:
     ).AsSource()
     smith = Agent(
         home=agent_home,
-        runtime=ContainerRuntime.APPTAINER,
+        runtime=Runtime.APPTAINER,
         setup_commands=[
             "module load gcc/9.4.0",
             "module load apptainer/1.3.1",
@@ -72,7 +72,7 @@ def main() -> None:
     )
 
     print("=== Loading resources & transforms ===")
-    base_res = [DataInstanceLibrary.Load(MLIB / "resources/containers")]
+    base_res = [DataInstanceLibrary.Load(MLIB / "resources/env")]
     t_transforms = [TransformInstanceLibrary.Load(MLIB / "transforms/transcriptomics")]
 
     print("=== Creating input library ===")

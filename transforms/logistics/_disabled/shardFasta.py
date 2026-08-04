@@ -18,7 +18,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::polars.oci"))
+image = model.AddRequirement(lib.GetType("env::polars.env"))
 orfs  = model.AddRequirement(lib.GetType("sequences::orfs"))
 shard = model.AddProduct(lib.GetType("sequences::orfs_shard"))
 
@@ -104,8 +104,8 @@ def protocol(context: ExecutionContext):
     with open(script, "w") as f:
         f.write(SHARDER)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"python {script} --fasta {iorfs.container} "
             f"--out-dir {staging} --shard-size {shard_size}",
     )

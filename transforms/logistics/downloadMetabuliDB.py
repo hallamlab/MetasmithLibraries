@@ -4,15 +4,15 @@ from metasmith.python_api import *
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::metabuli.oci"))
+image = model.AddRequirement(lib.GetType("env::metabuli.env"))
 ref   = model.AddProduct(lib.GetType("ref::metabuli_ref"))
 
 
 def protocol(context: ExecutionContext):
     idb = context.Output(ref)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd="metabuli databases GTDB . tmp",
     )
     Path("gtdb").rename(idb.local)

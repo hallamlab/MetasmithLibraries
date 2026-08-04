@@ -6,7 +6,7 @@ model   = Transform()
 exp     = model.AddRequirement(lib.GetType("transcriptomics::experiment"))
 asm     = model.AddRequirement(lib.GetType("sequences::assembly"), parents={exp})
 bam     = model.AddRequirement(lib.GetType("transcriptomics::merged_bam"), parents={exp})
-image   = model.AddRequirement(lib.GetType("containers::braker3.oci"))
+image   = model.AddRequirement(lib.GetType("env::braker3.env"))
 out_gff = model.AddProduct(lib.GetType("transcriptomics::braker3_gff"))
 out_aa  = model.AddProduct(lib.GetType("transcriptomics::braker3_proteins"))
 
@@ -24,8 +24,8 @@ def protocol(context: ExecutionContext):
     # contig names (accession only), causing filterIntronsFindStrand.pl to find
     # no matching sequences and produce an empty hints file.  Truncating headers
     # at the first whitespace before passing to braker3 prevents this mismatch.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             cp -r $AUGUSTUS_CONFIG_PATH augustus_config
             awk '/^>/{{print substr($1,1); next}}{{print}}' {iasm.container} > genome_clean.fa

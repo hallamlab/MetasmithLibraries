@@ -69,12 +69,18 @@ def porphyridium_input(tmp_inputs, test_data_dir):
         "transcriptomics::experiment",
     )
 
-    # Add reference assembly accession
+    # Add reference assembly accession, under the name it is fetched as.
+    reference_name = inputs.AddValue(
+        "porphyridium_name.txt",
+        "porphyridium",
+        "ncbi::genome_name",
+        parents={experiment},
+    )
     accession = inputs.AddValue(
         "porphyridium_accession.txt",
         PORPHYRIDIUM_ACCESSION,
         "ncbi::assembly_accession",
-        parents={experiment},
+        parents={reference_name},
     )
 
     # Add paired-end reads for each sample

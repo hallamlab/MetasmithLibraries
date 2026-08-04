@@ -40,7 +40,7 @@ LOCAL_ROOT  = Path("/tmp/oom_probe_stage")
 # weights_subdir-on-fir, extra_runner_args).
 # slice values map to gpubase_bygpu_b1 MIG selectors via #SBATCH --gres.
 # Transform-name → container-name + weights-dir mappings.
-# Container names are bare (no underscore between word parts) per the .oci
+# Container names are bare (no underscore between word parts) per the .env
 # files: external_esmc, external_ankh, etc.
 PROBES = [
     dict(

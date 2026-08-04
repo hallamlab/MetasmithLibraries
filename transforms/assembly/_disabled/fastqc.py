@@ -6,7 +6,7 @@ lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 reads   = model.AddRequirement(lib.GetType("sequences::short_reads"))
-image   = model.AddRequirement(lib.GetType("containers::fastqc.oci"))
+image   = model.AddRequirement(lib.GetType("env::fastqc.env"))
 stats   = model.AddProduct(lib.GetType("sequences::read_qc_stats"))
 html    = model.AddProduct(lib.GetType("sequences::fastqc_html_report"))
 raw     = model.AddProduct(lib.GetType("sequences::fastqc_raw_report"))
@@ -21,8 +21,8 @@ def protocol(context: ExecutionContext):
                 
     rname = ireads.container.name.replace(".fq.gz", "")
                 # --noextract \
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             mkdir fastqc_out
             fastqc \

@@ -155,8 +155,8 @@ class TestCheckMLineageRouting:
 
     def test_row33_checkm_via_chromosomal_contig(self, agent, base_resources, all_transforms, meta_assembly_with_bam):
         targets = TargetBuilder()
-        targets.Add("sequences::chromosomal_contig")
-        targets.Add("taxonomy::checkm_stats", parents={"sequences::chromosomal_contig"})
+        parent = targets.Add("sequences::chromosomal_contig")
+        targets.Add("taxonomy::checkm_stats", parents={parent})
         task = agent.GenerateWorkflow(
             samples=list(meta_assembly_with_bam.AsSamples("sequences::hifiasm_meta_assembly")),
             resources=base_resources + [meta_assembly_with_bam],
@@ -167,8 +167,8 @@ class TestCheckMLineageRouting:
 
     def test_row34_checkm_via_metabat2(self, agent, base_resources, all_transforms, meta_assembly_with_bam):
         targets = TargetBuilder()
-        targets.Add("sequences::metabat2_bin_fasta")
-        targets.Add("taxonomy::checkm_stats", parents={"sequences::metabat2_bin_fasta"})
+        parent = targets.Add("sequences::metabat2_bin_fasta")
+        targets.Add("taxonomy::checkm_stats", parents={parent})
         task = agent.GenerateWorkflow(
             samples=list(meta_assembly_with_bam.AsSamples("sequences::hifiasm_meta_assembly")),
             resources=base_resources + [meta_assembly_with_bam],
@@ -179,8 +179,8 @@ class TestCheckMLineageRouting:
 
     def test_row35_checkm_via_semibin2(self, agent, base_resources, all_transforms, meta_assembly_with_bam):
         targets = TargetBuilder()
-        targets.Add("sequences::semibin2_bin_fasta")
-        targets.Add("taxonomy::checkm_stats", parents={"sequences::semibin2_bin_fasta"})
+        parent = targets.Add("sequences::semibin2_bin_fasta")
+        targets.Add("taxonomy::checkm_stats", parents={parent})
         task = agent.GenerateWorkflow(
             samples=list(meta_assembly_with_bam.AsSamples("sequences::hifiasm_meta_assembly")),
             resources=base_resources + [meta_assembly_with_bam],
@@ -191,8 +191,8 @@ class TestCheckMLineageRouting:
 
     def test_row36_checkm_via_comebin(self, agent, base_resources, all_transforms, meta_assembly_with_bam):
         targets = TargetBuilder()
-        targets.Add("sequences::comebin_bin_fasta")
-        targets.Add("taxonomy::checkm_stats", parents={"sequences::comebin_bin_fasta"})
+        parent = targets.Add("sequences::comebin_bin_fasta")
+        targets.Add("taxonomy::checkm_stats", parents={parent})
         task = agent.GenerateWorkflow(
             samples=list(meta_assembly_with_bam.AsSamples("sequences::hifiasm_meta_assembly")),
             resources=base_resources + [meta_assembly_with_bam],
@@ -210,8 +210,8 @@ class TestCheckMParallelFork:
 
     def test_row37_target_builder_refuses_duplicate(self):
         targets = TargetBuilder()
-        targets.Add("sequences::metabat2_bin_fasta")
-        targets.Add("taxonomy::checkm_stats", parents={"sequences::metabat2_bin_fasta"})
+        parent = targets.Add("sequences::metabat2_bin_fasta")
+        targets.Add("taxonomy::checkm_stats", parents={parent})
         targets.Add("sequences::semibin2_bin_fasta")
         with pytest.raises(AssertionError, match="already added"):
             targets.Add(

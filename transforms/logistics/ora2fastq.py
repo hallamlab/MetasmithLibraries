@@ -5,8 +5,8 @@ model   = Transform()
 pair    = model.AddRequirement(lib.GetType("sequences::read_pair"))
 r1      = model.AddRequirement(lib.GetType("sequences::forward_ora_reads"), parents={pair})
 r2      = model.AddRequirement(lib.GetType("sequences::reverse_ora_reads"), parents={pair})
-orad    = model.AddRequirement(lib.GetType("containers::orad.oci"))
-bbtools = model.AddRequirement(lib.GetType("containers::bbtools.oci"))
+orad    = model.AddRequirement(lib.GetType("env::orad.env"))
+bbtools = model.AddRequirement(lib.GetType("env::bbtools.env"))
 out     = model.AddProduct(lib.GetType("sequences::short_reads_pe"))
 
 def protocol(context: ExecutionContext):
@@ -20,8 +20,8 @@ def protocol(context: ExecutionContext):
     # Note: on Apptainer (HPC), /app/oradata needs a bind mount from outside.
     # The runner script or Nextflow config should add:
     #   containerOptions = '--bind /path/to/oradata:/app/oradata'
-    context.ExecWithContainer(
-        image=orad,
+    context.ExecWithEnv().ifContainerDo(
+        env=orad,
         cmd=f'''
         orad -q -c "{ir1.container}" > r1.fastq.gz
         orad -q -c "{ir2.container}" > r2.fastq.gz
@@ -29,8 +29,8 @@ def protocol(context: ExecutionContext):
     )
 
     # Interleave R1+R2 with reformat.sh and compress with pigz
-    context.ExecWithContainer(
-        image=bbtools,
+    context.ExecWithEnv().ifContainerDo(
+        env=bbtools,
         cmd=f'''
         reformat.sh \
             in1=r1.fastq.gz \

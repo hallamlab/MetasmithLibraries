@@ -4,11 +4,11 @@ from pathlib import Path
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image_pbert = model.AddRequirement(lib.GetType("containers::proteinbert.oci"))
-image_polars = model.AddRequirement(lib.GetType("containers::polars.oci"))
-orfs = model.AddRequirement(lib.GetType("sequences::orfs"))
-out_embeddings = model.AddProduct(lib.GetType("annotation::proteinbert_embeddings"))
-out_index = model.AddProduct(lib.GetType("annotation::proteinbert_index"))
+image_pbert = model.AddRequirement(lib.GetType("env::proteinbert.env"))
+image_polars = model.AddRequirement(lib.GetType("env::polars.env"))
+orfs = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
+out_embeddings = model.AddProduct(lib.GetType("annotation::proteinbert_embeddings_chunk"))
+out_index = model.AddProduct(lib.GetType("annotation::proteinbert_index_chunk"))
 
 
 def protocol(context: ExecutionContext):
@@ -19,8 +19,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get("cpus", 8)
 
     # Run ProteinBERT to generate embeddings
-    context.ExecWithContainer(
-        image=image_pbert,
+    context.ExecWithEnv().ifContainerDo(
+        env=image_pbert,
         cmd=f"""
             pbert run \
                 -i {iorfs.container} \
@@ -54,8 +54,8 @@ if npy_files:
 ''')
 
     # Combine embeddings using polars container
-    context.ExecWithContainer(
-        image=image_polars,
+    context.ExecWithEnv().ifContainerDo(
+        env=image_polars,
         cmd=f"""
             python {combiner_script} pbert_output {iemb.container}
         """,

@@ -3,11 +3,11 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image        = model.AddRequirement(lib.GetType("containers::predictf.oci"))
-orfs         = model.AddRequirement(lib.GetType("sequences::orfs"))
+image        = model.AddRequirement(lib.GetType("env::predictf.env"))
+orfs         = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
 db           = model.AddRequirement(lib.GetType("annotation::predictf_db"))
-out_tf       = model.AddProduct(lib.GetType("annotation::predictf_results"))
-out_potential = model.AddProduct(lib.GetType("annotation::predictf_potential"))
+out_tf       = model.AddProduct(lib.GetType("annotation::predictf_results_chunk"))
+out_potential = model.AddProduct(lib.GetType("annotation::predictf_potential_chunk"))
 
 
 def protocol(context: ExecutionContext):
@@ -20,8 +20,8 @@ def protocol(context: ExecutionContext):
     # The deepARG.py --folder flag points to BacTFDB (database + model files).
     # Must use conda run -n predictf for Python 2.7 environment.
     # Subshell to avoid changing CWD (metasmith needs /ws writable for exit code).
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(idb.external, "/predictf_db")],
         cmd=f"""
             export THEANO_FLAGS="base_compiledir=/tmp/theano_compile"

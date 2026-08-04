@@ -3,7 +3,7 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image    = model.AddRequirement(lib.GetType("containers::diamond.oci"))
+image    = model.AddRequirement(lib.GetType("env::diamond.env"))
 centroids = model.AddRequirement(lib.GetType("clustering::centroids"))
 orfs      = model.AddRequirement(lib.GetType("sequences::orfs"))
 identity  = model.AddRequirement(lib.GetType("clustering::min_identity"))
@@ -26,8 +26,8 @@ def protocol(context: ExecutionContext):
     threads = "" if threads is None else f"-p {threads}"
 
     # Build diamond database from existing centroids and search new ORFs
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             diamond makedb --in {icentroids.container} -d centroid_db \
             && diamond blastp \

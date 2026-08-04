@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::busco.oci"))
+image   = model.AddRequirement(lib.GetType("env::busco.env"))
 src     = model.AddRequirement(lib.GetType("annotation::busco_source"))
 out     = model.AddProduct(lib.GetType("annotation::busco_lineage"))
 
@@ -13,8 +13,8 @@ def protocol(context: ExecutionContext):
 
     # busco --download ignores --download_path and always writes to
     # ./busco_downloads/ relative to cwd. Download there then move.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             busco \
                 --download {LINEAGE} \

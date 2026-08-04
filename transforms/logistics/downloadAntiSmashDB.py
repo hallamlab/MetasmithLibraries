@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::antismash.oci"))
+image = model.AddRequirement(lib.GetType("env::antismash.env"))
 out   = model.AddProduct(lib.GetType("ref::antismash"))
 
 
@@ -11,8 +11,8 @@ def protocol(context: ExecutionContext):
 
     # antiSMASH bundles a download command that fetches Pfam, ClusterBlast,
     # MIBiG, Resfams, NRPS/PKS substrate prediction models, etc.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p {iout.container}
             download-antismash-databases --database-dir {iout.container}

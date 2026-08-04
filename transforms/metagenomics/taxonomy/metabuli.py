@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib         = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model       = Transform()
-image       = model.AddRequirement(lib.GetType("containers::metabuli.oci"))
+image       = model.AddRequirement(lib.GetType("env::metabuli.env"))
 ref         = model.AddRequirement(lib.GetType("ref::metabuli_ref"))
 asm         = model.AddRequirement(lib.GetType("sequences::assembly"))
 tax         = model.AddProduct(lib.GetType("taxonomy::metabuli"))
@@ -21,8 +21,8 @@ def protocol(context: ExecutionContext):
     mem = context.params.get('memory')
     mem = "" if mem is None else f"--max-ram {int(float(mem))-6}"
     job_name = "metabuli_out"
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""\
             metabuli classify \
                 {iasm.container} \
@@ -56,8 +56,8 @@ TransformInstance(
     model=model,
     group_by=asm,
     resources=Resources(
-        cpus=4,
-        memory=Size.GB(64),
-        duration=Duration(hours=4),
+        cpus=32,
+        memory=Size.GB(180),
+        duration=Duration(hours=24),
     )
 )

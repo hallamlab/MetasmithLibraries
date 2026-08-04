@@ -4,7 +4,7 @@ from metasmith.python_api import *
 
 lib         = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model       = Transform()
-image       = model.AddRequirement(lib.GetType("containers::checkm.oci")) # database included at /checkm_database
+image       = model.AddRequirement(lib.GetType("env::checkm.env")) # database included at /checkm_database
 asm         = model.AddRequirement(lib.GetType("sequences::putative_genome"))
 out         = model.AddProduct(lib.GetType("taxonomy::checkm_stats"))
 
@@ -27,8 +27,8 @@ def protocol(context: ExecutionContext):
     ext = iasm.container.suffix.replace(".", "")
     temp_ws = "checkm_ws"
     qa_file = "checkm_qa.tsv"
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             export PATH=/opt/conda/bin:/opt/conda/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
             checkm lineage_wf {threads} -x {ext} ./input ./{temp_ws}

@@ -4,9 +4,9 @@ from pathlib import Path
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::deepec.oci"))
-orfs = model.AddRequirement(lib.GetType("sequences::orfs"))
-out_predictions = model.AddProduct(lib.GetType("annotation::deepec_predictions"))
+image = model.AddRequirement(lib.GetType("env::deepec.env"))
+orfs = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
+out_predictions = model.AddProduct(lib.GetType("annotation::deepec_predictions_chunk"))
 
 
 def protocol(context: ExecutionContext):
@@ -16,8 +16,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get("cpus", 8)
 
     # Run DeepEC
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             deepec \
                 -p {threads} \

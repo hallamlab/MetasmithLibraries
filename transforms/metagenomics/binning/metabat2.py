@@ -4,7 +4,7 @@ from metasmith.python_api import *
 
 lib         = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model       = Transform()
-image       = model.AddRequirement(lib.GetType("containers::metabat2.oci"))
+image       = model.AddRequirement(lib.GetType("env::metabat2.env"))
 asm         = model.AddRequirement(lib.GetType("sequences::assembly"))
 bam         = model.AddRequirement(lib.GetType("alignment::bam"), parents={asm})
 bin_fasta   = model.AddProduct(lib.GetType("sequences::metabat2_bin_fasta"))
@@ -19,8 +19,8 @@ def protocol(context: ExecutionContext):
     bin_dir = "metabat_bins"
     bin_prefix = f"{bin_dir}/bin"
 
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             mkdir -p {bin_dir}
             jgi_summarize_bam_contig_depths --outputDepth {depth_file} {ibam.container}

@@ -5,7 +5,7 @@ lib    = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model  = Transform()
 exp    = model.AddRequirement(lib.GetType("transcriptomics::experiment"))
 counts = model.AddRequirement(lib.GetType("transcriptomics::gene_count_table"), parents={exp})
-image  = model.AddRequirement(lib.GetType("containers::pydeseq2.oci"))
+image  = model.AddRequirement(lib.GetType("env::pydeseq2.env"))
 out    = model.AddProduct(lib.GetType("transcriptomics::deseq2_results"))
 
 def protocol(context: ExecutionContext):
@@ -80,8 +80,8 @@ de_df.to_csv(output_file)
 print(f"Wrote {output_file} ({len(de_df)} genes, {len(de_frames)} comparisons)", flush=True)
 """)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"python run_deseq2.py {icounts.container} {iout.container} {cpus}",
     )
     return ExecutionResult(

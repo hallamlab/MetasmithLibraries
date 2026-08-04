@@ -8,7 +8,7 @@ finds the expected transforms.
 import sys
 from pathlib import Path
 from metasmith.python_api import (
-    Agent, ContainerRuntime,
+    Agent, Runtime,
     Source,
     DataInstanceLibrary,
     TransformInstanceLibrary,
@@ -37,7 +37,7 @@ inputs = DataInstanceLibrary(in_dir)
 inputs.AddTypeLibrary(MLIB / "data_types/sequences.yml")
 inputs.AddTypeLibrary(MLIB / "data_types/alignment.yml")
 inputs.AddTypeLibrary(MLIB / "data_types/binning.yml")
-inputs.AddTypeLibrary(MLIB / "data_types/containers.yml")
+inputs.AddTypeLibrary(MLIB / "data_types/env.yml")
 
 # Register test data - our assembly and BAM file
 assembly_path = WORKSPACE / "test_assembly.fna"
@@ -61,7 +61,7 @@ for path, type_name, endpoint in inputs.Iterate():
 print("\n=== Step 2: Set up resources and transforms ===")
 resources = [
     DataInstanceLibrary.Load(MLIB / f"resources/{n}")
-    for n in ["containers", "lib"]
+    for n in ["env", "lib"]
 ]
 # Also add the inputs as resources since they provide the assembly and BAM
 resources.append(inputs)
@@ -76,7 +76,7 @@ print(f"Transforms: {len(transforms)} libraries")
 # --- Step 3: Deploy agent ---
 print("\n=== Step 3: Deploy agent ===")
 agent_home = Source.FromLocal(WORKSPACE / "msm_home")
-smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
 if not (WORKSPACE / "msm_home" / "msm").exists():
     smith.Deploy()
     print("Agent deployed.")

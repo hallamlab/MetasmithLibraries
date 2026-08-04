@@ -5,7 +5,7 @@ model   = Transform()
 pair    = model.AddRequirement(lib.GetType("sequences::read_pair"))
 r1      = model.AddRequirement(lib.GetType("sequences::forward_short_reads"), parents={pair})
 r2      = model.AddRequirement(lib.GetType("sequences::reverse_short_reads"), parents={pair})
-image   = model.AddRequirement(lib.GetType("containers::bbtools.oci"))
+image   = model.AddRequirement(lib.GetType("env::bbtools.env"))
 out     = model.AddProduct(lib.GetType("sequences::short_reads"))
 
 def protocol(context: ExecutionContext):
@@ -17,8 +17,8 @@ def protocol(context: ExecutionContext):
     # out=stdout.fq
     # ^ this actually tells reformat.sh to output to stdout
     # the suffix indicates format and compression
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f'''
         reformat.sh \
             in1="{ir1.container}" \

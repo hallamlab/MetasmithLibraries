@@ -7,7 +7,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::phyloflash.oci"))
+image = model.AddRequirement(lib.GetType("env::phyloflash.env"))
 out   = model.AddProduct(lib.GetType("ref::phyloflash_db"))
 
 SILVA_RELEASE = "138.2"
@@ -18,8 +18,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get('cpus')
     threads_arg = "" if threads is None else f"-CPUs {threads}"
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p {iout.container}
             cd {iout.container}

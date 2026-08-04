@@ -5,10 +5,10 @@ import csv
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::interproscan.oci"))
-orfs = model.AddRequirement(lib.GetType("sequences::orfs"))
+image = model.AddRequirement(lib.GetType("env::interproscan.env"))
+orfs = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
 data_dir = model.AddRequirement(lib.GetType("ref::interproscan_data"))
-out_gff = model.AddProduct(lib.GetType("annotation::interproscan_results"))
+out_gff = model.AddProduct(lib.GetType("annotation::interproscan_results_chunk"))
 
 
 def parse_interpro_gff(input_path, output_path):
@@ -60,8 +60,8 @@ def protocol(context: ExecutionContext):
     # Run InterProScan with extracted data directory. I5OPTS bumps the
     # JVM heap so the Java side can address most of the container RAM
     # (default Xmx is too small and OOMs on full-sample protein FASTAs).
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(context.external_cwd/"data", "/opt/interproscan/data")],
         cmd=f"""
             mkdir -p output

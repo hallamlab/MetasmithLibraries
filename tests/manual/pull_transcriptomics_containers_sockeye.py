@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from metasmith.python_api import (
-    Agent, ContainerRuntime, Source, SshSource,
+    Agent, Runtime, Source, SshSource,
     DataInstanceLibrary, TransformInstanceLibrary, TargetBuilder,
 )
 
@@ -12,20 +12,20 @@ MLIB = Path(__file__).resolve().parent.parent.parent
 agent_home = SshSource(host="sockeye", path=Path("/scratch/st-shallam-1/pwy_group/metasmith")).AsSource()
 smith = Agent(
     home=agent_home,
-    runtime=ContainerRuntime.APPTAINER,
+    runtime=Runtime.APPTAINER,
     setup_commands=[
         'module load gcc/9.4.0',
         'module load apptainer/1.3.1',
     ],
 )
 
-containers = DataInstanceLibrary.Load(MLIB / "resources/containers")
+containers = DataInstanceLibrary.Load(MLIB / "resources/env")
 logistics = TransformInstanceLibrary.Load(MLIB / "transforms/logistics")
 
 targets = TargetBuilder()
-targets.Add("containers::pulled_container")
+targets.Add("env::pulled_container")
 
-WHITELIST = {Path(f"{n}.oci") for n in [
+WHITELIST = {Path(f"{n}.env") for n in [
     "star",
     "stringtie",
     "seqkit",
@@ -41,7 +41,7 @@ WHITELIST = {Path(f"{n}.oci") for n in [
 ]}
 
 samples = [
-    x for x in containers.AsSamples("containers::container")
+    x for x in containers.AsSamples("env::env")
     if len(x._mask.intersection(WHITELIST)) > 0
 ]
 print(f"Pulling {len(samples)} containers: {[str(p) for s in samples for p in s._mask]}")

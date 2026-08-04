@@ -32,6 +32,7 @@ Usage examples:
   # Show last task keys
   python launch_dl_embeddings.py status
 """
+import os
 import sys
 import json
 import argparse
@@ -39,100 +40,56 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-MSM_SRC = Path("/home/tony/agentic_workspace/projects/metasmith/dev/src")
-sys.path.insert(0, str(MSM_SRC))
+# metasmith must be importable; set MSM_SRC to a source checkout if not installed.
+if os.environ.get("MSM_SRC"):
+    sys.path.insert(0, os.environ["MSM_SRC"])
+import metasmith
 from metasmith.python_api import (
-    Agent, Source, SshSource,
-    DataInstanceLibrary, TransformInstanceLibrary,
-    Resources, Size, Duration, TargetBuilder,
-    ContainerRuntime,
+    Agent, Source, SshSource, DataInstanceLibrary, Runtime,
 )
+
+import _dl_embeddings as DL
 
 ROOT = Path(__file__).resolve().parent
 DL_LIB = ROOT.parent
-MLIB = DL_LIB.parent
 CACHE_DIR = ROOT / "cache"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-# ─── HPC constants ──────────────────────────────────────────────────────────
-HPC_HOST = "fir"
-HPC_SCRATCH = Path("/scratch/phyberos")
+# ─── HPC constants (set via env vars or edit) ───────────────────────────────
+HPC_HOST = os.environ.get("MSM_HPC_HOST", "fir")
+HPC_SCRATCH = Path(os.environ.get("MSM_HPC_SCRATCH", "<cluster-scratch-dir>"))
 HPC_MSM_HOME = HPC_SCRATCH / "metasmith"
-HPC_DL = HPC_SCRATCH / "dl_testing_claude"
+HPC_DL = HPC_SCRATCH / "dl_work"
 
-# Account preference: RAC (rrg-) matches cyanoverse/scadc precedent. The first
-# GPU submit will tell us whether this account has GPU allocation. If not, swap
-# to def-shallam_gpu (proven good on gpubase_bygpu_b1 in the manual verify jobs).
-# Confirmed via sshare: phyberos has def-shallam_cpu, def-shallam_gpu,
-# rpp-shallam_cpu, rrg-shallam-ab_cpu. The cyanoverse-style 'rrg-shallam-ab'
-# without suffix only works for CPU-on-cpubase partitions and gets rejected
-# for GPU. def-shallam_gpu is the only one usable from these workflows.
-SLURM_ACCOUNT = "def-shallam_gpu"
+# GPU allocation to submit under — must have access to a GPU partition (a
+# CPU-only allocation gets rejected for GPU jobs).
+SLURM_ACCOUNT = os.environ.get("MSM_SLURM_ACCOUNT", "<gpu-allocation>")
 
 # ─── Inputs (paths resolve on fir; cyanoverse pattern) ──────────────────────
 HPC_INPUTS = HPC_DL / "inputs"
 FOSMIDS_FAA = HPC_INPUTS / "fosmids_orfprediction.faa"
 FOSMIDS_TEST5_FAA = HPC_INPUTS / "fosmids_orfprediction.head5.faa"
-METAG_FAA = HPC_INPUTS / "scadc_metag.faa"
+METAG_FAA = HPC_INPUTS / "metag.faa"
 # Local source paths (used only if we need to (re-)upload)
-LOCAL_DATA = Path("/home/tony/agentic_workspace/data/scadc")
-LOCAL_FOSMIDS_FAA = LOCAL_DATA / "raw_runs/orf_prediction/fosmids_orfprediction/fosmids_orfprediction/orf_prediction/fosmids_orfprediction.faa"
-LOCAL_METAG_FAA = LOCAL_DATA / "scadc_metag.faa"
+LOCAL_DATA = Path(os.environ.get("MSM_LOCAL_DATA", "<local-data-dir>"))
+LOCAL_FOSMIDS_FAA = LOCAL_DATA / "fosmids_orfprediction.faa"
+LOCAL_METAG_FAA = LOCAL_DATA / "metag.faa"
 
 # ─── HPC weights (staged out-of-band; tarballs match data_type ext: tgz) ────
+# Which weights a target needs, and what type each is, live in _dl_embeddings —
+# shared with the template author and the planner probe. Only where they sit on
+# this cluster is local.
 HPC_WEIGHTS = HPC_DL / "weights"
-WEIGHTS = {
-    "esmc":         (HPC_WEIGHTS / "esmc_300m.tgz",  "ref::esm_c_300m_weights"),
-    "ankh":         (HPC_WEIGHTS / "ankh_base.tgz",  "ref::ankh_base_weights"),
-    "prott5":       (HPC_WEIGHTS / "prott5_xl.tgz",  "ref::prott5_xl_uniref50_weights"),
-    "saprot":       (HPC_WEIGHTS / "saprot_650m.tgz","ref::saprot_650m_weights"),
-    "esmfold":      (HPC_WEIGHTS / "esmfold_v1.tgz", "ref::esmfold_weights"),
-}
+WEIGHT_PATHS = {k: HPC_WEIGHTS / f for k, f in DL.WEIGHT_FILES.items()}
 
-# ─── Target table ───────────────────────────────────────────────────────────
-# (produced_type, gpu_tier, weights_key, transform_module_name)
-# transform_module_name is what shows up in Nextflow process names as "p<N>__<name>"
-TARGETS = {
-    "esmc":          ("annotation::esm_c_embeddings",     "med",   "esmc",         "esm_c"),
-    "ankh":          ("annotation::ankh_embeddings",      "med",   "ankh",         "ankh"),
-    "prott5":        ("annotation::prott5_embeddings",    "med",   "prott5",       "prott5"),
-    "esmfold":       ("sequences::predicted_structures",  "med",   "esmfold",      "esmfold"),
-    "foldseek_3di":  ("sequences::structure_3di_tokens",  "cpu",   None,           "foldseek_3di"),
-    "saprot":        ("annotation::saprot_embeddings",    "med",   "saprot",       "saprot"),
-}
-
-# Additional weight keys needed transitively when a target is selected. Without
-# these, the planner introduces download* transforms for missing weights, which
-# crashes on the cgroup-limited Compute Canada login node (xlocalx executor).
-# foldseek_3di + saprot consume esmfold's predicted_structures → need esmfold weights.
-TRANSITIVE_WEIGHTS = {
-    "saprot":       ["esmfold"],
-    "foldseek_3di": ["esmfold"],
-}
-
-# Transforms pulled in by the planner as transitive producers. Each entry must
-# also be registered in TARGETS so we can look up its GPU tier; without this,
-# `--only saprot` plans esmfold + foldseek_3di but their clusterOptions fall
-# through to the default (def-shallam_cpu, no GPU) — silently runs ESMFold on
-# CPU which never produces output before walltime.
-TRANSITIVE_TRANSFORMS = {
-    "saprot":       ["esmfold", "foldseek_3di"],
-    "foldseek_3di": ["esmfold"],
-}
-
-# GPU tier → SLURM --gpus= MIG slice
-GPU_SLICE = {
-    "small": "nvidia_h100_80gb_hbm3_1g.10gb:1",
-    "med":   "nvidia_h100_80gb_hbm3_3g.40gb:1",
-    "cpu":   None,
-}
+TARGETS = DL.TARGETS
 
 
 def get_agent():
     home = SshSource(host=HPC_HOST, path=HPC_MSM_HOME).AsSource()
     return Agent(
         home=home,
-        runtime=ContainerRuntime.APPTAINER,
+        runtime=Runtime.APPTAINER,
         setup_commands=["module load apptainer"],
     )
 
@@ -186,20 +143,7 @@ def build_input_library(
 
     inputs = DataInstanceLibrary(in_dir)
     inputs.Purge()
-
-    inputs.AddTypeLibrary(DL_LIB / "data_types" / "sequences.yml")
-    inputs.AddTypeLibrary(DL_LIB / "data_types" / "annotation.yml")
-    inputs.AddTypeLibrary(DL_LIB / "data_types" / "ref.yml")
-
-    inputs.AddItem(orfs_path, "sequences::orfs")
-
-    for w_key in needed_weights:
-        if w_key is None:
-            continue
-        path, type_str = WEIGHTS[w_key]
-        inputs.AddItem(path, type_str)
-        print(f"    added weight: {type_str} @ {path}")
-
+    DL.add_inputs(inputs, orfs_path, {w: WEIGHT_PATHS[w] for w in needed_weights})
     inputs.Save()
     print(f"  created library: {in_dir}")
     return inputs
@@ -213,9 +157,7 @@ def make_fir_slurm_config(transform_gpu_map: dict[str, str]) -> Path:
       transform_gpu_map: { transform_name: SLURM --gpus= value or None }
         e.g. {"esm_c": "nvidia_h100_80gb_hbm3_1g.10gb:1", "foldseek_3di": None}
     """
-    base = MSM_SRC.parent.joinpath(
-        "src/metasmith/nextflow_config/slurm.nf"
-    )
+    base = Path(metasmith.__file__).parent / "nextflow_config" / "slurm.nf"
     base_text = base.read_text()
 
     overrides = ["", "process {"]
@@ -249,37 +191,12 @@ def run_one(
     """Generate, stage, and run a workflow over one set of targets."""
     print(f"\n{'='*60}\nworkflow: {name}\n{'='*60}")
 
-    # collect needed weights (deduped, preserves order) — includes transitive deps
-    seen = set()
-    needed_weights = []
-    transform_gpu_map = {}
-    for t in targets_to_run:
-        type_str, tier, w_key, tname = TARGETS[t]
-        for w in [w_key, *TRANSITIVE_WEIGHTS.get(t, [])]:
-            if w and w not in seen:
-                needed_weights.append(w)
-                seen.add(w)
-        # key by transform module name so withName: '.*__<tname>' matches Nextflow's p<N>__<tname>
-        # Include transitive transforms so all pulled-in steps get the right GPU tier.
-        for tt in [t, *TRANSITIVE_TRANSFORMS.get(t, [])]:
-            _, tt_tier, _, tt_tname = TARGETS[tt]
-            transform_gpu_map[tt_tname] = GPU_SLICE[tt_tier]
+    # key the gpu map by transform module name so withName: '.*__<tname>' matches
+    # Nextflow's p<N>__<tname>
+    needed_weights = DL.needed_weights(targets_to_run)
+    transform_gpu_map = DL.gpu_map(targets_to_run)
 
     inputs = build_input_library(orfs_path, needed_weights, name, force_rebuild=True)
-
-    # resources (container libs + transform libs)
-    containers = DataInstanceLibrary.Load(DL_LIB / "resources" / "containers")
-    transforms = [
-        TransformInstanceLibrary.Load(DL_LIB / "transforms" / "functionalAnnotation"),
-        TransformInstanceLibrary.Load(DL_LIB / "transforms" / "logistics"),
-    ]
-
-    # build target spec
-    tb = TargetBuilder()
-    for t in targets_to_run:
-        type_str, *_ = TARGETS[t]
-        tb.Add(type_str)
-
     smith = get_agent()
 
     print("generating workflow...")
@@ -287,13 +204,7 @@ def run_one(
     # `--only all` search that adds a redundant downloadESMFoldWeights step
     # despite the weight tarball being pre-staged. Seeds 1/7/99/2024 find the
     # optimal 7-step plan; see main/probe_planner.py for the sweep.
-    task = smith.GenerateWorkflow(
-        samples=list(inputs.AsSamples("sequences::orfs")),
-        resources=[containers, inputs],
-        transforms=transforms,
-        targets=tb,
-        seed=1,
-    )
+    task = DL.spec(inputs, targets_to_run).Solve(seed=1)
 
     if not task.ok or len(task.plan.steps) == 0:
         print(f"ERROR: workflow planning failed for {name}")

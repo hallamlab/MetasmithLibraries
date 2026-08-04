@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image   = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 profiles = model.AddProduct(lib.GetType("ref::kofamscan_profiles"))
 ko_list  = model.AddProduct(lib.GetType("ref::kofamscan_ko_list"))
 
@@ -13,8 +13,8 @@ def protocol(context: ExecutionContext):
     iprofiles = context.Output(profiles)
     iko_list = context.Output(ko_list)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             wget -q {PROFILES_URL} -O profiles.tar.gz
             wget -q {KO_LIST_URL} -O ko_list.gz

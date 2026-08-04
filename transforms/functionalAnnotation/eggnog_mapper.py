@@ -4,10 +4,10 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image    = model.AddRequirement(lib.GetType("containers::eggnog-mapper.oci"))
-orfs     = model.AddRequirement(lib.GetType("sequences::orfs"))
+image    = model.AddRequirement(lib.GetType("env::eggnog-mapper.env"))
+orfs     = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
 data_dir = model.AddRequirement(lib.GetType("annotation::eggnog_data"))
-out      = model.AddProduct(lib.GetType("annotation::eggnog_results"))
+out      = model.AddProduct(lib.GetType("annotation::eggnog_results_chunk"))
 
 def protocol(context: ExecutionContext):
     iorfs = context.Input(orfs)
@@ -25,8 +25,8 @@ def protocol(context: ExecutionContext):
     context.LocalShell(f"cp -r {idata.external} {local_data}")
 
     # Strip stop codon asterisks from protein sequences (same as interproscan)
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(local_data, "/eggnog_data")],
         cmd=f"""
             sed '/^[^>]/s/\\*//g' {iorfs.container} > ./proteins.clean.faa

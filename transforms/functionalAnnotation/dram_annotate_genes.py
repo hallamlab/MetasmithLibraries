@@ -3,10 +3,10 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::dram.oci"))
-orfs  = model.AddRequirement(lib.GetType("sequences::orfs"))
+image = model.AddRequirement(lib.GetType("env::dram.env"))
+orfs  = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
 db    = model.AddRequirement(lib.GetType("annotation::dram_db"))
-out   = model.AddProduct(lib.GetType("annotation::dram_annotations"))
+out   = model.AddProduct(lib.GetType("annotation::dram_annotations_chunk"))
 
 
 def protocol(context: ExecutionContext):
@@ -21,7 +21,7 @@ def protocol(context: ExecutionContext):
     # but argparse always passes it (even as None), crashing annotate_genes.
     # Workaround: write a wrapper script and call annotate_called_genes()
     # directly, which DOES accept config_loc. Using a script file avoids
-    # shell quoting issues with inline python -c inside ExecWithContainer.
+    # shell quoting issues with inline python -c inside the container arm.
     context.LocalShell(f"""cat > _run_dram.py << 'DRAMPY'
 import os, sys
 os.environ["HOME"] = "/tmp"
@@ -34,8 +34,8 @@ annotate_called_genes(
 )
 DRAMPY""")
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(idb.external, "/db")],
         cmd=f"""
             sed '/^[^>]/s/\\*//g' {iorfs.container} > input.clean.faa

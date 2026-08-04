@@ -7,7 +7,7 @@ lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
 reads   = model.AddRequirement(lib.GetType("sequences::reads"))
-img_sqk = model.AddRequirement(lib.GetType("containers::seqkit.oci"))
+img_sqk = model.AddRequirement(lib.GetType("env::seqkit.env"))
 stats   = model.AddProduct(lib.GetType("sequences::read_qc_stats"))
 
 def protocol(context: ExecutionContext):
@@ -23,8 +23,8 @@ def protocol(context: ExecutionContext):
     # [INFO] guessed quality encoding: Sanger
     # [INFO] converting Sanger -> Sanger
     # [WARN] source and target quality encoding match.
-    context.ExecWithContainer(
-        image = img_sqk,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_sqk,
         cmd = f"""
             seqkit convert --dry-run {ireads.container} 2>&1 | tee {seqkit_guess_enc_file}
             seqkit stat {threads} --all --tabular {ireads.container} | tee {seqkit_stats_file}
@@ -67,6 +67,8 @@ def protocol(context: ExecutionContext):
         reads=seqkit_stats["num_seqs"],
         bases=seqkit_stats["sum_len"],
         mean_quality=seqkit_stats["AvgQual"],
+        q20=seqkit_stats.get("Q20(%)"),
+        q30=seqkit_stats.get("Q30(%)"),
         phred_encoding=encoding,
         N50=seqkit_stats["N50"],
         GC=seqkit_stats["GC(%)"],

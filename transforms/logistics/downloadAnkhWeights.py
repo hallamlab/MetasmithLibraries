@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib      = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model    = Transform()
-image    = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image    = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 w_base   = model.AddProduct(lib.GetType("ref::ankh_base_weights"))
 w_large  = model.AddProduct(lib.GetType("ref::ankh_large_weights"))
 
@@ -13,8 +13,8 @@ def protocol(context: ExecutionContext):
     ibase  = context.Output(w_base)
     ilarge = context.Output(w_large)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             pip install --quiet --no-cache-dir huggingface_hub
             huggingface-cli download {HF_BASE}  --local-dir ankh_base  --local-dir-use-symlinks False

@@ -7,10 +7,10 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-img_mm2 = model.AddRequirement(lib.GetType("containers::minimap2.oci"))
-img_sam = model.AddRequirement(lib.GetType("containers::samtools.oci"))
-img_bed = model.AddRequirement(lib.GetType("containers::bedtools.oci"))
-img_sqk = model.AddRequirement(lib.GetType("containers::seqkit.oci"))
+img_mm2 = model.AddRequirement(lib.GetType("env::minimap2.env"))
+img_sam = model.AddRequirement(lib.GetType("env::samtools.env"))
+img_bed = model.AddRequirement(lib.GetType("env::bedtools.env"))
+img_sqk = model.AddRequirement(lib.GetType("env::seqkit.env"))
 meta    = model.AddRequirement(lib.GetType("sequences::read_metadata"))
 reads   = model.AddRequirement(lib.GetType("sequences::reads"), parents={meta})
 rstats  = model.AddRequirement(lib.GetType("sequences::read_qc_stats"), parents={meta})
@@ -75,8 +75,8 @@ def protocol(context: ExecutionContext):
     cpus = context.params.get("cpus")
     cpus_string = "" if cpus is None else f"-t {cpus}"
     temp_sam_path = Path("./temp.sam")
-    context.ExecWithContainer(
-        image = img_mm2,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_mm2,
         cmd = f"""
             minimap2 {preset} -a -2 {cpus_string} \
                 {iasm.container} {ireads.container} > {temp_sam_path}
@@ -87,8 +87,8 @@ def protocol(context: ExecutionContext):
     cpus_string = "" if cpus is None else f"-@ {cpus}"
     bam_file = "temp.bam"
     alignment_stats_file = "alignment_stats.tsv"
-    context.ExecWithContainer(
-        image = img_sam,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_sam,
         cmd = f"""
             samtools view {cpus_string} -b {temp_sam_path} \
                 | samtools sort {cpus_string} -o {bam_file} -O bam
@@ -100,8 +100,8 @@ def protocol(context: ExecutionContext):
     Log.Info("calculating per bp coverage")
     cov_tsv = "bp_cov.tsv"
     _header = "\t".join(["contig", "start", "end", "fold_coverage"])
-    context.ExecWithContainer(
-        image = img_bed,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_bed,
         cmd = f"""
             echo "{_header}" >{cov_tsv}
             bedtools genomecov -ibam {bam_file} -bg >>{cov_tsv}
@@ -193,8 +193,8 @@ def protocol(context: ExecutionContext):
 
     Log.Info("running seqkit")
     seqkit_stats_file = "seqkit_stats.tsv"
-    context.ExecWithContainer(
-        image = img_sqk,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_sqk,
         cmd = f"""
             seqkit stat --all --tabular {iasm.container} >{seqkit_stats_file}
         """

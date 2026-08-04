@@ -4,8 +4,8 @@ from pathlib import Path
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
 
-img_hfa = model.AddRequirement(lib.GetType("containers::hifiasm-meta.oci"))
-img_gft = model.AddRequirement(lib.GetType("containers::gfatools.oci"))
+img_hfa = model.AddRequirement(lib.GetType("env::hifiasm-meta.env"))
+img_gft = model.AddRequirement(lib.GetType("env::gfatools.env"))
 reads   = model.AddRequirement(lib.GetType("sequences::long_reads"))
 out     = model.AddProduct(lib.GetType("sequences::hifiasm_meta_assembly"))
 
@@ -16,8 +16,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get('cpus')
     threads = "" if threads is None else f"-t {threads}"
     assembly_prefix = "the_assembly"
-    context.ExecWithContainer(
-        image = img_hfa,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_hfa,
         cmd = f"""
         hifiasm_meta  -o {assembly_prefix} {threads} {ireads.container}
         """
@@ -25,8 +25,8 @@ def protocol(context: ExecutionContext):
 
     primary_gfa = f"{assembly_prefix}.p_ctg.gfa"
     assert Path(primary_gfa).exists(), "failed to find the primary gfa"
-    context.ExecWithContainer(
-        image = img_gft,
+    context.ExecWithEnv().ifContainerDo(
+        env = img_gft,
         cmd = f"""
         /gfatools-final-gt/gfatools gfa2fa {primary_gfa} >{iout.container}
         """

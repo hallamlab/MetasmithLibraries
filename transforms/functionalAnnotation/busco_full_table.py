@@ -3,10 +3,10 @@ from metasmith.python_api import *
 
 lib      = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model    = Transform()
-image    = model.AddRequirement(lib.GetType("containers::busco.oci"))
-orfs     = model.AddRequirement(lib.GetType("sequences::orfs"))
+image    = model.AddRequirement(lib.GetType("env::busco.env"))
+orfs     = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
 lineage  = model.AddRequirement(lib.GetType("annotation::busco_lineage"))
-out      = model.AddProduct(lib.GetType("annotation::busco_full_table"))
+out      = model.AddProduct(lib.GetType("annotation::busco_full_table_chunk"))
 
 def protocol(context: ExecutionContext):
     iorfs    = context.Input(orfs)
@@ -17,8 +17,8 @@ def protocol(context: ExecutionContext):
 
     lineage_name = Path(ilineage.external).name
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(ilineage.external, f"/busco_lineage/lineages/{lineage_name}")],
         cmd=f"""\
             busco \

@@ -5,7 +5,7 @@ from pathlib import Path
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image     = model.AddRequirement(lib.GetType("containers::esmfold.oci"))
+image     = model.AddRequirement(lib.GetType("env::esmfold.env"))
 weights   = model.AddRequirement(lib.GetType("ref::esmfold_weights"))
 orfs      = model.AddRequirement(lib.GetType("sequences::orfs_shard"))
 out_struct = model.AddProduct(lib.GetType("sequences::predicted_structures"))
@@ -41,7 +41,7 @@ a = p.parse_args()
 
 # Note: PYTORCH_CUDA_ALLOC_CONF must be set before torch initializes CUDA,
 # which happens at the first CUDA call below. We set it via the apptainer
-# `--env` flag on ExecWithContainer (see protocol() below), not here, because
+# `--env` flag on the container arm (see protocol() below), not here, because
 # `os.environ.setdefault` after `import torch` is too late to influence the
 # allocator's startup configuration.
 device = torch.device(a.device if (a.device == "cpu" or torch.cuda.is_available()) else "cpu")
@@ -106,8 +106,8 @@ def protocol(context: ExecutionContext):
     with open(script, "w") as f:
         f.write(INFERENCE)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[
             (context.external_cwd/"weights", "/weights"),
             (context.external_cwd/"structures", "/out"),

@@ -4,7 +4,7 @@ import re
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::bbtools.oci"))
+image   = model.AddRequirement(lib.GetType("env::bbtools.env"))
 meta    = model.AddRequirement(lib.GetType("sequences::read_metadata"))
 reads   = model.AddRequirement(lib.GetType("sequences::short_reads"), parents={meta})
 rstats  = model.AddRequirement(lib.GetType("sequences::read_qc_stats"), parents={reads})
@@ -49,8 +49,8 @@ def protocol(context: ExecutionContext):
     # we were actually given (85% of it — matches bbtools' own headroom budget).
     mem_gb = context.params.get('memory')
     xmx = f"-Xmx{int(mem_gb*0.85)}g" if mem_gb else ""
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             bbduk.sh {xmx} {threads} \
             {parg} ref=/bbmap/resources/adapters.fa \

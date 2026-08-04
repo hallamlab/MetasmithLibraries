@@ -2,8 +2,8 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::sylph.oci"))
-img_bb  = model.AddRequirement(lib.GetType("containers::bbtools.oci"))
+image   = model.AddRequirement(lib.GetType("env::sylph.env"))
+img_bb  = model.AddRequirement(lib.GetType("env::bbtools.env"))
 db      = model.AddRequirement(lib.GetType("ref::sylph_db"))
 reads   = model.AddRequirement(lib.GetType("sequences::short_reads"))
 
@@ -17,16 +17,16 @@ def protocol(context: ExecutionContext):
     threads  = context.params.get('cpus')
     threads_arg = "" if threads is None else f"-t {threads}"
 
-    context.ExecWithContainer(
-        image=img_bb,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_bb,
         cmd=f"""
             reformat.sh in={ireads.container} \
                 out1=split_r1.fq.gz out2=split_r2.fq.gz
         """
     )
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             sylph profile {idb.container} \
                 -1 split_r1.fq.gz -2 split_r2.fq.gz \

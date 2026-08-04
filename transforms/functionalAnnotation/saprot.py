@@ -5,7 +5,7 @@ from pathlib import Path
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image    = model.AddRequirement(lib.GetType("containers::saprot.oci"))
+image    = model.AddRequirement(lib.GetType("env::saprot.env"))
 weights  = model.AddRequirement(lib.GetType("ref::saprot_650m_weights"))
 orfs     = model.AddRequirement(lib.GetType("sequences::orfs_shard"))
 tokens   = model.AddRequirement(lib.GetType("sequences::structure_3di_tokens"), parents={orfs})
@@ -149,8 +149,8 @@ def protocol(context: ExecutionContext):
     with open(script, "w") as f:
         f.write(INFERENCE)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[
             (context.external_cwd/"weights", "/weights"),
             (context.external_cwd/script.name, f"/work/{script.name}"),

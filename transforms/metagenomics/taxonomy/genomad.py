@@ -4,8 +4,10 @@ from metasmith.python_api import *
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image    = model.AddRequirement(lib.GetType("containers::genomad.oci"))
-assembly = model.AddRequirement(lib.GetType("sequences::assembly"))
+image    = model.AddRequirement(lib.GetType("env::genomad.env"))
+# ~5 Mbp contig batch (w4_rebatch.py), sample-prefixed headers; per-sample
+# regroup happens in w4_recompile.py. Sibling of assembly, not a subtype.
+assembly = model.AddRequirement(lib.GetType("sequences::contig_batch"))
 ref  = model.AddRequirement(lib.GetType("ref::genomad"))
 
 virus_summary_out   = model.AddProduct(lib.GetType("taxonomy::genomad_virus_summary"))
@@ -21,8 +23,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get('cpus')
     threads = "" if threads is None else f"-t {threads}"
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"/usr/local/bin/_entrypoint.sh genomad end-to-end {iasm.container} genomad_output {idb.container} {threads} --cleanup",
     )
 

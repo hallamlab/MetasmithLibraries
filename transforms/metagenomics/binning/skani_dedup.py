@@ -13,7 +13,7 @@ from metasmith.python_api import *
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image = model.AddRequirement(lib.GetType("containers::skani.oci"))
+image = model.AddRequirement(lib.GetType("env::skani.env"))
 asm   = model.AddRequirement(lib.GetType("sequences::assembly"))
 bin   = model.AddRequirement(lib.GetType("binning_local::quality_bin_fasta"), parents={asm})
 table = model.AddProduct(lib.GetType("binning_local::cluster_table"))
@@ -61,8 +61,8 @@ def protocol(context: ExecutionContext):
 
     threads = context.params.get("cpus", 8)
     ani_tsv = "skani_ani.tsv"
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"skani triangle -l {bins_list} --sparse -o {ani_tsv} -t {threads}",
     )
 

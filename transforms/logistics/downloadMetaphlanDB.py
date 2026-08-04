@@ -6,7 +6,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::metaphlan.oci"))
+image = model.AddRequirement(lib.GetType("env::metaphlan.env"))
 out   = model.AddProduct(lib.GetType("ref::metaphlan_db"))
 
 
@@ -15,8 +15,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get('cpus')
     threads_arg = "" if threads is None else f"--nproc {threads}"
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p {iout.container}
             metaphlan --install --bowtie2db {iout.container} {threads_arg}

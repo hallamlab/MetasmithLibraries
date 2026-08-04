@@ -6,7 +6,7 @@ from metasmith.python_api import *
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image    = model.AddRequirement(lib.GetType("containers::antismash.oci"))
+image    = model.AddRequirement(lib.GetType("env::antismash.env"))
 assembly = model.AddRequirement(lib.GetType("sequences::assembly"))
 db       = model.AddRequirement(lib.GetType("ref::antismash"))
 
@@ -65,8 +65,8 @@ def protocol(context: ExecutionContext):
     cpus = context.params.get("cpus")
     cpus = 8 if cpus is None else cpus
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(idb.external, "/antismash_db")],
         cmd=f"""
             antismash \

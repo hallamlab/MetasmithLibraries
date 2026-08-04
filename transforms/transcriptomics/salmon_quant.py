@@ -6,7 +6,7 @@ pair    = model.AddRequirement(lib.GetType("sequences::read_pair"))
 r1      = model.AddRequirement(lib.GetType("sequences::zipped_forward_short_reads"), parents={pair})
 r2      = model.AddRequirement(lib.GetType("sequences::zipped_reverse_short_reads"), parents={pair})
 idx     = model.AddRequirement(lib.GetType("transcriptomics::salmon_index"))
-image   = model.AddRequirement(lib.GetType("containers::salmon.oci"))
+image   = model.AddRequirement(lib.GetType("env::salmon.env"))
 out     = model.AddProduct(lib.GetType("transcriptomics::salmon_quant"))
 
 def protocol(context: ExecutionContext):
@@ -16,8 +16,8 @@ def protocol(context: ExecutionContext):
     iout=context.Output(out)
     threads = context.params.get('cpus')
     threads = 8 if threads is None else threads
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             salmon quant \
                 -i {iidx.container} \

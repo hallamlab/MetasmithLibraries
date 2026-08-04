@@ -5,7 +5,7 @@ model = Transform()
 exp   = model.AddRequirement(lib.GetType("transcriptomics::experiment"))
 gtf   = model.AddRequirement(lib.GetType("transcriptomics::braker3_gff"), parents={exp})
 asm   = model.AddRequirement(lib.GetType("sequences::assembly"), parents={exp})
-image = model.AddRequirement(lib.GetType("containers::gffread.oci"))
+image = model.AddRequirement(lib.GetType("env::gffread.env"))
 out   = model.AddProduct(lib.GetType("sequences::orfs"))
 
 def protocol(context: ExecutionContext):
@@ -13,8 +13,8 @@ def protocol(context: ExecutionContext):
     iasm = context.Input(asm)
     iout = context.Output(out)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"gffread {igtf.container} -g {iasm.container} -y {iout.container}",
     )
     return ExecutionResult(

@@ -6,7 +6,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 out   = model.AddProduct(lib.GetType("ref::kraken2_db"))
 
 KRAKEN2_DB_URL = "https://genome-idx.s3.amazonaws.com/kraken/k2_standard_16gb_20240605.tar.gz"
@@ -14,8 +14,8 @@ KRAKEN2_DB_URL = "https://genome-idx.s3.amazonaws.com/kraken/k2_standard_16gb_20
 
 def protocol(context: ExecutionContext):
     iout = context.Output(out)
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p {iout.container}
             wget -q {KRAKEN2_DB_URL} -O k2.tar.gz

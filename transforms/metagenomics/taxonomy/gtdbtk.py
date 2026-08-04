@@ -4,7 +4,7 @@ import shutil
 
 lib         = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model       = Transform()
-image       = model.AddRequirement(lib.GetType("containers::gtdbtk.oci"))
+image       = model.AddRequirement(lib.GetType("env::gtdbtk.env"))
 ref         = model.AddRequirement(lib.GetType("ref::gtdb"))
 asm         = model.AddRequirement(lib.GetType("sequences::putative_genome"))
 tax         = model.AddProduct(lib.GetType("taxonomy::gtdbtk"))
@@ -31,7 +31,15 @@ def protocol(context: ExecutionContext):
     mem = context.params.get('memory')
     if mem:
         _mem_gb = int(float(mem))
-        pplacer_cpus = f"--pplacer_cpus {max(1, (_mem_gb-8)//40)}"
+        # pplacer keeps a FULL copy of the reference tree (~128 GB for r232's
+        # scaled bac120 tree) IN MEMORY PER THREAD, so peak RAM ~= pplacer_cpus
+        # * ~130 GB. The old (mem-8)//40 heuristic assumed ~40 GB/thread and
+        # yielded 5 threads at 240 GB -> ~640 GB peak -> SIGKILL right at
+        # "Step 8: Placing genomes" (silently swallowed by errorStrategy=ignore,
+        # producing empty taxonomy). Budget ~140 GB/thread over a ~40 GB base so
+        # 240 GB -> 1 thread (peak ~128 GB, fits). --skip_ani_screen is set, so
+        # the sketch DB is not loaded and pplacer is the sole memory driver.
+        pplacer_cpus = f"--pplacer_cpus {max(1, (_mem_gb-40)//140)}"
     else:
         pplacer_cpus = ""
 
@@ -48,11 +56,11 @@ def protocol(context: ExecutionContext):
     # - separate the skani screen? is this needed for small runs? 
     # - batchify
     out_raw = Path("./gtdb_raw")
-    context.ExecWithContainer(
+    context.ExecWithEnv().ifContainerDo(
         binds=[
             (iref.external, "/ref"),
         ],
-        image = image,
+        env = image,
         cmd = f"""\
             mkdir -p {temp_ws}
             export GTDBTK_DATA_PATH=/ref
@@ -127,10 +135,10 @@ TransformInstance(
     protocol=protocol,
     model=model,
     group_by=asm,
-    batch_size=25,
+    batch_size=200,
     resources=Resources(
-        cpus=2,
+        cpus=8,
         memory=Size.GB(240), # r232 sketches.db needs >120GB; r226 used 107 GB
-        duration=Duration(hours=12),
+        duration=Duration(hours=24),
     )
 )

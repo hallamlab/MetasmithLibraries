@@ -2,7 +2,7 @@ from metasmith.python_api import *
 
 lib       = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model     = Transform()
-image     = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image     = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 w_300m    = model.AddProduct(lib.GetType("ref::esm_c_300m_weights"))
 w_600m    = model.AddProduct(lib.GetType("ref::esm_c_600m_weights"))
 
@@ -13,8 +13,8 @@ def protocol(context: ExecutionContext):
     i300 = context.Output(w_300m)
     i600 = context.Output(w_600m)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             pip install --quiet --no-cache-dir huggingface_hub
             huggingface-cli download {HF_300M} --local-dir esmc_300m --local-dir-use-symlinks False

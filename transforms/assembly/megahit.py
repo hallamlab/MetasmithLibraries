@@ -3,7 +3,7 @@ import json
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::megahit.oci"))
+image   = model.AddRequirement(lib.GetType("env::megahit.env"))
 meta    = model.AddRequirement(lib.GetType("sequences::read_metadata"))
 reads   = model.AddRequirement(lib.GetType("sequences::clean_short_reads"), parents={meta})
 out     = model.AddProduct(lib.GetType("sequences::megahit_assembly"))
@@ -27,8 +27,8 @@ def protocol(context: ExecutionContext):
     # (85% of it, matching bbtools' headroom convention).
     mem_gb = context.params.get('memory')
     mem = f"--memory {int(mem_gb * 0.85 * 1024**3)}" if mem_gb else ""
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""\
             megahit {threads} {mem} \
                 {parg} {ireads.container} \

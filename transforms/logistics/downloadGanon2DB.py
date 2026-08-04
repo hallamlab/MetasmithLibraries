@@ -7,7 +7,7 @@ from metasmith.python_api import *
 
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
-image = model.AddRequirement(lib.GetType("containers::ganon.oci"))
+image = model.AddRequirement(lib.GetType("env::ganon.env"))
 out   = model.AddProduct(lib.GetType("ref::ganon2_db"))
 
 
@@ -18,8 +18,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get('cpus')
     threads_arg = "" if threads is None else f"--threads {threads}"
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             mkdir -p $(dirname {iout.container})
             ganon build --db-prefix {iout.container} \

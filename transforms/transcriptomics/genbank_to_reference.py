@@ -6,7 +6,7 @@ from metasmith.python_api import *
 lib   = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 gbk   = model.AddRequirement(lib.GetType("sequences::gbk"))
-image = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 fasta = model.AddProduct(lib.GetType("transcriptomics::organellar_reference"))
 gff   = model.AddProduct(lib.GetType("transcriptomics::organellar_gff"))
 
@@ -121,8 +121,8 @@ with open(gff_file, "w") as gout:
 print(f"Wrote GFF3: {gff_file}", flush=True)
 """)
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"python gbk_to_ref.py {igbk.container} {ifasta.container} {igff.container}",
     )
     return ExecutionResult(

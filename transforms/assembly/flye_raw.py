@@ -3,7 +3,7 @@ import json
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::flye.oci"))
+image   = model.AddRequirement(lib.GetType("env::flye.env"))
 oreads  = model.AddRequirement(lib.GetType("sequences::long_reads"))
 stats   = model.AddRequirement(lib.GetType("sequences::read_qc_stats"), parents={oreads})
 out     = model.AddProduct(lib.GetType("sequences::flye_raw_assembly"))
@@ -36,8 +36,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get('cpus')
     threads = "" if threads is None else f"--threads {threads}"
     # memory defaults to 0.9 of available [--memory 0.9]
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             flye --meta {err} {threads} \
                 {preset} {ireads.container} \

@@ -4,11 +4,11 @@ from pathlib import Path
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-image    = model.AddRequirement(lib.GetType("containers::kofamscan.oci"))
-orfs     = model.AddRequirement(lib.GetType("sequences::orfs"))
+image    = model.AddRequirement(lib.GetType("env::kofamscan.env"))
+orfs     = model.AddRequirement(lib.GetType("sequences::orf_chunk"))
 profiles = model.AddRequirement(lib.GetType("ref::kofamscan_profiles"))
 ko_list  = model.AddRequirement(lib.GetType("ref::kofamscan_ko_list"))
-out_results = model.AddProduct(lib.GetType("annotation::kofamscan_results"))
+out_results = model.AddProduct(lib.GetType("annotation::kofamscan_results_chunk"))
 
 
 def parse_kofamscan(input_path, output_path):
@@ -43,8 +43,8 @@ def protocol(context: ExecutionContext):
     context.LocalShell(f"pigz -dc {iprofiles.local} | tar xf -")
 
     # Run KofamScan with extracted database references
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[
             (context.external_cwd/"profiles", "/profiles"),
             (iko_list.external.parent, "/ko"),

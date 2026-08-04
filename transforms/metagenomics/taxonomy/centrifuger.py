@@ -2,9 +2,9 @@ from metasmith.python_api import *
 
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
-image   = model.AddRequirement(lib.GetType("containers::centrifuger.oci"))
-img_bb  = model.AddRequirement(lib.GetType("containers::bbtools.oci"))
-img_pq  = model.AddRequirement(lib.GetType("containers::python_for_data_science.oci"))
+image   = model.AddRequirement(lib.GetType("env::centrifuger.env"))
+img_bb  = model.AddRequirement(lib.GetType("env::bbtools.env"))
+img_pq  = model.AddRequirement(lib.GetType("env::python_for_data_science.env"))
 db      = model.AddRequirement(lib.GetType("ref::centrifuger_db"))
 reads   = model.AddRequirement(lib.GetType("sequences::short_reads"))
 
@@ -22,8 +22,8 @@ def protocol(context: ExecutionContext):
     threads = context.params.get('cpus')
     threads_arg = "" if threads is None else f"-t {threads}"
 
-    context.ExecWithContainer(
-        image=img_bb,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_bb,
         cmd=f"""
             reformat.sh in={ireads.container} \
                 out1=split_r1.fq.gz out2=split_r2.fq.gz
@@ -33,8 +33,8 @@ def protocol(context: ExecutionContext):
     # centrifuger writes per-read classifications as a TSV (one row per read);
     # kreport + quant downstream tools both consume the TSV. Stage it locally
     # then convert to parquet for the {iclass} product at the end.
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"""
             pfx=$(ls {idb.container}/*.1.cfr 2>/dev/null | head -1)
             pfx=${{pfx%.1.cfr}}
@@ -58,8 +58,8 @@ def protocol(context: ExecutionContext):
     # EVERY line. So the heredoc body must share that same 12-space indent;
     # otherwise the body and the `PY` terminator get chopped, leaving an
     # unterminated heredoc and a syntax-corrupted Python script.
-    context.ExecWithContainer(
-        image=img_pq,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_pq,
         cmd=f"""
             python <<'PY'
             import polars as pl

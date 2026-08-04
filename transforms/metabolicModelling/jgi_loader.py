@@ -4,7 +4,7 @@ from pathlib import Path
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
 
-image   = model.AddRequirement(lib.GetType("containers::metabolomics-python.oci"))
+image   = model.AddRequirement(lib.GetType("env::metabolomics-python.env"))
 dataset = model.AddRequirement(lib.GetType("metabolomics::jgi_metabolomics_dataset"))
 out_ft  = model.AddProduct(lib.GetType("metabolomics::metabolomics_feature_table"))
 
@@ -212,8 +212,8 @@ with open(meta_path, "w") as f:
 print(f"Saved {len(result)} features x {len(sample_cols)} samples -> {output_csv}")
 ''')
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         binds=[(idataset.external, "/jgi_data")],
         cmd=f"python {script} /jgi_data {iout.container}",
     )

@@ -7,7 +7,7 @@ sys.stderr.reconfigure(line_buffering=True)
 
 from pathlib import Path
 from metasmith.python_api import (
-    Agent, ContainerRuntime, SshSource,
+    Agent, Runtime, SshSource,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder,
 )
@@ -49,7 +49,7 @@ def main():
     ).AsSource()
     smith = Agent(
         home=agent_home,
-        runtime=ContainerRuntime.APPTAINER,
+        runtime=Runtime.APPTAINER,
         setup_commands=[
             'module load gcc/9.4.0',
             'module load apptainer/1.3.1',
@@ -57,7 +57,7 @@ def main():
     )
 
     print("=== Loading resources & transforms ===")
-    base_res = [DataInstanceLibrary.Load(MLIB / "resources/containers")]
+    base_res = [DataInstanceLibrary.Load(MLIB / "resources/env")]
     t_transforms = [
         TransformInstanceLibrary.Load(MLIB / "transforms/transcriptomics"),
         TransformInstanceLibrary.Load(MLIB / "transforms/functionalAnnotation"),

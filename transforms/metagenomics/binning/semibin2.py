@@ -4,7 +4,7 @@ from metasmith.python_api import *
 
 lib         = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model       = Transform()
-image       = model.AddRequirement(lib.GetType("containers::semibin.oci"))
+image       = model.AddRequirement(lib.GetType("env::semibin.env"))
 asm         = model.AddRequirement(lib.GetType("sequences::assembly"))
 bam         = model.AddRequirement(lib.GetType("alignment::bam"), parents={asm})
 bin_fasta   = model.AddProduct(lib.GetType("sequences::semibin2_bin_fasta"))
@@ -20,8 +20,8 @@ def protocol(context: ExecutionContext):
     # Use global environment model (works for most samples)
     environment = "global"
 
-    context.ExecWithContainer(
-        image = image,
+    context.ExecWithEnv().ifContainerDo(
+        env = image,
         cmd = f"""
             export PATH=/opt/conda/bin:$PATH
             SemiBin2 single_easy_bin \

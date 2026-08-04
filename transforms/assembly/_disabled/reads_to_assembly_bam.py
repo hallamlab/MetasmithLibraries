@@ -4,8 +4,8 @@ from metasmith.python_api import *
 lib = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model = Transform()
 
-img_mm2 = model.AddRequirement(lib.GetType("containers::minimap2.oci"))
-img_sam = model.AddRequirement(lib.GetType("containers::samtools.oci"))
+img_mm2 = model.AddRequirement(lib.GetType("env::minimap2.env"))
+img_sam = model.AddRequirement(lib.GetType("env::samtools.env"))
 meta    = model.AddRequirement(lib.GetType("sequences::read_metadata"))
 reads   = model.AddRequirement(lib.GetType("sequences::reads"), parents={meta})
 rstats  = model.AddRequirement(lib.GetType("sequences::read_qc_stats"), parents={meta})
@@ -45,16 +45,16 @@ def protocol(context: ExecutionContext):
 
     temp_sam = "temp.sam"
     bam_file = "aligned.bam"
-    context.ExecWithContainer(
-        image=img_mm2,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_mm2,
         cmd=f"""
             minimap2 {preset} -a -2 {cpus_mm2} \
                 {iasm.container} {ireads.container} > {temp_sam}
         """
     )
 
-    context.ExecWithContainer(
-        image=img_sam,
+    context.ExecWithEnv().ifContainerDo(
+        env=img_sam,
         cmd=f"""
             samtools view {cpus_sam} -b {temp_sam} \
                 | samtools sort {cpus_sam} -o {bam_file} -O bam

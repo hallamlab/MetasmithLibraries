@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from metasmith.python_api import (
     Agent,
-    ContainerRuntime,
+    Runtime,
     Source,
     DataInstanceLibrary,
     DataTypeLibrary,
@@ -33,7 +33,7 @@ def agent():
     agent_home = Source.FromLocal(TEST_MSM_HOME)
     smith = Agent(
         home=agent_home,
-        runtime=ContainerRuntime.DOCKER,
+        runtime=Runtime.DOCKER,
     )
     if not (TEST_MSM_HOME / "msm").exists():
         smith.Deploy()
@@ -42,7 +42,7 @@ def agent():
 
 @pytest.fixture(scope="module")
 def base_resources():
-    return [DataInstanceLibrary.Load(MLIB / "resources/containers")]
+    return [DataInstanceLibrary.Load(MLIB / "resources/env")]
 
 
 @pytest.fixture(scope="module")

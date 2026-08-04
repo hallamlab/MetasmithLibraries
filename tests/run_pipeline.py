@@ -7,7 +7,7 @@ sys.stderr.reconfigure(line_buffering=True)
 
 from pathlib import Path
 from metasmith.python_api import (
-    Agent, ContainerRuntime, Source,
+    Agent, Runtime, Source,
     DataInstanceLibrary, TransformInstanceLibrary,
     TargetBuilder, Resources, Size,
 )
@@ -35,7 +35,7 @@ SAMPLES = {
 def main():
     print("=== Setting up agent ===")
     agent_home = Source.FromLocal(TEST_MSM_HOME)
-    smith = Agent(home=agent_home, runtime=ContainerRuntime.DOCKER)
+    smith = Agent(home=agent_home, runtime=Runtime.DOCKER)
     if not (TEST_MSM_HOME / "msm").exists():
         print("Deploying with assertive=True...")
         smith.Deploy(assertive=True)
@@ -44,7 +44,7 @@ def main():
         print("Agent already deployed")
 
     print("\n=== Loading resources ===")
-    base_res = [DataInstanceLibrary.Load(MLIB / "resources/containers")]
+    base_res = [DataInstanceLibrary.Load(MLIB / "resources/env")]
 
     print("=== Loading transforms ===")
     t_transforms = [

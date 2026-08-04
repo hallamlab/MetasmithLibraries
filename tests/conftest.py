@@ -8,7 +8,7 @@ import pytest
 from pathlib import Path
 from metasmith.python_api import (
     Agent,
-    ContainerRuntime,
+    Runtime,
     Source,
     DataInstanceLibrary,
     DataTypeLibrary,
@@ -56,7 +56,7 @@ def agent():
     agent_home = Source.FromLocal(TEST_MSM_HOME)
     smith = Agent(
         home=agent_home,
-        runtime=ContainerRuntime.DOCKER,
+        runtime=Runtime.DOCKER,
     )
 
     # Deploy if not already deployed
@@ -74,7 +74,7 @@ def base_resources(mlib):
     These are common resources needed by most transforms.
     """
     return [
-        DataInstanceLibrary.Load(mlib / "resources/containers"),
+        DataInstanceLibrary.Load(mlib / "resources/env"),
     ]
 
 

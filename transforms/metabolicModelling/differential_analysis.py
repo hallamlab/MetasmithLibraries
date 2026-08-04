@@ -4,7 +4,7 @@ from pathlib import Path
 lib     = TransformInstanceLibrary.ResolveParentLibrary(__file__)
 model   = Transform()
 
-image   = model.AddRequirement(lib.GetType("containers::metabolomics-python.oci"))
+image   = model.AddRequirement(lib.GetType("env::metabolomics-python.env"))
 feat_ft = model.AddRequirement(lib.GetType("metabolomics::metabolomics_feature_table"))
 out_dir = model.AddProduct(lib.GetType("metabolomics::metabolomics_differential"))
 
@@ -166,8 +166,8 @@ if all_results:
 print(f"Differential analysis complete. Outputs in {out_dir}")
 ''')
 
-    context.ExecWithContainer(
-        image=image,
+    context.ExecWithEnv().ifContainerDo(
+        env=image,
         cmd=f"python {script} {ift.container} {iout.container}",
     )
 
