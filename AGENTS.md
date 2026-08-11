@@ -128,6 +128,10 @@ Everything in `main/` that is not a template author runs against a real cluster.
 - `main/probe_planner.py` — plan-only: solve a target set and print which transforms were
   picked. Inputs are deferred; nothing is opened. This is the tool for "why did the planner
   add that step".
+- `main/render_resistome_dag.py`, `main/viromics/render_viromics_dag.py` — plan-only DAG
+  renders from placeholder inputs. A renderer resolves the library root by walking up for
+  `data_types/` + `transforms/` rather than by relative depth, so it survives being filed
+  into a subdirectory, and writes beside itself into a git-ignored `cache/`.
 
 The shape of the DL workflow — targets, weights, transitive dependencies, GPU tiers — lives
 once in `main/_dl_embeddings.py`; the launcher and the probe differ only in where the files
